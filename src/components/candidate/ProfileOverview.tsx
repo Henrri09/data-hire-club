@@ -1,22 +1,32 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { EditProfileDialog } from "./EditProfileDialog";
+import { useState } from "react";
+import { Progress } from "../ui/progress";
+
+interface Profile {
+  description: string;
+  skills: string[];
+  photoUrl: string | null;
+}
 
 export function ProfileOverview() {
-  // Simulando dados do perfil (substituir quando tivermos banco de dados)
-  const profileData = {
-    photo: false,
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile>({
     description: "",
     skills: [],
-  };
+    photoUrl: null
+  });
 
   // Calcula a porcentagem de completude do perfil
   const calculateProfileCompletion = () => {
     let completed = 0;
-    const total = 3; // Total de campos (foto, descrição, habilidades)
+    const total = 3; // Total de critérios (foto, descrição > 200 palavras, 5+ habilidades)
 
-    if (profileData.photo) completed++;
-    if (profileData.description.length > 0) completed++;
-    if (profileData.skills.length > 0) completed++;
+    if (profile.photoUrl) completed++;
+    if (profile.description.length >= 200) completed++;
+    if (profile.skills.length >= 5) completed++;
 
     return Math.round((completed / total) * 100);
   };
@@ -34,15 +44,28 @@ export function ProfileOverview() {
     { name: 'Aceitas', value: 2 },
   ];
 
-  const COLORS = ['#7779f5', '#e5e7eb'];
-  const APPLICATION_COLORS = ['#7779f5', '#ef4444', '#22c55e'];
+  const COLORS = ['#2563eb', '#e5e7eb'];
+  const APPLICATION_COLORS = ['#2563eb', '#ef4444', '#22c55e'];
+
+  const handleProfileUpdate = (updatedProfile: Profile) => {
+    setProfile(updatedProfile);
+    // Aqui você pode adicionar a lógica para salvar no backend
+    console.log('Profile updated:', updatedProfile);
+  };
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-900">Complete seu perfil</CardTitle>
-          <p className="text-sm text-gray-500">Acompanhe o progresso do seu perfil</p>
+          <p className="text-sm text-gray-500">
+            Para atingir 100% você precisa:
+            <ul className="mt-2 list-disc list-inside">
+              <li>Adicionar uma foto</li>
+              <li>Escrever uma descrição com pelo menos 200 palavras</li>
+              <li>Adicionar pelo menos 5 habilidades</li>
+            </ul>
+          </p>
         </CardHeader>
         <CardContent>
           <div className="h-[250px]">
@@ -71,8 +94,14 @@ export function ProfileOverview() {
             </ResponsiveContainer>
           </div>
           <div className="text-center mt-4">
-            <p className="text-3xl font-bold text-[#7779f5]">{completion}%</p>
-            <p className="text-sm text-gray-500">do perfil completo</p>
+            <p className="text-3xl font-bold text-primary">{completion}%</p>
+            <p className="text-sm text-gray-500 mb-4">do perfil completo</p>
+            <Button 
+              onClick={() => setIsDialogOpen(true)}
+              className="w-full md:w-auto"
+            >
+              Editar Perfil
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -110,7 +139,7 @@ export function ProfileOverview() {
           </div>
           <div className="flex justify-around mt-4 text-sm">
             <div className="text-center">
-              <p className="text-xl font-bold text-[#7779f5]">3</p>
+              <p className="text-xl font-bold text-primary">3</p>
               <p className="text-gray-500">Pendentes</p>
             </div>
             <div className="text-center">
@@ -124,6 +153,12 @@ export function ProfileOverview() {
           </div>
         </CardContent>
       </Card>
+
+      <EditProfileDialog 
+        open={isDialogOpen} 
+        onOpenChange={setIsDialogOpen}
+        onProfileUpdate={handleProfileUpdate}
+      />
     </div>
   );
 }
