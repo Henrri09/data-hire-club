@@ -8,6 +8,7 @@ import { OverviewTab } from "@/components/company/dashboard/OverviewTab";
 import { JobsTab } from "@/components/company/dashboard/JobsTab";
 import { ProfileTab } from "@/components/company/dashboard/ProfileTab";
 import { JobPostingForm } from "@/components/company/dashboard/JobPostingForm";
+import { CompanyHeader } from "@/components/company/Header";
 
 export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,61 +61,64 @@ export default function CompanyDashboard() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Dashboard Empresarial</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Publicar Nova Vaga
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl w-[95%] p-6">
-            <JobPostingForm
-              formData={formData}
-              handleInputChange={handleInputChange}
-              handleSubmit={handleSubmit}
-              onCancel={() => setIsDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+    <div className="min-h-screen flex flex-col">
+      <CompanyHeader />
+      <div className="container mx-auto px-4 py-8 flex-1">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Dashboard Empresarial</h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Publicar Nova Vaga
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl w-[95%] p-6">
+              <JobPostingForm
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleSubmit={handleSubmit}
+                onCancel={() => setIsDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="bg-[#7779f5]/10">
+            <TabsTrigger 
+              value="overview"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+            >
+              Visão Geral
+            </TabsTrigger>
+            <TabsTrigger 
+              value="jobs"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+            >
+              Minhas Vagas
+            </TabsTrigger>
+            <TabsTrigger 
+              value="profile"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+            >
+              Perfil da Empresa
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview">
+            <OverviewTab />
+          </TabsContent>
+
+          <TabsContent value="jobs">
+            <JobsTab />
+          </TabsContent>
+
+          <TabsContent value="profile">
+            <ProfileTab />
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="bg-[#7779f5]/10">
-          <TabsTrigger 
-            value="overview"
-            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
-          >
-            Visão Geral
-          </TabsTrigger>
-          <TabsTrigger 
-            value="jobs"
-            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
-          >
-            Minhas Vagas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="profile"
-            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
-          >
-            Perfil da Empresa
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <OverviewTab />
-        </TabsContent>
-
-        <TabsContent value="jobs">
-          <JobsTab />
-        </TabsContent>
-
-        <TabsContent value="profile">
-          <ProfileTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
