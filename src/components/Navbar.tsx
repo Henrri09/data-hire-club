@@ -26,17 +26,17 @@ export function Navbar() {
               {isMenuOpen && (
                 <div className="absolute top-16 left-0 right-0 bg-white border-b p-4 flex flex-col space-y-4">
                   <Link to="/jobs" className="text-gray-600 hover:text-primary">
-                    Find Jobs
+                    Encontrar Vagas
                   </Link>
                   <Link to="/companies" className="text-gray-600 hover:text-primary">
-                    Companies
+                    Empresas
                   </Link>
                   <div className="flex flex-col space-y-2">
                     <Button asChild variant="ghost">
-                      <Link to="/login">Log in</Link>
+                      <Link to="/login">Entrar</Link>
                     </Button>
                     <Button asChild>
-                      <Link to="/register">Sign up</Link>
+                      <Link to="/register">Cadastrar</Link>
                     </Button>
                   </div>
                 </div>
@@ -46,18 +46,18 @@ export function Navbar() {
             <div className="flex items-center space-x-8">
               <div className="flex space-x-6">
                 <Link to="/jobs" className="text-gray-600 hover:text-primary">
-                  Find Jobs
+                  Encontrar Vagas
                 </Link>
                 <Link to="/companies" className="text-gray-600 hover:text-primary">
-                  Companies
+                  Empresas
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
                 <Button asChild variant="ghost">
-                  <Link to="/login">Log in</Link>
+                  <Link to="/login">Entrar</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/register">Sign up</Link>
+                  <Link to="/register">Cadastrar</Link>
                 </Button>
               </div>
             </div>
