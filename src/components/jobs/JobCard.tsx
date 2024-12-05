@@ -1,4 +1,4 @@
-import { Briefcase, MapPin } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -19,6 +19,7 @@ interface JobCardProps {
     seniority: string;
     salary_range: string;
     contract_type: string;
+    application_url?: string; // New optional field for external application URL
   };
 }
 
@@ -84,6 +85,18 @@ export function JobCard({ job }: JobCardProps) {
               <h4 className="font-semibold text-[#1e293b]">Tipo de Contratação</h4>
               <p className="text-[#1e293b]/80">{job.contract_type}</p>
             </div>
+            <a 
+              href={job.application_url || "https://example.com/apply"} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block mt-6"
+            >
+              <Button 
+                className="w-full bg-[#7779f5] hover:bg-[#9b87f5] text-white transition-colors flex items-center justify-center gap-2"
+              >
+                Candidatar-se <ExternalLink className="w-4 h-4" />
+              </Button>
+            </a>
           </div>
         </DialogContent>
       </Dialog>
