@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, Upload, Check } from "lucide-react";
+import { useState } from "react";
+import { X, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -10,8 +10,6 @@ import {
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
-import { Progress } from "../ui/progress";
-import { useToast } from "../ui/use-toast";
 
 interface Profile {
   description: string;
@@ -32,24 +30,6 @@ export function EditProfileDialog({
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [completionPercentage, setCompletionPercentage] = useState(0);
-  const { toast } = useToast();
-
-  const calculateCompletion = () => {
-    let completed = 0;
-    const total = 3;
-
-    if (photoPreview) completed++;
-    if (description.length >= 200) completed++;
-    if (skills.length >= 5) completed++;
-
-    return Math.round((completed / total) * 100);
-  };
-
-  useEffect(() => {
-    const percentage = calculateCompletion();
-    setCompletionPercentage(percentage);
-  }, [description, skills, photoPreview]);
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -104,11 +84,11 @@ export function EditProfileDialog({
                     <img
                       src={photoPreview}
                       alt="Preview"
-                      className="w-full h-full object-cover rounded-full border-4 border-primary/20"
+                      className="w-full h-full object-cover rounded-full border-4 border-[#9b87f5]/20"
                     />
                   ) : (
-                    <div className="w-full h-full rounded-full bg-secondary flex items-center justify-center border-4 border-primary/20">
-                      <Upload className="w-12 h-12 text-primary/60" />
+                    <div className="w-full h-full rounded-full bg-[#E5DEFF] flex items-center justify-center border-4 border-[#9b87f5]/20">
+                      <Upload className="w-12 h-12 text-[#9b87f5]/60" />
                     </div>
                   )}
                   <input
@@ -137,14 +117,14 @@ export function EditProfileDialog({
                 onChange={(e) => setNewSkill(e.target.value)}
                 onKeyDown={handleAddSkill}
                 placeholder="Digite uma habilidade e pressione Enter"
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#9b87f5]/50 focus:border-[#9b87f5]"
               />
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
                   <Badge 
                     key={skill}
                     variant="secondary"
-                    className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-[#9b87f5]/10 text-[#9b87f5] hover:bg-[#9b87f5]/20"
                   >
                     {skill}
                     <X
@@ -169,15 +149,13 @@ export function EditProfileDialog({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Fale um pouco sobre você..."
-                className="min-h-[240px] resize-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="min-h-[240px] resize-none focus:ring-2 focus:ring-[#9b87f5]/50 focus:border-[#9b87f5]"
               />
             </div>
-
-            <Progress value={completionPercentage} className="h-2 bg-primary/20" />
             
             <Button 
               onClick={handleSave} 
-              className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-semibold"
+              className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white py-6 text-lg font-semibold"
             >
               Salvar Alterações
             </Button>
