@@ -4,10 +4,30 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
+import { useToast } from "../ui/use-toast";
+
+// Interface para o perfil do usuário
+interface Profile {
+  description: string;
+  skills: string[];
+  photoUrl: string | null;
+}
 
 export function CandidateSidebar() {
   const location = useLocation();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleProfileUpdate = (profile: Profile) => {
+    // Aqui você pode implementar a lógica para salvar o perfil
+    // Por exemplo, fazer uma chamada à API
+    console.log("Perfil atualizado:", profile);
+    
+    toast({
+      title: "Perfil atualizado com sucesso",
+      description: "Suas informações foram salvas.",
+    });
+  };
 
   const menuItems = [
     {
@@ -52,6 +72,7 @@ export function CandidateSidebar() {
       <EditProfileDialog 
         open={isEditProfileOpen} 
         onOpenChange={setIsEditProfileOpen}
+        onProfileUpdate={handleProfileUpdate}
       />
     </aside>
   );
