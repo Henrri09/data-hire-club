@@ -1,4 +1,4 @@
-import { LogOut, UserRound } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
@@ -23,13 +23,13 @@ export function CandidateHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-black text-white">
+    <header className="sticky top-0 z-50 w-full border-b bg-[#9b87f5] text-white">
       <div className="container flex h-14 items-center justify-between">
         <span className="font-bold">Data Hire Club</span>
         <div className="flex items-center gap-4">
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.photoUrl || undefined} />
-            <AvatarFallback className="bg-[#7779f5] text-white">
+            <AvatarFallback className="bg-white/20 text-white">
               {getInitials(user.name)}
             </AvatarFallback>
           </Avatar>
