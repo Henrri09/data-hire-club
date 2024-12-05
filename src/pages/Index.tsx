@@ -1,34 +1,75 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ArrowRight, Briefcase, Users, Search, MapPin } from "lucide-react";
+import { useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
+
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  description: string;
+  seniority: string;
+  salary_range: string;
+  contract_type: string;
+}
+
+const ITEMS_PER_PAGE = 9;
+
+const fetchJobs = async ({ pageParam = 0, searchQuery = "" }) => {
+  // Simulando uma chamada à API
+  const mockJobs: Job[] = Array.from({ length: ITEMS_PER_PAGE }, (_, i) => ({
+    id: pageParam * ITEMS_PER_PAGE + i + 1,
+    title: `Analista de Dados ${pageParam * ITEMS_PER_PAGE + i + 1}`,
+    company: "TechBR Solutions",
+    location: "São Paulo, SP",
+    type: "Remoto",
+    description: "Experiência com Python, SQL e ferramentas de visualização.",
+    seniority: "Sênior",
+    salary_range: "R$ 8.000 - R$ 12.000",
+    contract_type: "CLT"
+  })).filter(job => 
+    searchQuery === "" || 
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return {
+    jobs: mockJobs,
+    nextPage: mockJobs.length === ITEMS_PER_PAGE ? pageParam + 1 : undefined,
+  };
+};
 
 const Index = () => {
-  const jobListings = [
-    {
-      id: 1,
-      title: "Analista de Dados Sênior",
-      company: "TechBR Solutions",
-      location: "São Paulo, SP",
-      type: "Remoto",
-      description: "Experiência com Python, SQL e ferramentas de visualização."
-    },
-    {
-      id: 2,
-      title: "Engenheiro de Dados Pleno",
-      company: "DataFlow Brasil",
-      location: "Rio de Janeiro, RJ",
-      type: "Híbrido",
-      description: "Conhecimento em Apache Spark, AWS e pipelines de dados."
-    },
-    {
-      id: 3,
-      title: "Cientista de Dados",
-      company: "IA Inovações",
-      location: "Florianópolis, SC",
-      type: "Presencial",
-      description: "Experiência com Machine Learning e análise estatística."
+  const [searchQuery, setSearchQuery] = useState("");
+  const { ref, inView } = useInView();
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: ['jobs', searchQuery],
+    queryFn: ({ pageParam }) => fetchJobs({ pageParam, searchQuery }),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
-  ];
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  const allJobs = data?.pages.flatMap(page => page.jobs) ?? [];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,11 +89,62 @@ const Index = () => {
                   Começar Agora <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-                <Link to="/jobs">Ver Todas as Vagas</Link>
-              </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Search and Jobs Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Buscar vagas por título, empresa ou localização..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {allJobs.map((job) => (
+              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
+                <p className="text-gray-600 mb-4">{job.company}</p>
+                <div className="flex gap-4 text-gray-600 mb-4">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {job.location}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Briefcase className="w-4 h-4" />
+                    {job.type}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">{job.description}</p>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">Senioridade: {job.seniority}</p>
+                  <p className="text-sm text-gray-600">Faixa Salarial: {job.salary_range}</p>
+                  <p className="text-sm text-gray-600">Contratação: {job.contract_type}</p>
+                </div>
+                <Button variant="outline" className="w-full mt-4">
+                  Ver Detalhes
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {(isLoading || isFetchingNextPage) && (
+            <div className="text-center mt-8">
+              Carregando mais vagas...
+            </div>
+          )}
+
+          <div ref={ref} className="h-10" />
         </div>
       </section>
 
@@ -87,40 +179,6 @@ const Index = () => {
                 Encontre oportunidades que combinam com suas habilidades e experiência.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Jobs Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Vagas em Destaque</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {jobListings.map((job) => (
-              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-                <p className="text-gray-600 mb-4">{job.company}</p>
-                <div className="flex gap-4 text-gray-600 mb-4">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    {job.location}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="w-4 h-4" />
-                    {job.type}
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">{job.description}</p>
-                <Button asChild variant="outline" className="w-full">
-                  <Link to={`/jobs/${job.id}`}>Ver Detalhes</Link>
-                </Button>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Button asChild variant="outline" size="lg">
-              <Link to="/jobs">Ver Todas as Vagas</Link>
-            </Button>
           </div>
         </div>
       </section>
