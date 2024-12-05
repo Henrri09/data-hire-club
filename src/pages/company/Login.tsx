@@ -4,11 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileHeader } from "@/components/MobileHeader";
 
 export default function CompanyLogin() {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="container mx-auto px-4 py-24">
-      <Card className="max-w-md mx-auto relative">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
+      {isMobile ? (
+        <MobileHeader showAuthButtons={false} />
+      ) : (
         <Link 
           to="/" 
           className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
@@ -16,39 +22,44 @@ export default function CompanyLogin() {
           <ChevronLeft className="h-4 w-4" />
           Voltar para home
         </Link>
-        <CardHeader className="pt-12">
-          <CardTitle>Login Empresarial</CardTitle>
-          <CardDescription>
-            Entre com sua conta empresarial para publicar vagas
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail corporativo</Label>
-              <Input id="email" type="email" placeholder="empresa@email.com" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="••••••••" />
-            </div>
-            <Button type="submit" className="w-full bg-[#7779f5] hover:bg-[#7779f5]/90">
-              Entrar
-            </Button>
-            <div className="text-center space-y-2">
-              <p className="text-sm text-gray-600">
-                Não tem uma conta?{" "}
-                <Link to="/company/register" className="text-[#7779f5] hover:underline">
-                  Cadastre sua empresa
+      )}
+      
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-2xl md:text-3xl text-center">Login Empresarial</CardTitle>
+            <CardDescription className="text-center">
+              Entre com sua conta empresarial para publicar vagas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail corporativo</Label>
+                <Input id="email" type="email" placeholder="empresa@email.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input id="password" type="password" placeholder="••••••••" />
+              </div>
+              <Button type="submit" className="w-full bg-[#7779f5] hover:bg-[#7779f5]/90">
+                Entrar
+              </Button>
+              <div className="text-center space-y-2">
+                <p className="text-sm text-gray-600">
+                  Não tem uma conta?{" "}
+                  <Link to="/company/register" className="text-[#7779f5] hover:underline">
+                    Cadastre sua empresa
+                  </Link>
+                </p>
+                <Link to="/company/forgot-password" className="text-sm text-[#7779f5] hover:underline block">
+                  Esqueceu sua senha?
                 </Link>
-              </p>
-              <Link to="/company/forgot-password" className="text-sm text-[#7779f5] hover:underline block">
-                Esqueceu sua senha?
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
