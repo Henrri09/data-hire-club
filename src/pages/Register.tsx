@@ -4,20 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 
 export default function Register() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center relative">
-        <Link 
-          to="/" 
-          className="absolute left-4 top-4 text-white hover:text-gray-200 flex items-center gap-1 text-sm"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar para home
-        </Link>
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
         <div className="max-w-xl">
           <h1 className="text-5xl font-bold mb-6">Comece sua jornada</h1>
           <p className="text-2xl mb-8">Junte-se a milhares de profissionais e empresas.</p>

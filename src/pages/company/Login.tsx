@@ -3,19 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 
 export default function CompanyLogin() {
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      <Link 
-        to="/" 
-        className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar para home
-      </Link>
-      
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader className="space-y-2">
