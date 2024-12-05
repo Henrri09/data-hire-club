@@ -26,7 +26,7 @@ export function Navbar() {
               {isMenuOpen && (
                 <div className="absolute top-16 left-0 right-0 bg-white border-b p-4 flex flex-col space-y-4">
                   <Link to="/jobs" className="text-gray-600 hover:text-primary">
-                    Encontrar Vagas
+                    Vagas
                   </Link>
                   <Link to="/companies" className="text-gray-600 hover:text-primary">
                     Empresas
@@ -46,7 +46,7 @@ export function Navbar() {
             <div className="flex items-center space-x-8">
               <div className="flex space-x-6">
                 <Link to="/jobs" className="text-gray-600 hover:text-primary">
-                  Encontrar Vagas
+                  Vagas
                 </Link>
                 <Link to="/companies" className="text-gray-600 hover:text-primary">
                   Empresas
