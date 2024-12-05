@@ -15,58 +15,34 @@ export default function CandidateDashboard() {
           </div>
         </main>
       </div>
-      <footer className="bg-gray-50 border-t mt-auto">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <footer className="bg-black text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">Sobre</h3>
-              <ul className="mt-4 space-y-4">
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Quem Somos</a>
-                </li>
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Carreiras</a>
-                </li>
-              </ul>
+              <h4 className="text-xl font-bold mb-4">Data Hire Club</h4>
+              <p className="text-gray-400">
+                Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.
+              </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">Suporte</h3>
-              <ul className="mt-4 space-y-4">
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">FAQ</a>
-                </li>
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Contato</a>
-                </li>
-              </ul>
+              <h4 className="text-xl font-bold mb-4">Contato</h4>
+              <p className="text-gray-400">
+                Email: contato@datahireclub.com.br<br />
+                Tel: (11) 4002-8922<br />
+                São Paulo, SP
+              </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">Legal</h3>
-              <ul className="mt-4 space-y-4">
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Privacidade</a>
-                </li>
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Termos</a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">Social</h3>
-              <ul className="mt-4 space-y-4">
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">LinkedIn</a>
-                </li>
-                <li>
-                  <a href="#" className="text-base text-gray-500 hover:text-gray-900">Twitter</a>
-                </li>
+              <h4 className="text-xl font-bold mb-4">Links Úteis</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">Sobre Nós</a></li>
+                <li><a href="#" className="hover:text-white">Termos de Uso</a></li>
+                <li><a href="#" className="hover:text-white">Política de Privacidade</a></li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 border-t border-gray-200 pt-8">
-            <p className="text-base text-gray-400 text-center">
-              &copy; 2024 Data Hire Club. Todos os direitos reservados.
-            </p>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Data Hire Club. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

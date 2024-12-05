@@ -2,9 +2,30 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export function ProfileOverview() {
+  // Simulando dados do perfil (substituir quando tivermos banco de dados)
+  const profileData = {
+    photo: false,
+    description: "",
+    skills: [],
+  };
+
+  // Calcula a porcentagem de completude do perfil
+  const calculateProfileCompletion = () => {
+    let completed = 0;
+    const total = 3; // Total de campos (foto, descrição, habilidades)
+
+    if (profileData.photo) completed++;
+    if (profileData.description.length > 0) completed++;
+    if (profileData.skills.length > 0) completed++;
+
+    return Math.round((completed / total) * 100);
+  };
+
+  const completion = calculateProfileCompletion();
+
   const profileCompletionData = [
-    { name: 'Completo', value: 75 },
-    { name: 'Incompleto', value: 25 },
+    { name: 'Completo', value: completion },
+    { name: 'Incompleto', value: 100 - completion },
   ];
 
   const applicationData = [
@@ -20,7 +41,7 @@ export function ProfileOverview() {
     <div className="grid gap-8 md:grid-cols-2">
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-gray-900">Completude do Perfil</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">Complete seu perfil</CardTitle>
           <p className="text-sm text-gray-500">Acompanhe o progresso do seu perfil</p>
         </CardHeader>
         <CardContent>
@@ -50,7 +71,7 @@ export function ProfileOverview() {
             </ResponsiveContainer>
           </div>
           <div className="text-center mt-4">
-            <p className="text-3xl font-bold text-[#7779f5]">75%</p>
+            <p className="text-3xl font-bold text-[#7779f5]">{completion}%</p>
             <p className="text-sm text-gray-500">do perfil completo</p>
           </div>
         </CardContent>
