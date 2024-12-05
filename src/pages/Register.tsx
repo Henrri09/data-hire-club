@@ -10,7 +10,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center relative">
         <Link 
           to="/" 
           className="absolute left-4 top-4 text-white hover:text-gray-200 flex items-center gap-1 text-sm"
