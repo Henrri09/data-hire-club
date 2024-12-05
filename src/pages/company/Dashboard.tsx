@@ -22,7 +22,7 @@ export default function CompanyDashboard() {
     tipoContratacao: "",
     faixaSalarialMin: "",
     faixaSalarialMax: "",
-    linkExterno: "", // New field for external link
+    linkExterno: "",
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -73,7 +73,7 @@ export default function CompanyDashboard() {
               Publicar Nova Vaga
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl w-full"> {/* Updated width here */}
             <DialogHeader>
               <DialogTitle>Publicar Nova Vaga</DialogTitle>
             </DialogHeader>
