@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
+import { useState } from "react";
 
 export function CandidateSidebar() {
   const location = useLocation();
