@@ -63,17 +63,17 @@ export default function CompanyDashboard() {
   return (
     <div className="min-h-screen flex flex-col">
       <CompanyHeader />
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Dashboard Empresarial</h1>
+      <div className="container mx-auto px-4 py-6 md:py-8 flex-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4 md:gap-0">
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard Empresarial</h1>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
+              <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90 w-full md:w-auto">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Publicar Nova Vaga
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl w-[95%] p-6">
+            <DialogContent className="max-w-4xl w-[95%] p-4 md:p-6">
               <JobPostingForm
                 formData={formData}
                 handleInputChange={handleInputChange}
@@ -85,36 +85,36 @@ export default function CompanyDashboard() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-[#7779f5]/10">
+          <TabsList className="bg-[#7779f5]/10 w-full md:w-auto flex overflow-x-auto">
             <TabsTrigger 
               value="overview"
-              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
             >
               Visão Geral
             </TabsTrigger>
             <TabsTrigger 
               value="jobs"
-              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
             >
               Minhas Vagas
             </TabsTrigger>
             <TabsTrigger 
               value="profile"
-              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
             >
               Perfil da Empresa
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
+          <TabsContent value="overview" className="mt-6">
             <OverviewTab />
           </TabsContent>
 
-          <TabsContent value="jobs">
+          <TabsContent value="jobs" className="mt-6">
             <JobsTab />
           </TabsContent>
 
-          <TabsContent value="profile">
+          <TabsContent value="profile" className="mt-6">
             <ProfileTab />
           </TabsContent>
         </Tabs>
