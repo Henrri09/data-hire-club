@@ -8,8 +8,8 @@ import { ChevronLeft } from "lucide-react";
 
 export default function Register() {
   return (
-    <div className="container mx-auto px-4 py-24">
-      <Card className="max-w-md mx-auto relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-md mx-auto relative">
         <Link 
           to="/" 
           className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
@@ -17,9 +17,9 @@ export default function Register() {
           <ChevronLeft className="h-4 w-4" />
           Voltar para home
         </Link>
-        <CardHeader className="pt-12">
-          <CardTitle>Criar conta</CardTitle>
-          <CardDescription>
+        <CardHeader className="pt-12 space-y-2">
+          <CardTitle className="text-2xl md:text-3xl text-center">Criar conta</CardTitle>
+          <CardDescription className="text-center">
             Cadastre-se para encontrar as melhores oportunidades em dados
           </CardDescription>
         </CardHeader>

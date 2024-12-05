@@ -7,8 +7,8 @@ import { ChevronLeft } from "lucide-react";
 
 export default function Login() {
   return (
-    <div className="container mx-auto px-4 py-24">
-      <Card className="max-w-md mx-auto relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-md mx-auto relative">
         <Link 
           to="/" 
           className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
@@ -16,9 +16,9 @@ export default function Login() {
           <ChevronLeft className="h-4 w-4" />
           Voltar para home
         </Link>
-        <CardHeader className="pt-12">
-          <CardTitle>Entrar</CardTitle>
-          <CardDescription>
+        <CardHeader className="pt-12 space-y-2">
+          <CardTitle className="text-2xl md:text-3xl text-center">Entrar</CardTitle>
+          <CardDescription className="text-center">
             Entre com sua conta para acessar a plataforma
           </CardDescription>
         </CardHeader>
@@ -35,12 +35,17 @@ export default function Login() {
             <Button type="submit" className="w-full bg-[#7779f5] hover:bg-[#7779f5]/90">
               Entrar
             </Button>
-            <p className="text-center text-sm text-gray-600">
-              Não tem uma conta?{" "}
-              <Link to="/register" className="text-[#7779f5] hover:underline">
-                Cadastre-se
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-600">
+                Não tem uma conta?{" "}
+                <Link to="/register" className="text-[#7779f5] hover:underline">
+                  Cadastre-se
+                </Link>
+              </p>
+              <Link to="/forgot-password" className="text-sm text-[#7779f5] hover:underline block">
+                Esqueceu sua senha?
               </Link>
-            </p>
+            </div>
           </form>
         </CardContent>
       </Card>
