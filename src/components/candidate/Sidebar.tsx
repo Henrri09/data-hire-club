@@ -40,8 +40,8 @@ export function CandidateSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-gray-50 border-r p-4 min-h-[calc(100vh-3.5rem)]">
-      <nav className="space-y-2">
+    <aside className="w-64 bg-gray-50 border-r min-h-[calc(100vh-3.5rem)] overflow-y-auto">
+      <nav className="sticky top-0 space-y-2 p-4">
         {menuItems.map((item) => (
           <Link
             key={item.path}

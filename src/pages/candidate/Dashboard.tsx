@@ -4,13 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, ExternalLink } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink, Menu } from "lucide-react";
 import { EditProfileDialog } from "@/components/candidate/EditProfileDialog";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function CandidateDashboard() {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Mock data - em produção viria da API
   const profile = {
@@ -45,29 +48,46 @@ export default function CandidateDashboard() {
       .toUpperCase();
   };
 
+  const SidebarContent = () => (
+    <CandidateSidebar />
+  );
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <CandidateHeader />
       <div className="flex flex-1">
-        <CandidateSidebar />
-        <main className="flex-1 p-8">
-          <div className="max-w-5xl mx-auto space-y-6">
+        {isMobile ? (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="fixed bottom-4 right-4 z-50 rounded-full bg-primary text-white shadow-lg">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <SidebarContent />
+        )}
+        <main className="flex-1 p-4 md:p-8">
+          <div className="max-w-5xl mx-auto space-y-4 md:space-y-6">
             {/* Profile Card */}
             <Card className="border-none shadow-md">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-6">
-                  <Avatar className="h-24 w-24">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6">
+                  <Avatar className="h-20 w-20 md:h-24 md:w-24">
                     <AvatarImage src={profile.photoUrl || undefined} />
                     <AvatarFallback className="bg-[#9b87f5] text-white text-xl">
                       {getInitials(profile.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                       <div>
-                        <h2 className="text-2xl font-bold text-gray-900">{profile.name}</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-900">{profile.name}</h2>
                         <p className="text-gray-600">{profile.role}</p>
-                        <div className="flex items-center gap-4 mt-2 text-gray-500">
+                        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mt-2 text-gray-500">
                           <span className="flex items-center gap-1">
                             <MapPin className="w-4 h-4" />
                             {profile.location}
@@ -80,7 +100,7 @@ export default function CandidateDashboard() {
                       </div>
                       <Button 
                         onClick={() => setIsEditProfileOpen(true)}
-                        className="bg-[#9b87f5] hover:bg-[#9b87f5]/90"
+                        className="w-full md:w-auto bg-[#9b87f5] hover:bg-[#9b87f5]/90"
                       >
                         Editar Perfil
                       </Button>
@@ -106,20 +126,20 @@ export default function CandidateDashboard() {
             {/* Applications Card */}
             <Card className="border-none shadow-md">
               <CardHeader>
-                <CardTitle>Minhas Candidaturas</CardTitle>
+                <CardTitle className="text-lg md:text-xl">Minhas Candidaturas</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {profile.applications.map((application, index) => (
                     <div 
                       key={index}
-                      className="flex items-center justify-between p-4 rounded-lg bg-white border border-gray-100 hover:border-[#9b87f5]/30 transition-colors"
+                      className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg bg-white border border-gray-100 hover:border-[#9b87f5]/30 transition-colors gap-4"
                     >
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{application.role}</h3>
                         <p className="text-gray-600">{application.company}</p>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
                         <span className="text-sm text-gray-500">{application.date}</span>
                         <a 
                           href={application.applicationUrl}
@@ -141,17 +161,17 @@ export default function CandidateDashboard() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer className="bg-black text-white py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h4 className="text-xl font-bold mb-4">Data Hire Club</h4>
+              <h4 className="text-lg md:text-xl font-bold mb-4">Data Hire Club</h4>
               <p className="text-gray-400">
                 Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.
               </p>
             </div>
             <div>
-              <h4 className="text-xl font-bold mb-4">Contato</h4>
+              <h4 className="text-lg md:text-xl font-bold mb-4">Contato</h4>
               <p className="text-gray-400">
                 Email: contato@datahireclub.com.br<br />
                 Tel: (11) 4002-8922<br />
@@ -159,7 +179,7 @@ export default function CandidateDashboard() {
               </p>
             </div>
             <div>
-              <h4 className="text-xl font-bold mb-4">Links Úteis</h4>
+              <h4 className="text-lg md:text-xl font-bold mb-4">Links Úteis</h4>
               <ul className="space-y-2 text-gray-400">
                 <li><Link to="/about" className="hover:text-white">Sobre Nós</Link></li>
                 <li><Link to="/terms" className="hover:text-white">Termos de Uso</Link></li>
