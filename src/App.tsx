@@ -11,6 +11,7 @@ import CompanyLogin from "./pages/company/Login";
 import CompanyRegister from "./pages/company/Register";
 import CompanyDashboard from "./pages/company/Dashboard";
 import CandidateDashboard from "./pages/candidate/Dashboard";
+import CandidateJobs from "./pages/candidate/Jobs";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/company/register" element={<><Navbar /><CompanyRegister /></>} />
           <Route path="/company/dashboard" element={<CompanyDashboard />} />
           <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+          <Route path="/candidate/jobs" element={<CandidateJobs />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

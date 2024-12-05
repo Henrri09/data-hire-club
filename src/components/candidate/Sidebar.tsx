@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
 
-// Interface para o perfil do usuário
 interface Profile {
   description: string;
   skills: string[];
@@ -19,8 +18,6 @@ export function CandidateSidebar() {
   const { toast } = useToast();
 
   const handleProfileUpdate = (profile: Profile) => {
-    // Aqui você pode implementar a lógica para salvar o perfil
-    // Por exemplo, fazer uma chamada à API
     console.log("Perfil atualizado:", profile);
     
     toast({
@@ -50,8 +47,8 @@ export function CandidateSidebar() {
             key={item.path}
             to={item.path}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#7779f5] hover:bg-gray-100 transition-colors",
-              location.pathname === item.path && "text-[#7779f5] font-medium bg-gray-100"
+              "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors",
+              location.pathname === item.path && "text-[#9b87f5] font-medium bg-gray-100"
             )}
           >
             <item.icon className="h-5 w-5" />
@@ -61,7 +58,7 @@ export function CandidateSidebar() {
         <button
           onClick={() => setIsEditProfileOpen(true)}
           className={cn(
-            "w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#7779f5] hover:bg-gray-100 transition-colors"
+            "w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors"
           )}
         >
           <UserCog className="h-5 w-5" />
