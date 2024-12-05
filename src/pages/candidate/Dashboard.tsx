@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin } from "lucide-react";
+import { Briefcase, MapPin, ExternalLink } from "lucide-react";
 import { EditProfileDialog } from "@/components/candidate/EditProfileDialog";
 import { useState } from "react";
 
@@ -24,14 +24,14 @@ export default function CandidateDashboard() {
       {
         company: "TechCorp",
         role: "Engenheiro de Dados Sênior",
-        status: "Em análise",
-        date: "2024-02-15"
+        date: "14/02/2024",
+        applicationUrl: "https://techcorp.com/careers"
       },
       {
         company: "DataTech",
         role: "Especialista em Big Data",
-        status: "Entrevista",
-        date: "2024-02-10"
+        date: "09/02/2024",
+        applicationUrl: "https://datatech.com/jobs"
       }
     ]
   };
@@ -114,18 +114,21 @@ export default function CandidateDashboard() {
                       key={index}
                       className="flex items-center justify-between p-4 rounded-lg bg-white border border-gray-100 hover:border-[#9b87f5]/30 transition-colors"
                     >
-                      <div>
+                      <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{application.role}</h3>
                         <p className="text-gray-600">{application.company}</p>
                       </div>
-                      <div className="text-right">
-                        <Badge 
-                          variant="secondary"
-                          className="bg-[#9b87f5]/10 text-[#9b87f5]"
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm text-gray-500">{application.date}</span>
+                        <a 
+                          href={application.applicationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-[#9b87f5] hover:text-[#9b87f5]/80 transition-colors"
                         >
-                          {application.status}
-                        </Badge>
-                        <p className="text-sm text-gray-500 mt-1">{new Date(application.date).toLocaleDateString()}</p>
+                          <ExternalLink className="w-4 h-4" />
+                          <span className="text-sm">Acessar vaga</span>
+                        </a>
                       </div>
                     </div>
                   ))}
@@ -139,7 +142,6 @@ export default function CandidateDashboard() {
         open={isEditProfileOpen}
         onOpenChange={setIsEditProfileOpen}
         onProfileUpdate={() => {
-          // Implementar atualização do perfil
           setIsEditProfileOpen(false);
         }}
       />
