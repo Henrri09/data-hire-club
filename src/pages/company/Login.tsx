@@ -4,25 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { MobileHeader } from "@/components/MobileHeader";
 
 export default function CompanyLogin() {
-  const isMobile = useIsMobile();
-
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      {isMobile ? (
-        <MobileHeader showAuthButtons={false} />
-      ) : (
-        <Link 
-          to="/" 
-          className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar para home
-        </Link>
-      )}
+      <Link 
+        to="/" 
+        className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Voltar para home
+      </Link>
       
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md mx-auto">
