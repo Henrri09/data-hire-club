@@ -8,6 +8,9 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Jobs from "./pages/Jobs";
+import CompanyLogin from "./pages/company/Login";
+import CompanyRegister from "./pages/company/Register";
+import CompanyDashboard from "./pages/company/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/company/login" element={<CompanyLogin />} />
+          <Route path="/company/register" element={<CompanyRegister />} />
+          <Route path="/company/dashboard" element={<CompanyDashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
