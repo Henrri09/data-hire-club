@@ -2,18 +2,48 @@ import { useState } from "react";
 import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { JobsList } from "@/components/jobs/JobsList";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
 
+  const SidebarContent = () => (
+    <div className="h-full py-4">
+      <CandidateSidebar />
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <CandidateHeader />
+      <div className="sticky top-0 z-50 w-full border-b bg-black text-white">
+        <div className="container flex h-14 items-center">
+          {isMobile ? (
+            <>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="mr-4">
+                    <Menu className="h-6 w-6" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-64 p-0">
+                  <SidebarContent />
+                </SheetContent>
+              </Sheet>
+              <span className="font-bold">Data Hire Club</span>
+            </>
+          ) : (
+            <Link to="/" className="mr-6 flex items-center space-x-2">
+              <span className="font-bold">Data Hire Club</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
       <div className="flex flex-1">
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
