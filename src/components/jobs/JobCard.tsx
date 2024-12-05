@@ -1,5 +1,12 @@
 import { Briefcase, MapPin } from "lucide-react";
 import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
 interface JobCardProps {
   job: {
@@ -30,15 +37,54 @@ export function JobCard({ job }: JobCardProps) {
           {job.type}
         </span>
       </div>
-      <p className="text-[#1e293b]/80 mb-4">{job.description}</p>
+      <p className="text-[#1e293b]/80 mb-4 line-clamp-2">{job.description}</p>
       <div className="space-y-2">
         <p className="text-sm text-[#1e293b]/70">Senioridade: {job.seniority}</p>
         <p className="text-sm text-[#1e293b]/70">Faixa Salarial: {job.salary_range}</p>
         <p className="text-sm text-[#1e293b]/70">Contratação: {job.contract_type}</p>
       </div>
-      <Button variant="outline" className="w-full mt-4">
-        Ver Detalhes
-      </Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="w-full mt-4">
+            Ver vaga
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#1e293b]">{job.title}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-4">
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Empresa</h4>
+              <p className="text-[#1e293b]/80">{job.company}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Localização</h4>
+              <p className="text-[#1e293b]/80">{job.location}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Tipo de Trabalho</h4>
+              <p className="text-[#1e293b]/80">{job.type}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Descrição</h4>
+              <p className="text-[#1e293b]/80">{job.description}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Senioridade</h4>
+              <p className="text-[#1e293b]/80">{job.seniority}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Faixa Salarial</h4>
+              <p className="text-[#1e293b]/80">{job.salary_range}</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-[#1e293b]">Tipo de Contratação</h4>
+              <p className="text-[#1e293b]/80">{job.contract_type}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

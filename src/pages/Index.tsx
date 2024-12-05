@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
-import { ArrowRight, Briefcase, Users, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 import { JobsList } from "@/components/jobs/JobsList";
 
@@ -21,17 +19,6 @@ const Index = () => {
               Conecte-se com as melhores empresas que contratam profissionais de dados. 
               Sua próxima posição em análise, engenharia ou ciência de dados está aqui.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button 
-                asChild 
-                size="lg" 
-                className="w-full sm:w-auto bg-[#7779f5] hover:bg-[#7779f5]/90"
-              >
-                <Link to="/register">
-                  Começar Agora <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </div>
       </section>
