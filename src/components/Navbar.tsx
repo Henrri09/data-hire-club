@@ -11,7 +11,7 @@ export function Navbar() {
         <nav className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="flex items-center gap-4">
             <Link to="/company/login" className="text-gray-300 hover:text-white">Publique uma vaga</Link>
-            <Button asChild variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+            <Button asChild variant="outline" className="text-[#7779f5] border-[#7779f5] hover:bg-[#7779f5]/10">
               <Link to="/login">Entrar</Link>
             </Button>
             <Button asChild className="bg-[#7779f5] hover:bg-[#7779f5]/90">
