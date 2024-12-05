@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Briefcase, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { JobsList } from "@/components/jobs/JobsList";
 
