@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building, PlusCircle, Settings, Briefcase } from "lucide-react";
-import { Link } from "react-router-dom";
+import { PlusCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { OverviewTab } from "@/components/company/dashboard/OverviewTab";
+import { JobsTab } from "@/components/company/dashboard/JobsTab";
+import { ProfileTab } from "@/components/company/dashboard/ProfileTab";
 
 export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function CompanyDashboard() {
     tipoContratacao: "",
     faixaSalarialMin: "",
     faixaSalarialMax: "",
+    linkExterno: "", // New field for external link
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -33,7 +35,6 @@ export default function CompanyDashboard() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validar se todos os campos estão preenchidos
     const isEmpty = Object.values(formData).some((value) => value === "");
     
     if (isEmpty) {
@@ -41,7 +42,11 @@ export default function CompanyDashboard() {
       return;
     }
 
-    // Aqui você adicionaria a lógica para salvar a vaga
+    if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
+      toast.error("Por favor, insira um link válido começando com http:// ou https://");
+      return;
+    }
+
     console.log("Dados da vaga:", formData);
     toast.success("Vaga publicada com sucesso!");
     setIsDialogOpen(false);
@@ -53,6 +58,7 @@ export default function CompanyDashboard() {
       tipoContratacao: "",
       faixaSalarialMin: "",
       faixaSalarialMax: "",
+      linkExterno: "",
     });
   };
 
@@ -62,7 +68,7 @@ export default function CompanyDashboard() {
         <h1 className="text-3xl font-bold">Dashboard Empresarial</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
               <PlusCircle className="mr-2 h-4 w-4" />
               Publicar Nova Vaga
             </Button>
@@ -162,11 +168,30 @@ export default function CompanyDashboard() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="linkExterno">Link para Candidatura (Obrigatório)</Label>
+                <Input
+                  id="linkExterno"
+                  value={formData.linkExterno}
+                  onChange={(e) => handleInputChange("linkExterno", e.target.value)}
+                  placeholder="Ex: https://empresa.com/vagas/analista"
+                />
+              </div>
+
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit">Publicar Vaga</Button>
+                <Button 
+                  type="submit"
+                  className="bg-[#7779f5] hover:bg-[#7779f5]/90"
+                >
+                  Publicar Vaga
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -174,100 +199,37 @@ export default function CompanyDashboard() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="jobs">Minhas Vagas</TabsTrigger>
-          <TabsTrigger value="profile">Perfil da Empresa</TabsTrigger>
+        <TabsList className="bg-[#7779f5]/10">
+          <TabsTrigger 
+            value="overview"
+            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+          >
+            Visão Geral
+          </TabsTrigger>
+          <TabsTrigger 
+            value="jobs"
+            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+          >
+            Minhas Vagas
+          </TabsTrigger>
+          <TabsTrigger 
+            value="profile"
+            className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+          >
+            Perfil da Empresa
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Vagas Ativas</CardTitle>
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">3</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Candidaturas</CardTitle>
-                <Building className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">12</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Visualizações</CardTitle>
-                <Settings className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">145</div>
-              </CardContent>
-            </Card>
-          </div>
+          <OverviewTab />
         </TabsContent>
 
         <TabsContent value="jobs">
-          <Card>
-            <CardHeader>
-              <CardTitle>Minhas Vagas</CardTitle>
-              <CardDescription>
-                Gerencie suas vagas publicadas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Lista de vagas aqui */}
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold">Analista de Dados Sênior</h3>
-                  <p className="text-sm text-gray-600">4 candidaturas</p>
-                  <div className="mt-2 flex gap-2">
-                    <Button variant="outline" size="sm">Editar</Button>
-                    <Button variant="outline" size="sm">Ver Candidatos</Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <JobsTab />
         </TabsContent>
 
         <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Perfil da Empresa</CardTitle>
-              <CardDescription>
-                Gerencie as informações da sua empresa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="editCompanyName">Nome da Empresa</Label>
-                    <Input id="editCompanyName" defaultValue="TechBR Solutions" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editCnpj">CNPJ</Label>
-                    <Input id="editCnpj" defaultValue="00.000.000/0000-00" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editSector">Setor</Label>
-                    <Input id="editSector" defaultValue="Tecnologia" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editLocation">Localização</Label>
-                    <Input id="editLocation" defaultValue="São Paulo, SP" />
-                  </div>
-                </div>
-                <Button type="submit">Salvar Alterações</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <ProfileTab />
         </TabsContent>
       </Tabs>
     </div>
