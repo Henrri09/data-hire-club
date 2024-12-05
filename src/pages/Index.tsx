@@ -1,75 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowRight, Briefcase, Users, Search, MapPin } from "lucide-react";
+import { ArrowRight, Briefcase, Users, Search } from "lucide-react";
 import { useState } from "react";
-import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
-
-interface Job {
-  id: number;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  description: string;
-  seniority: string;
-  salary_range: string;
-  contract_type: string;
-}
-
-const ITEMS_PER_PAGE = 9;
-
-const fetchJobs = async ({ pageParam = 0, searchQuery = "" }) => {
-  // Simulando uma chamada à API
-  const mockJobs: Job[] = Array.from({ length: ITEMS_PER_PAGE }, (_, i) => ({
-    id: pageParam * ITEMS_PER_PAGE + i + 1,
-    title: `Analista de Dados ${pageParam * ITEMS_PER_PAGE + i + 1}`,
-    company: "TechBR Solutions",
-    location: "São Paulo, SP",
-    type: "Remoto",
-    description: "Experiência com Python, SQL e ferramentas de visualização.",
-    seniority: "Sênior",
-    salary_range: "R$ 8.000 - R$ 12.000",
-    contract_type: "CLT"
-  })).filter(job => 
-    searchQuery === "" || 
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  return {
-    jobs: mockJobs,
-    nextPage: mockJobs.length === ITEMS_PER_PAGE ? pageParam + 1 : undefined,
-  };
-};
+import { JobsList } from "@/components/jobs/JobsList";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { ref, inView } = useInView();
-
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['jobs', searchQuery],
-    queryFn: ({ pageParam }) => fetchJobs({ pageParam, searchQuery }),
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 0
-  });
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
-
-  const allJobs = data?.pages.flatMap(page => page.jobs) ?? [];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -77,14 +14,19 @@ const Index = () => {
       <section className="pt-32 pb-16 hero-pattern">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-[#1e293b] mb-6">
               Encontre Sua Próxima Oportunidade em Dados
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Conecte-se com as melhores empresas que contratam profissionais de dados. Sua próxima posição em análise, engenharia ou ciência de dados está aqui.
+            <p className="text-xl text-[#1e293b]/80 mb-8">
+              Conecte-se com as melhores empresas que contratam profissionais de dados. 
+              Sua próxima posição em análise, engenharia ou ciência de dados está aqui.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild size="lg" className="w-full sm:w-auto">
+              <Button 
+                asChild 
+                size="lg" 
+                className="w-full sm:w-auto bg-[#7779f5] hover:bg-[#7779f5]/90"
+              >
                 <Link to="/register">
                   Começar Agora <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -95,7 +37,7 @@ const Index = () => {
       </section>
 
       {/* Search and Jobs Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-[#f8fafc]">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto mb-8">
             <div className="relative">
@@ -110,41 +52,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {allJobs.map((job) => (
-              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-                <p className="text-gray-600 mb-4">{job.company}</p>
-                <div className="flex gap-4 text-gray-600 mb-4">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    {job.location}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="w-4 h-4" />
-                    {job.type}
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">{job.description}</p>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Senioridade: {job.seniority}</p>
-                  <p className="text-sm text-gray-600">Faixa Salarial: {job.salary_range}</p>
-                  <p className="text-sm text-gray-600">Contratação: {job.contract_type}</p>
-                </div>
-                <Button variant="outline" className="w-full mt-4">
-                  Ver Detalhes
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          {(isLoading || isFetchingNextPage) && (
-            <div className="text-center mt-8">
-              Carregando mais vagas...
-            </div>
-          )}
-
-          <div ref={ref} className="h-10" />
+          <JobsList searchQuery={searchQuery} />
         </div>
       </section>
 
@@ -153,29 +61,29 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Briefcase className="h-6 w-6 text-primary" />
+              <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Vagas Selecionadas</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Vagas Selecionadas</h3>
+              <p className="text-[#1e293b]/70">
                 Oportunidades exclusivas em dados das principais empresas de tecnologia.
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-6 w-6 text-primary" />
+              <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Comunidade</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Comunidade</h3>
+              <p className="text-[#1e293b]/70">
                 Conecte-se com outros profissionais de dados e expanda sua rede.
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="h-6 w-6 text-primary" />
+              <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Match Inteligente</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Match Inteligente</h3>
+              <p className="text-[#1e293b]/70">
                 Encontre oportunidades que combinam com suas habilidades e experiência.
               </p>
             </div>
@@ -184,7 +92,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-black text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
