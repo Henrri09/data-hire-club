@@ -23,7 +23,7 @@ interface JobPostingFormProps {
 
 export function JobPostingForm({ formData, handleInputChange, handleSubmit, onCancel }: JobPostingFormProps) {
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-h-[80vh] overflow-y-auto px-1">
       <DialogHeader>
         <DialogTitle>Publicar Nova Vaga</DialogTitle>
       </DialogHeader>
@@ -46,7 +46,7 @@ export function JobPostingForm({ formData, handleInputChange, handleSubmit, onCa
             value={formData.descricao}
             onChange={(e) => handleInputChange("descricao", e.target.value)}
             placeholder="Descreva as responsabilidades e requisitos da vaga"
-            className="min-h-[150px]"
+            className="min-h-[120px]"
           />
         </div>
 
