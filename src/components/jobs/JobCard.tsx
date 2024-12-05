@@ -45,7 +45,9 @@ export function JobCard({ job }: JobCardProps) {
       </div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" className="w-full mt-4">
+          <Button 
+            className="w-full mt-4 bg-[#7779f5] hover:bg-[#9b87f5] text-white transition-colors"
+          >
             Ver vaga
           </Button>
         </DialogTrigger>
