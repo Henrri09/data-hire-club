@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import CompanyLogin from "./pages/company/Login";
 import CompanyRegister from "./pages/company/Register";
 import CompanyDashboard from "./pages/company/Dashboard";
+import CandidateDashboard from "./pages/candidate/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -19,14 +20,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Navbar />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/company/login" element={<CompanyLogin />} />
-          <Route path="/company/register" element={<CompanyRegister />} />
+          <Route path="/" element={<><Navbar /><Index /></>} />
+          <Route path="/login" element={<><Navbar /><Login /></>} />
+          <Route path="/register" element={<><Navbar /><Register /></>} />
+          <Route path="/company/login" element={<><Navbar /><CompanyLogin /></>} />
+          <Route path="/company/register" element={<><Navbar /><CompanyRegister /></>} />
           <Route path="/company/dashboard" element={<CompanyDashboard />} />
+          <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
