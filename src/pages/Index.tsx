@@ -13,7 +13,7 @@ const Index = () => {
       <section className="pt-32 pb-16 hero-pattern">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-[#1e293b] mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-[#7779f5] mb-6">
               Encontre Sua Próxima Oportunidade em Dados
             </h1>
             <p className="text-xl text-[#1e293b]/80 mb-8">
@@ -52,7 +52,7 @@ const Index = () => {
               <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Briefcase className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Vagas Selecionadas</h3>
+              <h3 className="text-xl font-semibold mb-2 text-[#7779f5]">Vagas Selecionadas</h3>
               <p className="text-[#1e293b]/70">
                 Oportunidades exclusivas em dados das principais empresas de tecnologia.
               </p>
@@ -61,7 +61,7 @@ const Index = () => {
               <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Comunidade</h3>
+              <h3 className="text-xl font-semibold mb-2 text-[#7779f5]">Comunidade</h3>
               <p className="text-[#1e293b]/70">
                 Conecte-se com outros profissionais de dados e expanda sua rede.
               </p>
@@ -70,7 +70,7 @@ const Index = () => {
               <div className="w-12 h-12 bg-[#7779f5]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="h-6 w-6 text-[#7779f5]" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-[#1e293b]">Match Inteligente</h3>
+              <h3 className="text-xl font-semibold mb-2 text-[#7779f5]">Match Inteligente</h3>
               <p className="text-[#1e293b]/70">
                 Encontre oportunidades que combinam com suas habilidades e experiência.
               </p>
