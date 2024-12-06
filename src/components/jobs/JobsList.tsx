@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { JobCard } from "./JobCard";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { JobFilters } from "./filters/JobFilters";
+import { ActiveFilters } from "./filters/ActiveFilters";
 
 const MOCK_JOBS = [
   {
@@ -158,85 +156,25 @@ export function JobsList({ searchQuery }: JobsListProps) {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow-sm">
-        <div className="space-y-2">
-          <Label>Localização</Label>
-          <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-            <SelectTrigger>
-              <SelectValue placeholder="Todas as localizações" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as localizações</SelectItem>
-              {uniqueLocations.map(location => (
-                <SelectItem key={location} value={location}>{location}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <JobFilters
+        selectedLocation={selectedLocation}
+        selectedType={selectedType}
+        selectedSeniority={selectedSeniority}
+        selectedContract={selectedContract}
+        uniqueLocations={uniqueLocations}
+        uniqueTypes={uniqueTypes}
+        uniqueSeniorities={uniqueSeniorities}
+        uniqueContracts={uniqueContracts}
+        onLocationChange={setSelectedLocation}
+        onTypeChange={setSelectedType}
+        onSeniorityChange={setSelectedSeniority}
+        onContractChange={setSelectedContract}
+      />
 
-        <div className="space-y-2">
-          <Label>Tipo de Trabalho</Label>
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Todos os tipos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os tipos</SelectItem>
-              {uniqueTypes.map(type => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Senioridade</Label>
-          <Select value={selectedSeniority} onValueChange={setSelectedSeniority}>
-            <SelectTrigger>
-              <SelectValue placeholder="Todas as senioridades" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as senioridades</SelectItem>
-              {uniqueSeniorities.map(seniority => (
-                <SelectItem key={seniority} value={seniority}>{seniority}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Tipo de Contrato</Label>
-          <Select value={selectedContract} onValueChange={setSelectedContract}>
-            <SelectTrigger>
-              <SelectValue placeholder="Todos os contratos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os contratos</SelectItem>
-              {uniqueContracts.map(contract => (
-                <SelectItem key={contract} value={contract}>{contract}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {activeFilters.map((filter) => (
-            <Badge 
-              key={filter} 
-              variant="secondary"
-              className="flex items-center gap-1 px-3 py-1"
-            >
-              {filter}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
-                onClick={() => clearFilter(filter)}
-              />
-            </Badge>
-          ))}
-        </div>
-      )}
+      <ActiveFilters 
+        filters={activeFilters}
+        onClearFilter={clearFilter}
+      />
 
       <div className="space-y-6">
         {filteredJobs.map((job) => (
