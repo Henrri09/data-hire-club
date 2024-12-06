@@ -3,12 +3,15 @@ import { Search, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { JobsList } from "@/components/jobs/JobsList";
+import { Navbar } from "@/components/Navbar";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Navbar />
+      
       {/* Hero Section */}
       <section className="py-8 md:py-16 bg-white">
         <div className="container px-4 md:px-8">
