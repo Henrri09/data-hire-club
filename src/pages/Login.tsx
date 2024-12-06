@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function Login() {
   return (
@@ -21,6 +22,15 @@ export default function Login() {
       {/* Form Section */}
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
+          <div className="mb-6">
+            <Link 
+              to="/" 
+              className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar para home
+            </Link>
+          </div>
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl md:text-3xl text-center">Bem-vindo de volta</CardTitle>
             <CardDescription className="text-center">
