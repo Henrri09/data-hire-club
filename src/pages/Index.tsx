@@ -10,7 +10,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="py-8 md:py-16 hero-pattern">
+      <section className="py-8 md:py-16 bg-white">
         <div className="container px-4 md:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
             <div className="text-left max-w-2xl mb-8 md:mb-0">
