@@ -85,22 +85,22 @@ export default function CompanyDashboard() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-[#7779f5]/10 w-full md:w-auto flex overflow-x-auto">
+          <TabsList className="bg-[#7779f5]/10 inline-flex w-auto">
             <TabsTrigger 
               value="overview"
-              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap"
             >
               Visão Geral
             </TabsTrigger>
             <TabsTrigger 
               value="jobs"
-              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap"
             >
               Minhas Vagas
             </TabsTrigger>
             <TabsTrigger 
               value="profile"
-              className="flex-1 md:flex-none data-[state=active]:bg-[#7779f5] data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap"
             >
               Perfil da Empresa
             </TabsTrigger>
