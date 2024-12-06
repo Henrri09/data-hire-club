@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Search, Menu, LogOut } from "lucide-react";
 import { JobsList } from "@/components/jobs/JobsList";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
+  const location = useLocation();
 
   // Simulando dados do usuário (substituir quando tivermos autenticação)
   const user = {
@@ -33,6 +33,8 @@ export default function CandidateJobs() {
       <CandidateSidebar />
     </div>
   );
+
+  const isCommunityRoute = location.pathname.includes('/community');
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
@@ -78,24 +80,40 @@ export default function CandidateJobs() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">Vagas Publicadas Recentemente</h1>
-            
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-4 md:mb-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar vagas..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
+            {!isCommunityRoute ? (
+              <>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">
+                  Vagas Publicadas Recentemente
+                </h1>
+                
+                <div className="max-w-2xl mx-auto mb-4 md:mb-8">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Buscar vagas..."
+                      className="pl-10"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-            {/* Jobs List */}
-            <JobsList searchQuery={searchQuery} />
+                <JobsList searchQuery={searchQuery} />
+              </>
+            ) : (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h1 className="text-2xl font-bold text-gray-900 mb-6">
+                  {location.pathname.includes('introductions') && "Apresente-se"}
+                  {location.pathname.includes('learning') && "O que você está aprendendo"}
+                  {location.pathname.includes('questions') && "Tire suas dúvidas"}
+                  {location.pathname.includes('links') && "Links externos"}
+                </h1>
+                <p className="text-gray-600">
+                  Conteúdo em desenvolvimento. Em breve você poderá interagir com outros membros da comunidade aqui!
+                </p>
+              </div>
+            )}
           </div>
         </main>
       </div>
