@@ -91,6 +91,9 @@ export type Database = {
           candidate_id: string
           cover_letter: string | null
           created_at: string
+          deleted_at: string | null
+          feedback: string | null
+          feedback_date: string | null
           id: string
           job_id: string
           status: Database["public"]["Enums"]["application_status"]
@@ -100,6 +103,9 @@ export type Database = {
           candidate_id: string
           cover_letter?: string | null
           created_at?: string
+          deleted_at?: string | null
+          feedback?: string | null
+          feedback_date?: string | null
           id?: string
           job_id: string
           status?: Database["public"]["Enums"]["application_status"]
@@ -109,6 +115,9 @@ export type Database = {
           candidate_id?: string
           cover_letter?: string | null
           created_at?: string
+          deleted_at?: string | null
+          feedback?: string | null
+          feedback_date?: string | null
           id?: string
           job_id?: string
           status?: Database["public"]["Enums"]["application_status"]
@@ -139,12 +148,14 @@ export type Database = {
           company_id: string
           contract_type: string | null
           created_at: string
+          deleted_at: string | null
           description: string
           experience_level: string | null
           external_link: string | null
           id: string
           job_type: Database["public"]["Enums"]["job_type"]
           location: string | null
+          max_applications: number | null
           requirements: string[] | null
           responsibilities: string[] | null
           salary_range: string | null
@@ -162,12 +173,14 @@ export type Database = {
           company_id: string
           contract_type?: string | null
           created_at?: string
+          deleted_at?: string | null
           description: string
           experience_level?: string | null
           external_link?: string | null
           id?: string
           job_type: Database["public"]["Enums"]["job_type"]
           location?: string | null
+          max_applications?: number | null
           requirements?: string[] | null
           responsibilities?: string[] | null
           salary_range?: string | null
@@ -185,12 +198,14 @@ export type Database = {
           company_id?: string
           contract_type?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string
           experience_level?: string | null
           external_link?: string | null
           id?: string
           job_type?: Database["public"]["Enums"]["job_type"]
           location?: string | null
+          max_applications?: number | null
           requirements?: string[] | null
           responsibilities?: string[] | null
           salary_range?: string | null
