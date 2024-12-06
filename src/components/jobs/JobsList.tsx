@@ -81,10 +81,10 @@ interface JobsListProps {
 }
 
 export function JobsList({ searchQuery }: JobsListProps) {
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [selectedType, setSelectedType] = useState<string>("");
-  const [selectedSeniority, setSelectedSeniority] = useState<string>("");
-  const [selectedContract, setSelectedContract] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<string>("all");
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedSeniority, setSelectedSeniority] = useState<string>("all");
+  const [selectedContract, setSelectedContract] = useState<string>("all");
   const [filteredJobs, setFilteredJobs] = useState(MOCK_JOBS);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
@@ -102,22 +102,22 @@ export function JobsList({ searchQuery }: JobsListProps) {
     }
 
     // Location filter
-    if (selectedLocation) {
+    if (selectedLocation && selectedLocation !== "all") {
       filtered = filtered.filter(job => job.location === selectedLocation);
     }
 
     // Job type filter
-    if (selectedType) {
+    if (selectedType && selectedType !== "all") {
       filtered = filtered.filter(job => job.type === selectedType);
     }
 
     // Seniority filter
-    if (selectedSeniority) {
+    if (selectedSeniority && selectedSeniority !== "all") {
       filtered = filtered.filter(job => job.seniority === selectedSeniority);
     }
 
     // Contract type filter
-    if (selectedContract) {
+    if (selectedContract && selectedContract !== "all") {
       filtered = filtered.filter(job => job.contract_type === selectedContract);
     }
 
@@ -125,10 +125,10 @@ export function JobsList({ searchQuery }: JobsListProps) {
 
     // Update active filters
     const newActiveFilters = [];
-    if (selectedLocation) newActiveFilters.push(`Local: ${selectedLocation}`);
-    if (selectedType) newActiveFilters.push(`Tipo: ${selectedType}`);
-    if (selectedSeniority) newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
-    if (selectedContract) newActiveFilters.push(`Contrato: ${selectedContract}`);
+    if (selectedLocation !== "all") newActiveFilters.push(`Local: ${selectedLocation}`);
+    if (selectedType !== "all") newActiveFilters.push(`Tipo: ${selectedType}`);
+    if (selectedSeniority !== "all") newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
+    if (selectedContract !== "all") newActiveFilters.push(`Contrato: ${selectedContract}`);
     setActiveFilters(newActiveFilters);
 
   }, [searchQuery, selectedLocation, selectedType, selectedSeniority, selectedContract]);
@@ -137,16 +137,16 @@ export function JobsList({ searchQuery }: JobsListProps) {
     const filterType = filter.split(":")[0].trim();
     switch (filterType) {
       case "Local":
-        setSelectedLocation("");
+        setSelectedLocation("all");
         break;
       case "Tipo":
-        setSelectedType("");
+        setSelectedType("all");
         break;
       case "Senioridade":
-        setSelectedSeniority("");
+        setSelectedSeniority("all");
         break;
       case "Contrato":
-        setSelectedContract("");
+        setSelectedContract("all");
         break;
     }
   };
@@ -166,7 +166,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
               <SelectValue placeholder="Todas as localizações" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as localizações</SelectItem>
+              <SelectItem value="all">Todas as localizações</SelectItem>
               {uniqueLocations.map(location => (
                 <SelectItem key={location} value={location}>{location}</SelectItem>
               ))}
@@ -181,7 +181,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
               <SelectValue placeholder="Todos os tipos" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os tipos</SelectItem>
+              <SelectItem value="all">Todos os tipos</SelectItem>
               {uniqueTypes.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
@@ -196,7 +196,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
               <SelectValue placeholder="Todas as senioridades" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as senioridades</SelectItem>
+              <SelectItem value="all">Todas as senioridades</SelectItem>
               {uniqueSeniorities.map(seniority => (
                 <SelectItem key={seniority} value={seniority}>{seniority}</SelectItem>
               ))}
@@ -211,7 +211,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
               <SelectValue placeholder="Todos os contratos" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os contratos</SelectItem>
+              <SelectItem value="all">Todos os contratos</SelectItem>
               {uniqueContracts.map(contract => (
                 <SelectItem key={contract} value={contract}>{contract}</SelectItem>
               ))}
