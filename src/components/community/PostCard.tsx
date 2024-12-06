@@ -1,14 +1,10 @@
 import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { MessageSquare, ThumbsUp } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import { Textarea } from "@/components/ui/textarea"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { PostHeader } from "./PostHeader"
+import { PostActions } from "./PostActions"
+import { PostComments } from "./PostComments"
 
 interface Comment {
   id: string
@@ -60,7 +56,6 @@ export function PostCard({ id, author, content, likes, comments, created_at, isL
       }
 
       if (localLiked) {
-        // Remove like
         const { error } = await supabase
           .from('community_post_likes')
           .delete()
@@ -70,7 +65,6 @@ export function PostCard({ id, author, content, likes, comments, created_at, isL
         if (error) throw error
         setLocalLikes(prev => prev - 1)
       } else {
-        // Add like
         const { error } = await supabase
           .from('community_post_likes')
           .insert({
@@ -179,87 +173,32 @@ export function PostCard({ id, author, content, likes, comments, created_at, isL
     }
   }
 
-  const formatDate = (date: string) => {
-    return format(new Date(date), "d 'de' MMMM 'às' HH:mm", { locale: ptBR })
-  }
-
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar>
-          <AvatarImage src={author.avatar} />
-          <AvatarFallback>{author.name[0]}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{author.name}</h3>
-          <p className="text-sm text-gray-500">{formatDate(created_at)}</p>
-        </div>
+      <CardHeader>
+        <PostHeader author={author} created_at={created_at} />
       </CardHeader>
       <CardContent>
         <p className="text-gray-700 whitespace-pre-wrap">{content}</p>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
-        <div className="flex gap-4 w-full">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`text-gray-600 ${localLiked ? 'bg-gray-100' : ''}`}
-            onClick={handleLike}
-            disabled={isLiking}
-          >
-            <ThumbsUp className={`mr-2 h-4 w-4 ${localLiked ? 'fill-current' : ''}`} />
-            {localLikes}
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-gray-600"
-            onClick={loadComments}
-          >
-            <MessageSquare className="mr-2 h-4 w-4" />
-            {comments}
-          </Button>
-        </div>
+        <PostActions
+          likes={localLikes}
+          comments={comments}
+          isLiked={localLiked}
+          isLiking={isLiking}
+          onLike={handleLike}
+          onComment={loadComments}
+        />
 
         {showComments && (
-          <div className="w-full space-y-4">
-            <div className="flex gap-2">
-              <Textarea
-                placeholder="Escreva um comentário..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                className="min-h-[60px]"
-              />
-              <Button 
-                onClick={handleComment}
-                disabled={!newComment.trim()}
-              >
-                Comentar
-              </Button>
-            </div>
-
-            {isLoadingComments ? (
-              <p className="text-center text-gray-500">Carregando comentários...</p>
-            ) : (
-              <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                {postComments.length === 0 ? (
-                  <p className="text-center text-gray-500">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
-                ) : (
-                  <div className="space-y-4">
-                    {postComments.map((comment) => (
-                      <div key={comment.id} className="border-b pb-4 last:border-0">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-medium">{comment.author.full_name}</span>
-                          <span className="text-sm text-gray-500">{formatDate(comment.created_at)}</span>
-                        </div>
-                        <p className="text-gray-700">{comment.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            )}
-          </div>
+          <PostComments
+            comments={postComments}
+            newComment={newComment}
+            isLoading={isLoadingComments}
+            onCommentChange={setNewComment}
+            onSubmitComment={handleComment}
+          />
         )}
       </CardFooter>
     </Card>

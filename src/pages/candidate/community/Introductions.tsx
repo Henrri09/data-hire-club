@@ -1,5 +1,6 @@
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostCard } from "@/components/community/PostCard"
+import { PostSkeleton } from "@/components/community/PostSkeleton"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -29,18 +30,17 @@ export default function Introductions() {
   const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const postsPerPage = 10
-
-  useEffect(() => {
-    fetchPosts()
-  }, [page])
 
   const fetchPosts = async (isNewSearch = false) => {
     try {
-      setIsLoading(true)
       if (isNewSearch) {
+        setIsLoading(true)
         setPage(1)
         setPosts([])
+      } else {
+        setIsLoadingMore(true)
       }
 
       const { data: { user } } = await supabase.auth.getUser()
@@ -94,8 +94,13 @@ export default function Introductions() {
       console.error('Error fetching posts:', error)
     } finally {
       setIsLoading(false)
+      setIsLoadingMore(false)
     }
   }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [page])
 
   const handleSearch = () => {
     fetchPosts(true)
@@ -131,8 +136,12 @@ export default function Introductions() {
             <CreatePost onPostCreated={() => fetchPosts(true)} />
             
             <div className="space-y-4">
-              {isLoading && posts.length === 0 ? (
-                <p className="text-center text-gray-500">Carregando posts...</p>
+              {isLoading ? (
+                <>
+                  <PostSkeleton />
+                  <PostSkeleton />
+                  <PostSkeleton />
+                </>
               ) : posts.length === 0 ? (
                 <p className="text-center text-gray-500">
                   {searchQuery 
@@ -163,9 +172,9 @@ export default function Introductions() {
                       <Button
                         variant="outline"
                         onClick={handleLoadMore}
-                        disabled={isLoading}
+                        disabled={isLoadingMore}
                       >
-                        {isLoading ? "Carregando..." : "Carregar mais"}
+                        {isLoadingMore ? "Carregando..." : "Carregar mais"}
                       </Button>
                     </div>
                   )}
