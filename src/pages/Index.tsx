@@ -12,14 +12,24 @@ const Index = () => {
       {/* Hero Section */}
       <section className="py-8 md:py-16 hero-pattern">
         <div className="container px-4 md:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-[#7779f5] mb-3 md:mb-6">
-              Encontre Sua Próxima Oportunidade em Dados
-            </h1>
-            <p className="text-sm sm:text-base md:text-lg text-[#1e293b]/80 mb-4 md:mb-8 px-2 md:px-4">
-              Conecte-se com as melhores empresas que contratam profissionais de dados. 
-              Sua próxima posição em análise, engenharia ou ciência de dados está aqui.
-            </p>
+          <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
+            <div className="text-left max-w-2xl mb-8 md:mb-0">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-[#7779f5] mb-3 md:mb-6">
+                Encontre Sua Próxima Oportunidade em Dados
+              </h1>
+              <p className="text-sm sm:text-base md:text-lg text-[#1e293b]/80 mb-4 md:mb-8">
+                Conecte-se com as melhores empresas que contratam profissionais de dados. 
+                Sua próxima posição em análise, engenharia ou ciência de dados está aqui.
+              </p>
+            </div>
+            <div className="w-full md:w-1/2 flex justify-center">
+              <img 
+                src="https://undraw.co/illustrations/undraw_data_trends_re_2cdy.svg" 
+                alt="Data Analysis Illustration" 
+                className="w-full max-w-md"
+                style={{ filter: 'invert(46%) sepia(85%) saturate(1234%) hue-rotate(213deg) brightness(101%) contrast(101%)' }}
+              />
+            </div>
           </div>
         </div>
       </section>
