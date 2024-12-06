@@ -52,26 +52,6 @@ export default function Learning() {
     }
   }
 
-  const formatDate = (date: string) => {
-    const now = new Date()
-    const postDate = new Date(date)
-    const diffTime = Math.abs(now.getTime() - postDate.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
-    if (diffDays === 1) return 'Há 1 dia'
-    if (diffDays < 1) {
-      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60))
-      if (diffHours === 1) return 'Há 1 hora'
-      if (diffHours < 1) {
-        const diffMinutes = Math.ceil(diffTime / (1000 * 60))
-        if (diffMinutes === 1) return 'Há 1 minuto'
-        return `Há ${diffMinutes} minutos`
-      }
-      return `Há ${diffHours} horas`
-    }
-    return `Há ${diffDays} dias`
-  }
-
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <CandidateHeader />
@@ -90,13 +70,15 @@ export default function Learning() {
                 posts.map((post) => (
                   <PostCard
                     key={post.id}
+                    id={post.id}
                     author={{
                       name: post.author?.full_name || 'Usuário Anônimo',
-                      date: formatDate(post.created_at),
+                      id: post.author?.id
                     }}
                     content={post.content}
                     likes={post.likes_count}
                     comments={post.comments_count}
+                    created_at={post.created_at}
                   />
                 ))
               )}
