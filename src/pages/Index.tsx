@@ -24,7 +24,7 @@ const Index = () => {
             </div>
             <div className="w-full md:w-1/2 flex justify-center">
               <img 
-                src="https://undraw.co/illustrations/undraw_data_trends_re_2cdy.svg" 
+                src="/placeholder.svg"
                 alt="Data Analysis Illustration" 
                 className="w-full max-w-md"
                 style={{ filter: 'invert(46%) sepia(85%) saturate(1234%) hue-rotate(213deg) brightness(101%) contrast(101%)' }}
