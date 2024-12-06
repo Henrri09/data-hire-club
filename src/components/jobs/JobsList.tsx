@@ -26,6 +26,25 @@ interface JobsListProps {
   searchQuery: string;
 }
 
+interface JobResponse {
+  id: string;
+  title: string;
+  description: string;
+  work_model: string | null;
+  experience_level: string | null;
+  salary_range: string | null;
+  contract_type: string | null;
+  benefits: string | null;
+  requirements: string[] | null;
+  responsibilities: string[] | null;
+  views_count: number | null;
+  applications_count: number | null;
+  companies: {
+    company_name: string;
+    location: string | null;
+  } | null;
+}
+
 const fetchJobs = async () => {
   const { data, error } = await supabase
     .from('jobs')
@@ -41,14 +60,14 @@ const fetchJobs = async () => {
 
   if (error) throw error;
 
-  return data.map(job => ({
+  return (data as JobResponse[]).map(job => ({
     id: job.id,
     title: job.title,
     company: job.companies?.company_name || 'Empresa não especificada',
-    location: job.companies?.location || job.location || 'Localização não especificada',
+    location: job.companies?.location || 'Localização não especificada',
     type: job.work_model || 'Não especificado',
     description: job.description,
-    seniority: job.experience_level,
+    seniority: job.experience_level || 'Não especificado',
     salary_range: job.salary_range || 'A combinar',
     contract_type: job.contract_type || 'Não especificado',
     benefits: job.benefits ? JSON.parse(job.benefits) : undefined,
