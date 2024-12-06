@@ -3,12 +3,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function CompanyLogin() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md mx-auto">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Gradient Section */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
+        <div className="max-w-xl">
+          <h1 className="text-5xl font-bold mb-6">Data Talent Bridge</h1>
+          <p className="text-2xl mb-8">Portal Empresarial</p>
+          <p className="text-xl opacity-90">
+            Encontre os melhores talentos em dados para sua empresa.
+          </p>
+        </div>
+      </div>
+
+      {/* Form Section */}
+      <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
+        <Card className="w-full max-w-md border-none shadow-none bg-transparent">
+          <div className="mb-6">
+            <Link 
+              to="/" 
+              className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar para home
+            </Link>
+          </div>
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl md:text-3xl text-center">Login Empresarial</CardTitle>
             <CardDescription className="text-center">
@@ -19,23 +41,33 @@ export default function CompanyLogin() {
             <form className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail corporativo</Label>
-                <Input id="email" type="email" placeholder="empresa@email.com" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="empresa@email.com"
+                  className="bg-white"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input id="password" type="password" placeholder="••••••••" />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="••••••••"
+                  className="bg-white"
+                />
               </div>
-              <Button type="submit" className="w-full bg-[#7779f5] hover:bg-[#7779f5]/90">
+              <Button type="submit" className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]">
                 Entrar
               </Button>
               <div className="text-center space-y-2">
                 <p className="text-sm text-gray-600">
                   Não tem uma conta?{" "}
-                  <Link to="/company/register" className="text-[#7779f5] hover:underline">
+                  <Link to="/company/register" className="text-[#8B5CF6] hover:underline">
                     Cadastre sua empresa
                   </Link>
                 </p>
-                <Link to="/company/forgot-password" className="text-sm text-[#7779f5] hover:underline block">
+                <Link to="/company/forgot-password" className="text-sm text-[#8B5CF6] hover:underline block">
                   Esqueceu sua senha?
                 </Link>
               </div>
