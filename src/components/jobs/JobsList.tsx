@@ -60,7 +60,7 @@ const fetchJobs = async () => {
 
   if (error) throw error;
 
-  return (data as JobResponse[]).map(job => ({
+  return (data as unknown as JobResponse[]).map(job => ({
     id: job.id,
     title: job.title,
     company: job.companies?.company_name || 'Empresa não especificada',
