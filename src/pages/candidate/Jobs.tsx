@@ -2,15 +2,31 @@ import { useState } from "react";
 import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, LogOut } from "lucide-react";
 import { JobsList } from "@/components/jobs/JobsList";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
+
+  // Simulando dados do usuário (substituir quando tivermos autenticação)
+  const user = {
+    name: "João Silva",
+    photoUrl: null
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase();
+  };
 
   const SidebarContent = () => (
     <div className="h-full py-4">
@@ -21,26 +37,40 @@ export default function CandidateJobs() {
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <div className="sticky top-0 z-50 w-full border-b bg-black text-white">
-        <div className="container flex h-14 items-center">
-          {isMobile ? (
-            <>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button className="mr-4">
-                    <Menu className="h-6 w-6" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-64 p-0">
-                  <SidebarContent />
-                </SheetContent>
-              </Sheet>
-              <span className="font-bold">Data Hire Club</span>
-            </>
-          ) : (
-            <Link to="/" className="mr-6 flex items-center space-x-2">
-              <span className="font-bold">Data Hire Club</span>
-            </Link>
-          )}
+        <div className="container flex h-14 items-center justify-between">
+          <div className="flex items-center">
+            {isMobile ? (
+              <>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <button className="mr-4">
+                      <Menu className="h-6 w-6" />
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-64 p-0">
+                    <SidebarContent />
+                  </SheetContent>
+                </Sheet>
+                <span className="font-bold">Data Hire Club</span>
+              </>
+            ) : (
+              <Link to="/" className="mr-6 flex items-center space-x-2">
+                <span className="font-bold">Data Hire Club</span>
+              </Link>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.photoUrl || undefined} />
+              <AvatarFallback className="bg-white/20 text-white">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
