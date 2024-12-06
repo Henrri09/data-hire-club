@@ -50,7 +50,7 @@ const fetchJobs = async () => {
     .from('jobs')
     .select(`
       *,
-      companies:company_id (
+      companies (
         company_name,
         location
       )
