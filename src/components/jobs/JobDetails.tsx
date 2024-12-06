@@ -11,20 +11,41 @@ interface JobDetailsProps {
     benefits?: string[];
     requirements?: string[];
     responsibilities?: string[];
+    views?: number;
+    applications?: number;
   };
 }
 
 export function JobDetails({ job }: JobDetailsProps) {
   return (
     <div className="space-y-6">
-      <div>
-        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
-      </div>
+      <div className="flex justify-between items-start">
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
+            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
+          </div>
 
-      <div>
-        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
+          <div>
+            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
+            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
+          </div>
+        </div>
+
+        {(job.views !== undefined || job.applications !== undefined) && (
+          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+            {job.views !== undefined && (
+              <div className="text-sm">
+                <span className="font-medium">Visualizações:</span> {job.views}
+              </div>
+            )}
+            {job.applications !== undefined && (
+              <div className="text-sm">
+                <span className="font-medium">Candidaturas:</span> {job.applications}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div>
@@ -42,7 +63,7 @@ export function JobDetails({ job }: JobDetailsProps) {
           <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Requisitos</h4>
           <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
             {job.requirements.map((req, index) => (
-              <li key={index}>{req}</li>
+              <li key={index} className="pl-2">{req}</li>
             ))}
           </ul>
         </div>
@@ -53,7 +74,7 @@ export function JobDetails({ job }: JobDetailsProps) {
           <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Responsabilidades</h4>
           <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
             {job.responsibilities.map((resp, index) => (
-              <li key={index}>{resp}</li>
+              <li key={index} className="pl-2">{resp}</li>
             ))}
           </ul>
         </div>
@@ -79,7 +100,7 @@ export function JobDetails({ job }: JobDetailsProps) {
           <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Benefícios</h4>
           <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
             {job.benefits.map((benefit, index) => (
-              <li key={index}>{benefit}</li>
+              <li key={index} className="pl-2">{benefit}</li>
             ))}
           </ul>
         </div>

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { JobCard } from "./JobCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 
 const MOCK_JOBS = [
   {
@@ -24,7 +26,9 @@ const MOCK_JOBS = [
       "Desenvolver pipelines de dados",
       "Otimizar processos de ETL",
       "Mentoria técnica"
-    ]
+    ],
+    views: 150,
+    applications: 12
   },
   {
     id: "2",
@@ -82,6 +86,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
   const [selectedSeniority, setSelectedSeniority] = useState<string>("");
   const [selectedContract, setSelectedContract] = useState<string>("");
   const [filteredJobs, setFilteredJobs] = useState(MOCK_JOBS);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   useEffect(() => {
     let filtered = MOCK_JOBS;
@@ -117,7 +122,34 @@ export function JobsList({ searchQuery }: JobsListProps) {
     }
 
     setFilteredJobs(filtered);
+
+    // Update active filters
+    const newActiveFilters = [];
+    if (selectedLocation) newActiveFilters.push(`Local: ${selectedLocation}`);
+    if (selectedType) newActiveFilters.push(`Tipo: ${selectedType}`);
+    if (selectedSeniority) newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
+    if (selectedContract) newActiveFilters.push(`Contrato: ${selectedContract}`);
+    setActiveFilters(newActiveFilters);
+
   }, [searchQuery, selectedLocation, selectedType, selectedSeniority, selectedContract]);
+
+  const clearFilter = (filter: string) => {
+    const filterType = filter.split(":")[0].trim();
+    switch (filterType) {
+      case "Local":
+        setSelectedLocation("");
+        break;
+      case "Tipo":
+        setSelectedType("");
+        break;
+      case "Senioridade":
+        setSelectedSeniority("");
+        break;
+      case "Contrato":
+        setSelectedContract("");
+        break;
+    }
+  };
 
   const uniqueLocations = Array.from(new Set(MOCK_JOBS.map(job => job.location)));
   const uniqueTypes = Array.from(new Set(MOCK_JOBS.map(job => job.type)));
@@ -187,6 +219,24 @@ export function JobsList({ searchQuery }: JobsListProps) {
           </Select>
         </div>
       </div>
+
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeFilters.map((filter) => (
+            <Badge 
+              key={filter} 
+              variant="secondary"
+              className="flex items-center gap-1 px-3 py-1"
+            >
+              {filter}
+              <X 
+                className="h-3 w-3 cursor-pointer" 
+                onClick={() => clearFilter(filter)}
+              />
+            </Badge>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-6">
         {filteredJobs.map((job) => (
