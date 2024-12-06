@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface JobCardProps {
   job: {
-    id: number;
+    id: string; // Changed from number to string to match UUID type
     title: string;
     company: string;
     location: string;
@@ -65,7 +65,7 @@ export function JobCard({ job }: JobCardProps) {
       const { error: applicationError } = await supabase
         .from('job_applications')
         .insert({
-          job_id: job.id,
+          job_id: job.id, // Now correctly passing a string UUID
           candidate_id: candidateData.id,
           cover_letter: coverLetter,
           status: 'pending'
