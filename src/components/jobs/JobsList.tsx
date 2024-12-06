@@ -2,7 +2,7 @@ import { JobCard } from "./JobCard";
 
 const MOCK_JOBS = [
   {
-    id: 1,
+    id: "1",
     title: "Engenheiro de Dados Sênior",
     company: "TechBR Solutions",
     location: "São Paulo, SP",
@@ -13,7 +13,7 @@ const MOCK_JOBS = [
     contract_type: "CLT"
   },
   {
-    id: 2,
+    id: "2",
     title: "Cientista de Dados",
     company: "Data Analytics Co",
     location: "Rio de Janeiro, RJ",
@@ -24,7 +24,7 @@ const MOCK_JOBS = [
     contract_type: "PJ"
   },
   {
-    id: 3,
+    id: "3",
     title: "Analista de Business Intelligence",
     company: "Finance Tech",
     location: "Curitiba, PR",
@@ -35,7 +35,7 @@ const MOCK_JOBS = [
     contract_type: "CLT"
   },
   {
-    id: 4,
+    id: "4",
     title: "Arquiteto de Dados",
     company: "Cloud Systems",
     location: "Belo Horizonte, MG",
@@ -46,7 +46,7 @@ const MOCK_JOBS = [
     contract_type: "PJ"
   },
   {
-    id: 5,
+    id: "5",
     title: "Analista de Dados",
     company: "E-commerce Brasil",
     location: "Florianópolis, SC",
