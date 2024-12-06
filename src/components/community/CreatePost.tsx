@@ -3,21 +3,54 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
+import { supabase } from "@/integrations/supabase/client"
+import { useLocation } from "react-router-dom"
 
 export function CreatePost() {
   const [content, setContent] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  const location = useLocation()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getPostType = () => {
+    if (location.pathname.includes('introductions')) return 'introduction'
+    if (location.pathname.includes('learning')) return 'learning'
+    if (location.pathname.includes('questions')) return 'question'
+    return 'introduction'
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Aqui será integrado com o backend posteriormente
-    toast({
-      title: "Post criado com sucesso!",
-      description: "Seu post foi publicado na comunidade.",
-    })
+    if (!content.trim()) return
     
-    setContent("")
+    setIsSubmitting(true)
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .insert({
+          content: content.trim(),
+          post_type: getPostType()
+        })
+
+      if (error) throw error
+
+      toast({
+        title: "Post criado com sucesso!",
+        description: "Seu post foi publicado na comunidade.",
+      })
+      
+      setContent("")
+    } catch (error) {
+      console.error('Error creating post:', error)
+      toast({
+        title: "Erro ao criar post",
+        description: "Ocorreu um erro ao tentar publicar seu post. Tente novamente.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -32,8 +65,11 @@ export function CreatePost() {
           />
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button type="submit" disabled={!content.trim()}>
-            Publicar
+          <Button 
+            type="submit" 
+            disabled={!content.trim() || isSubmitting}
+          >
+            {isSubmitting ? "Publicando..." : "Publicar"}
           </Button>
         </CardFooter>
       </form>

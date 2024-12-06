@@ -3,31 +3,74 @@ import { PostCard } from "@/components/community/PostCard"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+
+interface Post {
+  id: string
+  content: string
+  created_at: string
+  likes_count: number
+  comments_count: number
+  author: {
+    full_name: string
+    id: string
+  }
+}
 
 export default function Introductions() {
-  const isMobile = useIsMobile();
-  
-  // Dados mockados para exemplo
-  const posts = [
-    {
-      author: {
-        name: "Ana Silva",
-        date: "Há 2 dias",
-      },
-      content: "Olá! Sou analista de dados há 5 anos, especializada em visualização de dados e análise preditiva. Estou animada para fazer parte desta comunidade e compartilhar experiências!",
-      likes: 12,
-      comments: 3,
-    },
-    {
-      author: {
-        name: "Carlos Santos",
-        date: "Há 3 dias",
-      },
-      content: "Oi pessoal! Estou começando minha jornada em ciência de dados. Atualmente estou estudando Python e estatística. Adoraria conectar com outros profissionais da área!",
-      likes: 8,
-      comments: 5,
-    },
-  ]
+  const isMobile = useIsMobile()
+  const [posts, setPosts] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const fetchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_posts')
+        .select(`
+          id,
+          content,
+          created_at,
+          likes_count,
+          comments_count,
+          author:profiles(id, full_name)
+        `)
+        .eq('post_type', 'introduction')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      setPosts(data || [])
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const formatDate = (date: string) => {
+    const now = new Date()
+    const postDate = new Date(date)
+    const diffTime = Math.abs(now.getTime() - postDate.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 1) return 'Há 1 dia'
+    if (diffDays < 1) {
+      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60))
+      if (diffHours === 1) return 'Há 1 hora'
+      if (diffHours < 1) {
+        const diffMinutes = Math.ceil(diffTime / (1000 * 60))
+        if (diffMinutes === 1) return 'Há 1 minuto'
+        return `Há ${diffMinutes} minutos`
+      }
+      return `Há ${diffHours} horas`
+    }
+    return `Há ${diffDays} dias`
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
@@ -39,9 +82,24 @@ export default function Introductions() {
             <h1 className="text-2xl font-bold mb-6">Apresente-se à Comunidade</h1>
             <CreatePost />
             <div className="space-y-4">
-              {posts.map((post, index) => (
-                <PostCard key={index} {...post} />
-              ))}
+              {isLoading ? (
+                <p className="text-center text-gray-500">Carregando posts...</p>
+              ) : posts.length === 0 ? (
+                <p className="text-center text-gray-500">Nenhum post encontrado. Seja o primeiro a se apresentar!</p>
+              ) : (
+                posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    author={{
+                      name: post.author?.full_name || 'Usuário Anônimo',
+                      date: formatDate(post.created_at),
+                    }}
+                    content={post.content}
+                    likes={post.likes_count}
+                    comments={post.comments_count}
+                  />
+                ))
+              )}
             </div>
           </div>
         </main>
