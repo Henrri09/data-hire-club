@@ -24,10 +24,9 @@ const Index = () => {
             </div>
             <div className="w-full md:w-1/2 flex justify-center">
               <img 
-                src="/placeholder.svg"
+                src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png"
                 alt="Data Analysis Illustration" 
                 className="w-full max-w-md"
-                style={{ filter: 'invert(46%) sepia(85%) saturate(1234%) hue-rotate(213deg) brightness(101%) contrast(101%)' }}
               />
             </div>
           </div>
