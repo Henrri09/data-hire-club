@@ -7,7 +7,11 @@ import { supabase } from "@/integrations/supabase/client"
 import { useLocation } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 
-export function CreatePost() {
+interface CreatePostProps {
+  onPostCreated?: () => void
+}
+
+export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
@@ -57,6 +61,9 @@ export function CreatePost() {
       })
       
       setContent("")
+      if (onPostCreated) {
+        onPostCreated()
+      }
     } catch (error) {
       console.error('Error creating post:', error)
       toast({
