@@ -66,7 +66,7 @@ export function CandidateSidebar() {
     <aside className="w-64 bg-gray-50 border-r min-h-[calc(100vh-3.5rem)] overflow-y-auto">
       <nav className="sticky top-0 space-y-6 p-4">
         <div className="space-y-2">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
             Menu Principal
           </h2>
           {menuItems.map((item) => (
@@ -74,18 +74,18 @@ export function CandidateSidebar() {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors",
+                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs",
                 location.pathname === item.path && "text-[#9b87f5] font-medium bg-gray-100"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4" />
               <span>{item.label}</span>
             </Link>
           ))}
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
             Comunidade
           </h2>
           {communityItems.map((item) => (
@@ -93,11 +93,11 @@ export function CandidateSidebar() {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors",
+                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs",
                 location.pathname === item.path && "text-[#9b87f5] font-medium bg-gray-100"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4" />
               <span>{item.label}</span>
             </Link>
           ))}
@@ -107,10 +107,10 @@ export function CandidateSidebar() {
           <button
             onClick={() => setIsEditProfileOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors"
+              "w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs"
             )}
           >
-            <UserCog className="h-5 w-5" />
+            <UserCog className="h-4 w-4" />
             <span>Editar Perfil</span>
           </button>
         </div>
