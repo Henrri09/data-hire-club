@@ -78,7 +78,7 @@ export default function CandidateJobs() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">Vagas Disponíveis</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">Vagas Publicadas Recentemente</h1>
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto mb-4 md:mb-8">
