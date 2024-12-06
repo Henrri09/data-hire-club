@@ -5,12 +5,14 @@ import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export function CreatePost() {
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const location = useLocation()
+  const navigate = useNavigate()
 
   const getPostType = () => {
     if (location.pathname.includes('introductions')) return 'introduction'
@@ -23,6 +25,19 @@ export function CreatePost() {
     e.preventDefault()
     
     if (!content.trim()) return
+
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      toast({
+        title: "Erro ao criar post",
+        description: "Você precisa estar logado para publicar.",
+        variant: "destructive"
+      })
+      navigate("/login")
+      return
+    }
     
     setIsSubmitting(true)
     try {
@@ -30,7 +45,8 @@ export function CreatePost() {
         .from('community_posts')
         .insert({
           content: content.trim(),
-          post_type: getPostType()
+          post_type: getPostType(),
+          author_id: user.id
         })
 
       if (error) throw error
