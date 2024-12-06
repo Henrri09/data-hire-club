@@ -79,7 +79,6 @@ interface JobsListProps {
 }
 
 export function JobsList({ searchQuery }: JobsListProps) {
-  const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedSeniority, setSelectedSeniority] = useState<string>("all");
   const [selectedContract, setSelectedContract] = useState<string>("all");
@@ -97,11 +96,6 @@ export function JobsList({ searchQuery }: JobsListProps) {
         job.company.toLowerCase().includes(query) ||
         job.description.toLowerCase().includes(query)
       );
-    }
-
-    // Location filter
-    if (selectedLocation && selectedLocation !== "all") {
-      filtered = filtered.filter(job => job.location === selectedLocation);
     }
 
     // Job type filter
@@ -123,20 +117,16 @@ export function JobsList({ searchQuery }: JobsListProps) {
 
     // Update active filters
     const newActiveFilters = [];
-    if (selectedLocation !== "all") newActiveFilters.push(`Local: ${selectedLocation}`);
     if (selectedType !== "all") newActiveFilters.push(`Tipo: ${selectedType}`);
     if (selectedSeniority !== "all") newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
     if (selectedContract !== "all") newActiveFilters.push(`Contrato: ${selectedContract}`);
     setActiveFilters(newActiveFilters);
 
-  }, [searchQuery, selectedLocation, selectedType, selectedSeniority, selectedContract]);
+  }, [searchQuery, selectedType, selectedSeniority, selectedContract]);
 
   const clearFilter = (filter: string) => {
     const filterType = filter.split(":")[0].trim();
     switch (filterType) {
-      case "Local":
-        setSelectedLocation("all");
-        break;
       case "Tipo":
         setSelectedType("all");
         break;
@@ -149,7 +139,6 @@ export function JobsList({ searchQuery }: JobsListProps) {
     }
   };
 
-  const uniqueLocations = Array.from(new Set(MOCK_JOBS.map(job => job.location)));
   const uniqueTypes = Array.from(new Set(MOCK_JOBS.map(job => job.type)));
   const uniqueSeniorities = Array.from(new Set(MOCK_JOBS.map(job => job.seniority)));
   const uniqueContracts = Array.from(new Set(MOCK_JOBS.map(job => job.contract_type)));
@@ -157,15 +146,12 @@ export function JobsList({ searchQuery }: JobsListProps) {
   return (
     <div className="space-y-6">
       <JobFilters
-        selectedLocation={selectedLocation}
         selectedType={selectedType}
         selectedSeniority={selectedSeniority}
         selectedContract={selectedContract}
-        uniqueLocations={uniqueLocations}
         uniqueTypes={uniqueTypes}
         uniqueSeniorities={uniqueSeniorities}
         uniqueContracts={uniqueContracts}
-        onLocationChange={setSelectedLocation}
         onTypeChange={setSelectedType}
         onSeniorityChange={setSelectedSeniority}
         onContractChange={setSelectedContract}
