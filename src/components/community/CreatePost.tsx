@@ -4,8 +4,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import { useLocation } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 interface CreatePostProps {
   onPostCreated?: () => void
@@ -30,7 +29,6 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
     
     if (!content.trim()) return
 
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
@@ -84,10 +82,14 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             placeholder="Compartilhe algo com a comunidade..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[100px]"
+            className="min-h-[100px] resize-none"
+            disabled={isSubmitting}
           />
         </CardContent>
-        <CardFooter className="flex justify-end">
+        <CardFooter className="flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            {content.length}/500 caracteres
+          </p>
           <Button 
             type="submit" 
             disabled={!content.trim() || isSubmitting}
