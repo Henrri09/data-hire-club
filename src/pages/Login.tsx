@@ -2,10 +2,87 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Redirect based on user type
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.user_type === 'company') {
+          navigate('/company/dashboard');
+        } else {
+          navigate('/candidate/dashboard');
+        }
+      }
+    };
+
+    checkUser();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Get user profile to determine redirect
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', data.user.id)
+          .single();
+
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para o painel...",
+        });
+
+        // Redirect based on user type
+        if (profile?.user_type === 'company') {
+          navigate('/company/dashboard');
+        } else {
+          navigate('/candidate/dashboard');
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro no login",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
@@ -38,7 +115,7 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input 
@@ -46,6 +123,9 @@ export default function Login() {
                   type="email" 
                   placeholder="seu@email.com"
                   className="bg-white"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -55,10 +135,17 @@ export default function Login() {
                   type="password" 
                   placeholder="••••••••"
                   className="bg-white"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]">
-                Entrar
+              <Button 
+                type="submit" 
+                className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
+                disabled={loading}
+              >
+                {loading ? "Entrando..." : "Entrar"}
               </Button>
               <div className="text-center space-y-2">
                 <p className="text-sm text-gray-600">
