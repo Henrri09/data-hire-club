@@ -47,7 +47,9 @@ export function EditProfileDialog({
 
         if (profile) {
           setDescription(profile.bio || "");
-          setSkills(Array.isArray(profile.skills) ? profile.skills : []);
+          // Ensure skills is an array of strings
+          const profileSkills = profile.skills as any;
+          setSkills(Array.isArray(profileSkills) ? profileSkills.map(String) : []);
           setPhotoPreview(profile.logo_url || null);
         }
       }
