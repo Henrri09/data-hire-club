@@ -1,12 +1,61 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    fullName: "",
+    userType: "candidate"
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+            user_type: formData.userType
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Verifique seu email para confirmar o cadastro.",
+        });
+        navigate("/login");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro no cadastro",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
@@ -39,10 +88,13 @@ export default function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="userType">Tipo de conta</Label>
-                <Select>
+                <Select
+                  value={formData.userType}
+                  onValueChange={(value) => setFormData({ ...formData, userType: value })}
+                >
                   <SelectTrigger className="bg-white">
                     <SelectValue placeholder="Selecione o tipo de conta" />
                   </SelectTrigger>
@@ -53,33 +105,46 @@ export default function Register() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
+                <Label htmlFor="fullName">Nome completo</Label>
                 <Input 
-                  id="name" 
+                  id="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Seu nome completo"
                   className="bg-white"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input 
-                  id="email" 
-                  type="email" 
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="seu@email.com"
                   className="bg-white"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
                 <Input 
-                  id="password" 
-                  type="password" 
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
                   className="bg-white"
+                  required
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]">
-                Cadastrar
+              <Button 
+                type="submit" 
+                className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
+                disabled={loading}
+              >
+                {loading ? "Cadastrando..." : "Cadastrar"}
               </Button>
               <p className="text-center text-sm text-gray-600">
                 Já tem uma conta?{" "}

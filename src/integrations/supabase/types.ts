@@ -47,6 +47,41 @@ export type Database = {
           },
         ]
       }
+      community_pinned_rules: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_pinned_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_post_comments: {
         Row: {
           author_id: string
@@ -356,6 +391,7 @@ export type Database = {
           headline: string | null
           id: string
           industry: string | null
+          is_admin: boolean | null
           location: string | null
           logo_url: string | null
           resume_url: string | null
@@ -374,6 +410,7 @@ export type Database = {
           headline?: string | null
           id: string
           industry?: string | null
+          is_admin?: boolean | null
           location?: string | null
           logo_url?: string | null
           resume_url?: string | null
@@ -392,6 +429,7 @@ export type Database = {
           headline?: string | null
           id?: string
           industry?: string | null
+          is_admin?: boolean | null
           location?: string | null
           logo_url?: string | null
           resume_url?: string | null
