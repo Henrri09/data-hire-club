@@ -7,6 +7,7 @@ import { JobsLoadingState } from "./JobsLoadingState";
 import { JobsErrorState } from "./JobsErrorState";
 import { EmptyJobsList } from "./EmptyJobsList";
 import { Job } from "@/types/job.types";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface JobsListProps {
   searchQuery: string;
@@ -18,6 +19,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
   const [selectedContract, setSelectedContract] = useState<string>("all");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const { trackJobSearch } = useAnalytics();
 
   const { jobs, isLoading, error } = useJobsData(searchQuery);
 
@@ -31,6 +33,9 @@ export function JobsList({ searchQuery }: JobsListProps) {
         job.company.toLowerCase().includes(query) ||
         job.description.toLowerCase().includes(query)
       );
+      
+      // Rastrear busca de vagas
+      trackJobSearch(searchQuery, filtered.length);
     }
 
     if (selectedType !== "all") {
@@ -52,7 +57,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
     if (selectedSeniority !== "all") newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
     if (selectedContract !== "all") newActiveFilters.push(`Contrato: ${selectedContract}`);
     setActiveFilters(newActiveFilters);
-  }, [searchQuery, selectedType, selectedSeniority, selectedContract, jobs]);
+  }, [searchQuery, selectedType, selectedSeniority, selectedContract, jobs, trackJobSearch]);
 
   const clearFilter = (filter: string) => {
     const filterType = filter.split(":")[0].trim();
