@@ -15,15 +15,17 @@ export function CommunityBanner() {
 
   useEffect(() => {
     const fetchBanner = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('community_banners')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
-
-      if (data) setBanner(data)
+        
+      // Instead of using .single(), we check if data exists and take the first item
+      if (data && data.length > 0) {
+        setBanner(data[0])
+      }
     }
 
     fetchBanner()
