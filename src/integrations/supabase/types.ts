@@ -47,6 +47,50 @@ export type Database = {
           },
         ]
       }
+      community_banners: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          link_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          link_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          link_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_banners_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_pinned_rules: {
         Row: {
           content: string
@@ -87,6 +131,7 @@ export type Database = {
           author_id: string
           content: string
           created_at: string
+          deleted_at: string | null
           id: string
           post_id: string
           updated_at: string
@@ -95,6 +140,7 @@ export type Database = {
           author_id: string
           content: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           post_id: string
           updated_at?: string
@@ -103,6 +149,7 @@ export type Database = {
           author_id?: string
           content?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           post_id?: string
           updated_at?: string

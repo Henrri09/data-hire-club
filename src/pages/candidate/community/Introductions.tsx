@@ -1,6 +1,7 @@
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostCard } from "@/components/community/PostCard"
 import { PostSkeleton } from "@/components/community/PostSkeleton"
+import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -117,6 +118,7 @@ export default function Introductions() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
+            <CommunityBanner />
             <h1 className="text-2xl font-bold mb-6">Apresente-se à Comunidade</h1>
             
             <div className="mb-6">
