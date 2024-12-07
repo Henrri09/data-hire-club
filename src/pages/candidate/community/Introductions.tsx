@@ -9,7 +9,15 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Search, Settings2 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { AdminBannerDialog } from "@/components/community/admin/AdminBannerDialog"
+import { AdminRulesDialog } from "@/components/community/admin/AdminRulesDialog"
 
 interface Post {
   id: string
@@ -32,7 +40,27 @@ export default function Introductions() {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [showBannerDialog, setShowBannerDialog] = useState(false)
+  const [showRulesDialog, setShowRulesDialog] = useState(false)
   const postsPerPage = 10
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single()
+        
+        setIsAdmin(profile?.is_admin || false)
+      }
+    }
+
+    checkAdminStatus()
+  }, [])
 
   const fetchPosts = async (isNewSearch = false) => {
     try {
@@ -118,8 +146,26 @@ export default function Introductions() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <CommunityBanner />
-            <h1 className="text-2xl font-bold mb-6">Apresente-se à Comunidade</h1>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">Apresente-se à Comunidade</h1>
+              {isAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Settings2 className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setShowBannerDialog(true)}>
+                      Gerenciar Banner
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowRulesDialog(true)}>
+                      Gerenciar Regras
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
             
             <div className="mb-6">
               <div className="relative">
@@ -135,6 +181,7 @@ export default function Introductions() {
               </div>
             </div>
 
+            <CommunityBanner />
             <CreatePost onPostCreated={() => fetchPosts(true)} />
             
             <div className="space-y-4">
@@ -186,6 +233,16 @@ export default function Introductions() {
           </div>
         </main>
       </div>
+
+      <AdminBannerDialog 
+        open={showBannerDialog} 
+        onOpenChange={setShowBannerDialog} 
+      />
+      
+      <AdminRulesDialog
+        open={showRulesDialog}
+        onOpenChange={setShowRulesDialog}
+      />
     </div>
   )
 }
