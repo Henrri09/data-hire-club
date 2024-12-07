@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 interface Banner {
   id: string
@@ -26,6 +27,10 @@ export function CommunityBanner() {
       if (data && data.length > 0) {
         setBanner(data[0])
       }
+
+      if (error) {
+        console.error('Error fetching banner:', error)
+      }
     }
 
     fetchBanner()
@@ -48,14 +53,20 @@ export function CommunityBanner() {
           <p className="text-gray-600 mb-4">{banner.description}</p>
         )}
         {banner.link_url && (
-          <a 
-            href={banner.link_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
+          <Button 
+            variant="link" 
+            asChild
+            className="p-0 h-auto font-normal hover:no-underline"
           >
-            Saiba mais →
-          </a>
+            <a 
+              href={banner.link_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/90"
+            >
+              Saiba mais →
+            </a>
+          </Button>
         )}
       </CardContent>
     </Card>
