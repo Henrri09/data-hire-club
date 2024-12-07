@@ -22,23 +22,57 @@ export default function Login() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Redirect based on user type
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('user_type')
-          .eq('id', session.user.id)
-          .single();
+        console.log("Session found:", session);
+        try {
+          // Get user profile to determine redirect
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('user_type')
+            .eq('id', session.user.id)
+            .single();
 
-        if (profile?.user_type === 'company') {
-          navigate('/company/dashboard');
-        } else {
-          navigate('/candidate/dashboard');
+          console.log("Profile data:", profile, "Error:", error);
+
+          if (error) {
+            // Se o perfil não existir, vamos criar um
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert([
+                {
+                  id: session.user.id,
+                  email: session.user.email,
+                  user_type: 'candidate', // default type
+                }
+              ])
+              .select('user_type')
+              .single();
+
+            console.log("New profile created:", newProfile, "Error:", createError);
+
+            if (!createError && newProfile) {
+              navigate('/candidate/dashboard');
+              return;
+            }
+          }
+
+          if (profile?.user_type === 'company') {
+            navigate('/company/dashboard');
+          } else {
+            navigate('/candidate/dashboard');
+          }
+        } catch (error) {
+          console.error("Error checking user profile:", error);
+          toast({
+            title: "Erro ao verificar perfil",
+            description: "Por favor, tente novamente ou contate o suporte.",
+            variant: "destructive",
+          });
         }
       }
     };
 
     checkUser();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,19 +87,48 @@ export default function Login() {
       if (error) throw error;
 
       if (data.user) {
+        console.log("User logged in:", data.user);
+        
         // Get user profile to determine redirect
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('user_type')
           .eq('id', data.user.id)
           .single();
+
+        console.log("Profile after login:", profile, "Error:", profileError);
+
+        if (profileError) {
+          // Se o perfil não existir, vamos criar um
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: data.user.id,
+                email: data.user.email,
+                user_type: 'candidate', // default type
+              }
+            ])
+            .select('user_type')
+            .single();
+
+          console.log("New profile created after login:", newProfile, "Error:", createError);
+
+          if (!createError && newProfile) {
+            toast({
+              title: "Login realizado com sucesso!",
+              description: "Redirecionando para o painel...",
+            });
+            navigate('/candidate/dashboard');
+            return;
+          }
+        }
 
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando para o painel...",
         });
 
-        // Redirect based on user type
         if (profile?.user_type === 'company') {
           navigate('/company/dashboard');
         } else {
@@ -73,6 +136,7 @@ export default function Login() {
         }
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Erro no login",
         description: error.message,
