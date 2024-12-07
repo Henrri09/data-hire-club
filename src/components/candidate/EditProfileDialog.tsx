@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -10,6 +10,8 @@ import {
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "../ui/use-toast";
 
 interface Profile {
   description: string;
@@ -30,15 +32,80 @@ export function EditProfileDialog({
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profile) {
+          setDescription(profile.bio || "");
+          setSkills(profile.skills || []);
+          setPhotoPreview(profile.avatar_url || null);
+        }
+      }
+    };
+
+    if (open) {
+      loadProfile();
+    }
+  }, [open]);
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Usuário não autenticado");
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhotoPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, file, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        // Update profile
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: publicUrl })
+          .eq('id', user.id);
+
+        if (updateError) throw updateError;
+
+        toast({
+          title: "Foto atualizada",
+          description: "Sua foto de perfil foi atualizada com sucesso.",
+        });
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        toast({
+          title: "Erro ao atualizar foto",
+          description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -56,15 +123,44 @@ export function EditProfileDialog({
     setSkills(skills.filter(skill => skill !== skillToRemove));
   };
 
-  const handleSave = () => {
-    const profile = {
-      description,
-      skills,
-      photoUrl: photoPreview
-    };
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
-    onProfileUpdate(profile);
-    onOpenChange(false);
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          bio: description,
+          skills: skills,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Perfil atualizado",
+        description: "Suas informações foram atualizadas com sucesso.",
+      });
+
+      onProfileUpdate({
+        description,
+        skills,
+        photoUrl: photoPreview,
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao tentar salvar suas informações.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -157,10 +253,11 @@ export function EditProfileDialog({
             </div>
             
             <Button 
-              onClick={handleSave} 
+              onClick={handleSave}
+              disabled={isLoading}
               className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white py-6 text-lg font-semibold"
             >
-              Salvar Alterações
+              {isLoading ? "Salvando..." : "Salvar Alterações"}
             </Button>
           </div>
         </div>
