@@ -1,23 +1,15 @@
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
-import { PostCard } from "@/components/community/PostCard"
-import { PostSkeleton } from "@/components/community/PostSkeleton"
 import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useEffect, useState } from "react"
-import { supabase } from "@/integrations/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Settings2 } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { AdminBannerDialog } from "@/components/community/admin/AdminBannerDialog"
 import { AdminRulesDialog } from "@/components/community/admin/AdminRulesDialog"
+import { IntroductionsHeader } from "@/components/community/introductions/IntroductionsHeader"
+import { SearchBar } from "@/components/community/introductions/SearchBar"
+import { PostsList } from "@/components/community/introductions/PostsList"
 
 interface Post {
   id: string
@@ -96,7 +88,6 @@ export default function Introductions() {
 
       if (error) throw error
 
-      // Fetch likes for current user if logged in
       let postsWithLikes = posts || []
       if (user) {
         const { data: likes } = await supabase
@@ -131,14 +122,6 @@ export default function Introductions() {
     fetchPosts()
   }, [page])
 
-  const handleSearch = () => {
-    fetchPosts(true)
-  }
-
-  const handleLoadMore = () => {
-    setPage(prev => prev + 1)
-  }
-
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <CandidateHeader />
@@ -146,89 +129,31 @@ export default function Introductions() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">Apresente-se à Comunidade</h1>
-              {isAdmin && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Settings2 className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setShowBannerDialog(true)}>
-                      Gerenciar Banner
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowRulesDialog(true)}>
-                      Gerenciar Regras
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </div>
+            <IntroductionsHeader
+              isAdmin={isAdmin}
+              onOpenBannerDialog={() => setShowBannerDialog(true)}
+              onOpenRulesDialog={() => setShowRulesDialog(true)}
+            />
             
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar posts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={() => fetchPosts(true)}
+            />
 
             <CommunityBanner />
             <CreatePost onPostCreated={() => fetchPosts(true)} />
             
             <div className="space-y-4">
-              {isLoading ? (
-                <>
-                  <PostSkeleton />
-                  <PostSkeleton />
-                  <PostSkeleton />
-                </>
-              ) : posts.length === 0 ? (
-                <p className="text-center text-gray-500">
-                  {searchQuery 
-                    ? "Nenhum post encontrado para sua busca."
-                    : "Nenhum post encontrado. Seja o primeiro a se apresentar!"}
-                </p>
-              ) : (
-                <>
-                  {posts.map((post) => (
-                    <PostCard
-                      key={post.id}
-                      id={post.id}
-                      author={{
-                        name: post.author?.full_name || 'Usuário Anônimo',
-                        id: post.author?.id
-                      }}
-                      content={post.content}
-                      likes={post.likes_count}
-                      comments={post.comments_count}
-                      created_at={post.created_at}
-                      isLiked={post.is_liked}
-                      onLikeChange={() => fetchPosts()}
-                    />
-                  ))}
-                  
-                  {hasMore && (
-                    <div className="text-center pt-4">
-                      <Button
-                        variant="outline"
-                        onClick={handleLoadMore}
-                        disabled={isLoadingMore}
-                      >
-                        {isLoadingMore ? "Carregando..." : "Carregar mais"}
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
+              <PostsList
+                posts={posts}
+                isLoading={isLoading}
+                isLoadingMore={isLoadingMore}
+                hasMore={hasMore}
+                searchQuery={searchQuery}
+                onLoadMore={() => setPage(prev => prev + 1)}
+                onLikeChange={() => fetchPosts()}
+              />
             </div>
           </div>
         </main>
