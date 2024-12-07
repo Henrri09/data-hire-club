@@ -13,33 +13,44 @@ export function MobileHeader({ sidebarContent, showAuthButtons = true }: MobileH
     <div className="sticky top-0 z-50 w-full border-b bg-black text-white">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center">
-          {sidebarContent && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="mr-2 text-white hover:text-white/80">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="mr-2 text-white hover:text-white/80">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 bg-black text-white p-0">
+              <div className="flex flex-col py-4">
                 {sidebarContent}
-              </SheetContent>
-            </Sheet>
-          )}
+                <Link 
+                  to="/company/login" 
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Publique uma vaga
+                </Link>
+                {showAuthButtons && (
+                  <>
+                    <Link 
+                      to="/login" 
+                      className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      Entrar
+                    </Link>
+                    <Link 
+                      to="/register" 
+                      className="px-4 py-2 text-[#7779f5] hover:text-[#7779f5]/90 hover:bg-white/10 transition-colors"
+                    >
+                      Cadastrar
+                    </Link>
+                  </>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-bold">Data Hire Club</span>
           </Link>
         </div>
-        
-        {showAuthButtons && (
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="text-white hover:text-white/80">
-              <Link to="/login">Entrar</Link>
-            </Button>
-            <Button asChild className="bg-[#7779f5] hover:bg-[#7779f5]/90">
-              <Link to="/register">Cadastrar</Link>
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

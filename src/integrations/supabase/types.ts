@@ -335,7 +335,15 @@ export type Database = {
           views_count?: number | null
           work_model?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -399,7 +407,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_jobs_company_ids: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          job_id: string
+          company_id: string
+        }[]
+      }
     }
     Enums: {
       application_status: "pending" | "reviewed" | "accepted" | "rejected"
