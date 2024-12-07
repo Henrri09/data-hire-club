@@ -41,14 +41,14 @@ export function EditProfileDialog({
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('*')
+          .select('bio, skills, logo_url')
           .eq('id', user.id)
           .single();
 
         if (profile) {
           setDescription(profile.bio || "");
-          setSkills(profile.skills || []);
-          setPhotoPreview(profile.avatar_url || null);
+          setSkills(Array.isArray(profile.skills) ? profile.skills : []);
+          setPhotoPreview(profile.logo_url || null);
         }
       }
     };
@@ -89,7 +89,7 @@ export function EditProfileDialog({
         // Update profile
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ avatar_url: publicUrl })
+          .update({ logo_url: publicUrl })
           .eq('id', user.id);
 
         if (updateError) throw updateError;

@@ -9,13 +9,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 
+interface Profile {
+  full_name: string | null;
+  logo_url: string | null;
+  is_admin: boolean | null;
+}
+
 export function CandidateHeader() {
   const isMobile = useIsMobile();
-  const [profile, setProfile] = useState<{
-    full_name: string;
-    avatar_url: string | null;
-    is_admin: boolean;
-  } | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export function CandidateHeader() {
       if (user) {
         const { data, error } = await supabase
           .from('profiles')
-          .select('full_name, avatar_url, is_admin')
+          .select('full_name, logo_url, is_admin')
           .eq('id', user.id)
           .single();
 
@@ -83,7 +85,7 @@ export function CandidateHeader() {
         </Link>
         <div className="flex flex-1 items-center justify-end gap-4">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profile?.avatar_url || undefined} />
+            <AvatarImage src={profile?.logo_url || undefined} />
             <AvatarFallback className="bg-white/20 text-white">
               {profile?.full_name ? getInitials(profile.full_name) : "?"}
             </AvatarFallback>
