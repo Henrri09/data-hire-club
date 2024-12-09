@@ -1,4 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Pencil } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 import { PostHeader } from "./PostHeader"
 import { PostActions } from "./PostActions"
 import { PostComments } from "./PostComments"
@@ -42,6 +45,7 @@ export function PostCard({
   const [isAdmin, setIsAdmin] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedContent, setEditedContent] = useState(content)
+  const { toast } = useToast()
 
   const { 
     isLiking, 
