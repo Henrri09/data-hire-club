@@ -62,7 +62,10 @@ export function ProfileOverview() {
         if (profileData) {
           setProfile({
             description: profileData.bio || "",
-            skills: Array.isArray(profileData.skills) ? profileData.skills : [],
+            // Convertendo explicitamente o array de Json para array de strings
+            skills: Array.isArray(profileData.skills) 
+              ? profileData.skills.map(skill => String(skill))
+              : [],
             photoUrl: profileData.logo_url,
             full_name: profileData.full_name,
             headline: profileData.headline,
