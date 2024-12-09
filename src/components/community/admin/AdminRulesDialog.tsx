@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import {
@@ -34,6 +34,7 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
   const { toast } = useToast()
   const [rules, setRules] = useState<Rule[]>([])
   const [isAddingRule, setIsAddingRule] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: {
@@ -41,19 +42,45 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
     },
   })
 
-  const fetchRules = async () => {
-    const { data } = await supabase
-      .from("community_pinned_rules")
-      .select("*")
-      .order("created_at", { ascending: false })
-    
-    if (data) setRules(data)
-  }
+  useEffect(() => {
+    const loadUserAndRules = async () => {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+      }
+
+      // Load rules
+      const { data } = await supabase
+        .from("community_pinned_rules")
+        .select("*")
+        .order("created_at", { ascending: false })
+      
+      if (data) setRules(data)
+    }
+
+    if (open) {
+      loadUserAndRules()
+    }
+  }, [open])
 
   const onSubmit = async (values: any) => {
+    if (!userId) {
+      toast({
+        title: "Erro ao criar regra",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      })
+      return
+    }
+
     const { error } = await supabase
       .from("community_pinned_rules")
-      .insert([{ ...values, is_active: true }])
+      .insert([{ 
+        ...values, 
+        is_active: true,
+        created_by: userId 
+      }])
 
     if (error) {
       toast({
@@ -67,7 +94,12 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
       })
       setIsAddingRule(false)
       form.reset()
-      fetchRules()
+      const { data } = await supabase
+        .from("community_pinned_rules")
+        .select("*")
+        .order("created_at", { ascending: false })
+      
+      if (data) setRules(data)
     }
   }
 
@@ -87,7 +119,12 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
       toast({
         title: "Regra atualizada com sucesso",
       })
-      fetchRules()
+      const { data } = await supabase
+        .from("community_pinned_rules")
+        .select("*")
+        .order("created_at", { ascending: false })
+      
+      if (data) setRules(data)
     }
   }
 
