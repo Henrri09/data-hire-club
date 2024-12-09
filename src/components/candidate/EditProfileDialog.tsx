@@ -64,7 +64,9 @@ export function EditProfileDialog({
           setDescription(profile.bio || "");
           setFullName(profile.full_name || "");
           setHeadline(profile.headline || "");
-          setSkills(Array.isArray(profile.skills) ? profile.skills : []);
+          // Convert skills to string array and handle null/undefined cases
+          const profileSkills = profile.skills as string[] | null;
+          setSkills(Array.isArray(profileSkills) ? profileSkills.map(String) : []);
           setPhotoPreview(profile.logo_url || null);
         }
       } catch (error) {
