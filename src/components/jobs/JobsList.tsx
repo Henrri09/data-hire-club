@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { JobCard } from "./JobCard";
 import { JobFilters } from "./filters/JobFilters";
 import { ActiveFilters } from "./filters/ActiveFilters";
@@ -23,7 +23,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
 
   const { jobs, isLoading, error } = useJobsData(searchQuery);
 
-  useEffect(() => {
+  const filterJobs = useCallback(() => {
     let filtered = jobs;
 
     if (searchQuery) {
@@ -34,7 +34,6 @@ export function JobsList({ searchQuery }: JobsListProps) {
         job.description.toLowerCase().includes(query)
       );
       
-      // Rastrear busca de vagas
       trackJobSearch(searchQuery, filtered.length);
     }
 
@@ -50,6 +49,11 @@ export function JobsList({ searchQuery }: JobsListProps) {
       filtered = filtered.filter(job => job.contract_type === selectedContract);
     }
 
+    return filtered;
+  }, [jobs, searchQuery, selectedType, selectedSeniority, selectedContract, trackJobSearch]);
+
+  useEffect(() => {
+    const filtered = filterJobs();
     setFilteredJobs(filtered);
 
     const newActiveFilters = [];
@@ -57,7 +61,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
     if (selectedSeniority !== "all") newActiveFilters.push(`Senioridade: ${selectedSeniority}`);
     if (selectedContract !== "all") newActiveFilters.push(`Contrato: ${selectedContract}`);
     setActiveFilters(newActiveFilters);
-  }, [searchQuery, selectedType, selectedSeniority, selectedContract, jobs, trackJobSearch]);
+  }, [filterJobs, selectedType, selectedSeniority, selectedContract]);
 
   const clearFilter = (filter: string) => {
     const filterType = filter.split(":")[0].trim();

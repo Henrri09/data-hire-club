@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { ProfileHeader } from "./profile/ProfileHeader";
 import { ApplicationsChart } from "./profile/ApplicationsChart";
+import { useQuery } from "@tanstack/react-query";
 
 interface Profile {
   description: string;
@@ -12,7 +13,6 @@ interface Profile {
   photoUrl: string | null;
   full_name: string | null;
   headline: string | null;
-  location: string | null;
 }
 
 export function ProfileOverview() {
@@ -23,16 +23,37 @@ export function ProfileOverview() {
     photoUrl: null,
     full_name: null,
     headline: null,
-    location: null
   });
   const { toast } = useToast();
 
-  // Carregar dados reais de candidaturas do banco
-  const [applicationData, setApplicationData] = useState([
+  const { data: applicationData = [
     { name: 'Pendentes', value: 0 },
     { name: 'Rejeitadas', value: 0 },
     { name: 'Aceitas', value: 0 },
-  ]);
+  ], refetch: refetchApplications } = useQuery({
+    queryKey: ['applications'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const { data: applications, error } = await supabase
+        .from('job_applications')
+        .select('status')
+        .eq('candidate_id', user.id);
+
+      if (error) throw error;
+
+      const pending = applications?.filter(app => app.status === 'pending').length || 0;
+      const rejected = applications?.filter(app => app.status === 'rejected').length || 0;
+      const accepted = applications?.filter(app => app.status === 'accepted').length || 0;
+
+      return [
+        { name: 'Pendentes', value: pending },
+        { name: 'Rejeitadas', value: rejected },
+        { name: 'Aceitas', value: accepted },
+      ];
+    },
+  });
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -49,7 +70,7 @@ export function ProfileOverview() {
 
         const { data: profileData, error } = await supabase
           .from('profiles')
-          .select('full_name, bio, skills, logo_url, headline, location')
+          .select('full_name, bio, skills, logo_url, headline')
           .eq('id', user.id)
           .single();
 
@@ -64,28 +85,7 @@ export function ProfileOverview() {
             photoUrl: profileData.logo_url,
             full_name: profileData.full_name,
             headline: profileData.headline,
-            location: profileData.location
           });
-        }
-
-        // Carregar contagem de candidaturas
-        const { data: applications, error: applicationsError } = await supabase
-          .from('job_applications')
-          .select('status')
-          .eq('candidate_id', user.id);
-
-        if (applicationsError) throw applicationsError;
-
-        if (applications) {
-          const pending = applications.filter(app => app.status === 'pending').length;
-          const rejected = applications.filter(app => app.status === 'rejected').length;
-          const accepted = applications.filter(app => app.status === 'accepted').length;
-
-          setApplicationData([
-            { name: 'Pendentes', value: pending },
-            { name: 'Rejeitadas', value: rejected },
-            { name: 'Aceitas', value: accepted },
-          ]);
         }
       } catch (error) {
         console.error('Erro ao carregar perfil:', error);
@@ -98,7 +98,27 @@ export function ProfileOverview() {
     };
 
     loadProfile();
-  }, [toast]);
+
+    // Inscrever-se para atualizações em tempo real
+    const channel = supabase
+      .channel('job_applications_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'job_applications'
+        },
+        () => {
+          refetchApplications();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [toast, refetchApplications]);
 
   const handleProfileUpdate = (updatedProfile: Profile) => {
     setProfile(updatedProfile);
