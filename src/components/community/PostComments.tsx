@@ -38,19 +38,31 @@ export function PostComments({
   onSubmitComment 
 }: PostCommentsProps) {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isDeletingComment, setIsDeletingComment] = useState<string | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .single()
-        
-        setIsAdmin(profile?.is_admin || false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          console.log("Checking admin status for user:", user.id)
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', user.id)
+            .single()
+          
+          if (error) {
+            console.error("Error checking admin status:", error)
+            return
+          }
+
+          console.log("Admin status:", profile?.is_admin)
+          setIsAdmin(profile?.is_admin || false)
+        }
+      } catch (error) {
+        console.error("Error in checkAdminStatus:", error)
       }
     }
 
@@ -59,17 +71,31 @@ export function PostComments({
 
   const handleDeleteComment = async (commentId: string) => {
     try {
+      setIsDeletingComment(commentId)
       const { error } = await supabase
         .from('community_post_comments')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', commentId)
 
-      if (error) throw error
+      if (error) {
+        console.error("Error deleting comment:", error)
+        throw error
+      }
 
       toast({
         title: "Comentário removido",
         description: "O comentário foi removido com sucesso.",
       })
+
+      // Atualizar a lista de comentários localmente
+      const updatedComments = comments.map(comment => 
+        comment.id === commentId 
+          ? { ...comment, deleted_at: new Date().toISOString() }
+          : comment
+      )
+      
+      // Se você tiver uma função para atualizar os comentários no componente pai
+      // onCommentsUpdate(updatedComments)
     } catch (error) {
       console.error('Error deleting comment:', error)
       toast({
@@ -77,6 +103,8 @@ export function PostComments({
         description: "Ocorreu um erro ao tentar remover o comentário.",
         variant: "destructive"
       })
+    } finally {
+      setIsDeletingComment(null)
     }
   }
 
@@ -140,6 +168,7 @@ export function PostComments({
                         size="icon"
                         className="opacity-0 group-hover:opacity-100 transition-opacity ml-2"
                         onClick={() => handleDeleteComment(comment.id)}
+                        disabled={isDeletingComment === comment.id}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>

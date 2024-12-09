@@ -54,9 +54,12 @@ export function PostsList({
     )
   }
 
+  // Remover possíveis duplicatas baseado no ID
+  const uniquePosts = Array.from(new Map(posts.map(post => [post.id, post])).values())
+
   return (
     <>
-      {posts.map((post) => (
+      {uniquePosts.map((post) => (
         <PostCard
           key={post.id}
           id={post.id}
