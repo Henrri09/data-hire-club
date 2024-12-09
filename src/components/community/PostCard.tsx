@@ -5,10 +5,11 @@ import { PostComments } from "./PostComments"
 import { usePostActions } from "@/hooks/usePostActions"
 import { usePostComments } from "@/hooks/usePostComments"
 import { useState, useEffect } from "react"
-import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { PostCardActions } from "./post/PostCardActions"
 import { PostEditDialog } from "./post/PostEditDialog"
+import { PostContent } from "./post/PostContent"
+import { PostDeleteButton } from "./post/PostDeleteButton"
 
 interface PostCardProps {
   id: string
@@ -41,8 +42,6 @@ export function PostCard({
   const [isAdmin, setIsAdmin] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedContent, setEditedContent] = useState(content)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const { toast } = useToast()
 
   const { 
     isLiking, 
@@ -109,66 +108,34 @@ export function PostCard({
     }
   }
 
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true)
-      console.log('Attempting to delete post:', id)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('User not authenticated')
-      }
-
-      console.log('Current user:', user.id)
-      console.log('Post author:', author.id)
-      console.log('Is admin:', isAdmin)
-
-      const { error } = await supabase
-        .from('community_posts')
-        .delete()
-        .eq('id', id)
-
-      if (error) {
-        console.error('Supabase delete error:', error)
-        throw error
-      }
-
-      toast({
-        title: "Post removido",
-        description: "O post foi removido com sucesso.",
-      })
-      
-      if (onPostDelete) {
-        onPostDelete()
-      }
-    } catch (error) {
-      console.error('Error deleting post:', error)
-      toast({
-        title: "Erro ao remover post",
-        description: "Ocorreu um erro ao tentar remover o post.",
-        variant: "destructive"
-      })
-    } finally {
-      setIsDeleting(false)
-    }
-  }
-
   return (
     <Card className="mb-4">
       <CardHeader>
         <div className="flex justify-between items-start">
           <PostHeader author={author} created_at={created_at} />
-          <PostCardActions
-            isCurrentUser={isCurrentUser}
-            isAdmin={isAdmin}
-            isDeleting={isDeleting}
-            onEdit={() => setIsEditing(true)}
-            onDelete={handleDelete}
-          />
+          <div className="flex gap-2">
+            {isCurrentUser && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            )}
+            {(isCurrentUser || isAdmin) && (
+              <PostDeleteButton
+                postId={id}
+                authorId={author.id}
+                isAdmin={isAdmin}
+                onPostDelete={onPostDelete}
+              />
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-700 whitespace-pre-wrap">{content}</p>
+        <PostContent content={content} />
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <PostActions
