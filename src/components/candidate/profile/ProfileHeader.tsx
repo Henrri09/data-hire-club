@@ -1,13 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin, Briefcase } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ProfileHeaderProps {
   profile: {
     full_name: string | null;
     headline: string | null;
-    location: string | null;
     photoUrl: string | null;
     skills: string[];
   };
@@ -26,24 +24,25 @@ export function ProfileHeader({ profile, onEditClick }: ProfileHeaderProps) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-gray-900">
-          {profile.full_name || "Complete seu perfil"}
-        </h3>
-        <p className="text-gray-600">{profile.headline || "Adicione seu cargo atual"}</p>
-        
-        <div className="flex flex-col md:flex-row gap-3 text-gray-500 text-sm">
-          {profile.location && (
-            <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {profile.location}
-            </span>
-          )}
-          <span className="flex items-center gap-1">
-            <Briefcase className="w-4 h-4" />
-            Disponível para propostas
-          </span>
+      <div className="flex items-center gap-4">
+        <Avatar className="h-20 w-20">
+          <AvatarImage src={profile.photoUrl || undefined} />
+          <AvatarFallback className="bg-[#9b87f5] text-white text-xl">
+            {getInitials(profile.full_name)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold text-gray-900">
+            {profile.full_name || "Complete seu perfil"}
+          </h3>
+          <p className="text-gray-600">{profile.headline || "Adicione sua profissão"}</p>
         </div>
+        <Button 
+          onClick={onEditClick}
+          className="bg-[#9b87f5] hover:bg-[#9b87f5]/90"
+        >
+          Editar Perfil
+        </Button>
       </div>
 
       {profile.skills.length > 0 && (
@@ -59,15 +58,6 @@ export function ProfileHeader({ profile, onEditClick }: ProfileHeaderProps) {
           ))}
         </div>
       )}
-
-      <div className="text-center mt-4">
-        <Button 
-          onClick={onEditClick}
-          className="w-full md:w-auto"
-        >
-          Editar Perfil
-        </Button>
-      </div>
     </div>
   );
 }

@@ -19,6 +19,7 @@ interface Profile {
   skills: string[];
   photoUrl: string | null;
   full_name?: string | null;
+  headline?: string | null;
 }
 
 export function EditProfileDialog({ 
@@ -32,6 +33,7 @@ export function EditProfileDialog({
 }) {
   const [description, setDescription] = useState("");
   const [fullName, setFullName] = useState("");
+  const [headline, setHeadline] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +54,7 @@ export function EditProfileDialog({
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('bio, skills, logo_url, full_name')
+          .select('bio, skills, logo_url, full_name, headline')
           .eq('id', user.id)
           .single();
 
@@ -61,6 +63,7 @@ export function EditProfileDialog({
         if (profile) {
           setDescription(profile.bio || "");
           setFullName(profile.full_name || "");
+          setHeadline(profile.headline || "");
           const profileSkills = profile.skills as any;
           setSkills(Array.isArray(profileSkills) ? profileSkills.map(String) : []);
           setPhotoPreview(profile.logo_url || null);
@@ -92,6 +95,7 @@ export function EditProfileDialog({
           bio: description,
           skills: skills,
           full_name: fullName,
+          headline: headline,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -107,7 +111,8 @@ export function EditProfileDialog({
         description,
         skills,
         photoUrl: photoPreview,
-        full_name: fullName
+        full_name: fullName,
+        headline: headline
       });
       onOpenChange(false);
     } catch (error) {
@@ -137,6 +142,16 @@ export function EditProfileDialog({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome completo"
+                className="focus:ring-2 focus:ring-[#9b87f5]/50 focus:border-[#9b87f5]"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <Label className="text-lg font-semibold">Profissão</Label>
+              <Input
+                value={headline}
+                onChange={(e) => setHeadline(e.target.value)}
+                placeholder="Ex: Engenheiro de Dados, Cientista de Dados..."
                 className="focus:ring-2 focus:ring-[#9b87f5]/50 focus:border-[#9b87f5]"
               />
             </div>
