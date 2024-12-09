@@ -71,17 +71,23 @@ export function PostCard({
 
   useEffect(() => {
     const checkUserPermissions = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setIsCurrentUser(user.id === author.id)
-        
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .single()
-        
-        setIsAdmin(profile?.is_admin || false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          console.log("Verificando permissões para usuário:", user.id)
+          setIsCurrentUser(user.id === author.id)
+          
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', user.id)
+            .single()
+          
+          console.log("Perfil do usuário:", profile)
+          setIsAdmin(profile?.is_admin || false)
+        }
+      } catch (error) {
+        console.error("Erro ao verificar permissões:", error)
       }
     }
 
@@ -103,7 +109,7 @@ export function PostCard({
       })
       setIsEditing(false)
     } catch (error) {
-      console.error('Error updating post:', error)
+      console.error('Erro ao atualizar post:', error)
       toast({
         title: "Erro ao atualizar post",
         description: "Ocorreu um erro ao tentar atualizar o post.",
