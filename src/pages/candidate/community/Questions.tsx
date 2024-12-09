@@ -51,9 +51,17 @@ export default function Questions() {
       setIsLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
       
-      let query = supabase
+      const baseQuery = supabase
         .from('community_posts')
-        .select(`
+        .select(user ? `
+          id,
+          content,
+          created_at,
+          likes_count,
+          comments_count,
+          author:profiles(id, full_name),
+          is_liked:community_post_likes!inner(id)
+        ` : `
           id,
           content,
           created_at,
@@ -65,21 +73,9 @@ export default function Questions() {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      if (searchQuery) {
-        query = query.ilike('content', `%${searchQuery}%`)
-      }
-
-      if (user) {
-        query = query.select(`
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles(id, full_name),
-          is_liked:community_post_likes!inner(id)
-        `)
-      }
+      const query = searchQuery 
+        ? baseQuery.ilike('content', `%${searchQuery}%`)
+        : baseQuery
 
       const { data, error } = await query
 
@@ -100,12 +96,19 @@ export default function Questions() {
     try {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
-      
       const { data: { user } } = await supabase.auth.getUser()
       
-      let query = supabase
+      const baseQuery = supabase
         .from('community_posts')
-        .select(`
+        .select(user ? `
+          id,
+          content,
+          created_at,
+          likes_count,
+          comments_count,
+          author:profiles(id, full_name),
+          is_liked:community_post_likes!inner(id)
+        ` : `
           id,
           content,
           created_at,
@@ -118,21 +121,9 @@ export default function Questions() {
         .lt('created_at', lastPost.created_at)
         .limit(10)
 
-      if (searchQuery) {
-        query = query.ilike('content', `%${searchQuery}%`)
-      }
-
-      if (user) {
-        query = query.select(`
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles(id, full_name),
-          is_liked:community_post_likes!inner(id)
-        `)
-      }
+      const query = searchQuery 
+        ? baseQuery.ilike('content', `%${searchQuery}%`)
+        : baseQuery
 
       const { data, error } = await query
 
