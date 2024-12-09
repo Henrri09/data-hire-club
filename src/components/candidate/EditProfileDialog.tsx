@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
@@ -17,6 +18,7 @@ interface Profile {
   description: string;
   skills: string[];
   photoUrl: string | null;
+  full_name?: string | null;
 }
 
 export function EditProfileDialog({ 
@@ -29,6 +31,7 @@ export function EditProfileDialog({
   onProfileUpdate: (profile: Profile) => void;
 }) {
   const [description, setDescription] = useState("");
+  const [fullName, setFullName] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +52,7 @@ export function EditProfileDialog({
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('bio, skills, logo_url')
+          .select('bio, skills, logo_url, full_name')
           .eq('id', user.id)
           .single();
 
@@ -57,12 +60,13 @@ export function EditProfileDialog({
 
         if (profile) {
           setDescription(profile.bio || "");
+          setFullName(profile.full_name || "");
           const profileSkills = profile.skills as any;
           setSkills(Array.isArray(profileSkills) ? profileSkills.map(String) : []);
           setPhotoPreview(profile.logo_url || null);
         }
       } catch (error) {
-        console.error('Error loading profile:', error);
+        console.error('Erro ao carregar perfil:', error);
         toast({
           title: "Erro ao carregar perfil",
           description: "Ocorreu um erro ao carregar suas informações",
@@ -87,6 +91,7 @@ export function EditProfileDialog({
         .update({
           bio: description,
           skills: skills,
+          full_name: fullName,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -102,10 +107,11 @@ export function EditProfileDialog({
         description,
         skills,
         photoUrl: photoPreview,
+        full_name: fullName
       });
       onOpenChange(false);
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('Erro ao salvar perfil:', error);
       toast({
         title: "Erro ao salvar",
         description: "Ocorreu um erro ao tentar salvar suas informações.",
@@ -125,6 +131,16 @@ export function EditProfileDialog({
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
+            <div className="space-y-4">
+              <Label className="text-lg font-semibold">Nome Completo</Label>
+              <Input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Seu nome completo"
+                className="focus:ring-2 focus:ring-[#9b87f5]/50 focus:border-[#9b87f5]"
+              />
+            </div>
+
             <PhotoUpload 
               photoPreview={photoPreview}
               onPhotoUpdate={setPhotoPreview}

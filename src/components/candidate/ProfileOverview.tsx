@@ -1,13 +1,21 @@
+import { useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "../ui/use-toast";
+import { MapPin, Briefcase } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface Profile {
   description: string;
   skills: string[];
   photoUrl: string | null;
+  full_name: string | null;
+  headline: string | null;
+  location: string | null;
 }
 
 export function ProfileOverview() {
@@ -15,8 +23,12 @@ export function ProfileOverview() {
   const [profile, setProfile] = useState<Profile>({
     description: "",
     skills: [],
-    photoUrl: null
+    photoUrl: null,
+    full_name: null,
+    headline: null,
+    location: null
   });
+  const { toast } = useToast();
 
   const applicationData = [
     { name: 'Pendentes', value: 3 },
@@ -26,9 +38,53 @@ export function ProfileOverview() {
 
   const APPLICATION_COLORS = ['#2563eb', '#ef4444', '#22c55e'];
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            title: "Erro ao carregar perfil",
+            description: "Usuário não autenticado",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('full_name, bio, skills, logo_url, headline, location')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (profileData) {
+          setProfile({
+            description: profileData.bio || "",
+            skills: Array.isArray(profileData.skills) ? profileData.skills : [],
+            photoUrl: profileData.logo_url,
+            full_name: profileData.full_name,
+            headline: profileData.headline,
+            location: profileData.location
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+        toast({
+          title: "Erro ao carregar perfil",
+          description: "Ocorreu um erro ao carregar suas informações",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadProfile();
+  }, [toast]);
+
   const handleProfileUpdate = (updatedProfile: Profile) => {
     setProfile(updatedProfile);
-    console.log('Profile updated:', updatedProfile);
+    console.log('Perfil atualizado:', updatedProfile);
   };
 
   return (
@@ -38,13 +94,49 @@ export function ProfileOverview() {
           <CardTitle className="text-2xl font-bold text-gray-900">Seu Perfil</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center mt-4">
-            <Button 
-              onClick={() => setIsDialogOpen(true)}
-              className="w-full md:w-auto"
-            >
-              Editar Perfil
-            </Button>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {profile.full_name || "Complete seu perfil"}
+              </h3>
+              <p className="text-gray-600">{profile.headline || "Adicione seu cargo atual"}</p>
+              
+              <div className="flex flex-col md:flex-row gap-3 text-gray-500 text-sm">
+                {profile.location && (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {profile.location}
+                  </span>
+                )}
+                <span className="flex items-center gap-1">
+                  <Briefcase className="w-4 h-4" />
+                  Disponível para propostas
+                </span>
+              </div>
+            </div>
+
+            {profile.skills.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {profile.skills.map((skill) => (
+                  <Badge 
+                    key={skill}
+                    variant="secondary"
+                    className="bg-[#9b87f5]/10 text-[#9b87f5] hover:bg-[#9b87f5]/20"
+                  >
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            <div className="text-center mt-4">
+              <Button 
+                onClick={() => setIsDialogOpen(true)}
+                className="w-full md:w-auto"
+              >
+                Editar Perfil
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
