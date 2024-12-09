@@ -5,18 +5,10 @@ import { PostComments } from "./PostComments"
 import { usePostActions } from "@/hooks/usePostActions"
 import { usePostComments } from "@/hooks/usePostComments"
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
+import { PostCardActions } from "./post/PostCardActions"
+import { PostEditDialog } from "./post/PostEditDialog"
 
 interface PostCardProps {
   id: string
@@ -120,12 +112,17 @@ export function PostCard({
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
+      console.log('Deleting post:', id) // Debug log
+
       const { error } = await supabase
         .from('community_posts')
         .delete()
         .eq('id', id)
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error) // Debug log
+        throw error
+      }
 
       toast({
         title: "Post removido",
@@ -152,27 +149,13 @@ export function PostCard({
       <CardHeader>
         <div className="flex justify-between items-start">
           <PostHeader author={author} created_at={created_at} />
-          {(isCurrentUser || isAdmin) && (
-            <div className="flex gap-2">
-              {isCurrentUser && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4 text-red-500" />
-              </Button>
-            </div>
-          )}
+          <PostCardActions
+            isCurrentUser={isCurrentUser}
+            isAdmin={isAdmin}
+            isDeleting={isDeleting}
+            onEdit={() => setIsEditing(true)}
+            onDelete={handleDelete}
+          />
         </div>
       </CardHeader>
       <CardContent>
@@ -199,26 +182,13 @@ export function PostCard({
         )}
       </CardFooter>
 
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar post</DialogTitle>
-          </DialogHeader>
-          <Textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            className="min-h-[100px]"
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleEdit}>
-              Salvar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PostEditDialog
+        open={isEditing}
+        content={editedContent}
+        onOpenChange={setIsEditing}
+        onContentChange={setEditedContent}
+        onSave={handleEdit}
+      />
     </Card>
   )
 }
