@@ -112,7 +112,16 @@ export function PostCard({
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      console.log('Deleting post:', id) // Debug log
+      console.log('Attempting to delete post:', id)
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      console.log('Current user:', user.id)
+      console.log('Post author:', author.id)
+      console.log('Is admin:', isAdmin)
 
       const { error } = await supabase
         .from('community_posts')
@@ -120,7 +129,7 @@ export function PostCard({
         .eq('id', id)
 
       if (error) {
-        console.error('Supabase error:', error) // Debug log
+        console.error('Supabase delete error:', error)
         throw error
       }
 
