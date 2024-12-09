@@ -23,6 +23,7 @@ interface PostsListProps {
   searchQuery: string
   onLoadMore: () => void
   onLikeChange: () => void
+  onPostDelete?: () => void
 }
 
 export function PostsList({
@@ -33,6 +34,7 @@ export function PostsList({
   searchQuery,
   onLoadMore,
   onLikeChange,
+  onPostDelete,
 }: PostsListProps) {
   if (isLoading) {
     return (
@@ -73,6 +75,7 @@ export function PostsList({
           created_at={post.created_at}
           isLiked={post.is_liked}
           onLikeChange={onLikeChange}
+          onPostDelete={onPostDelete}
         />
       ))}
       
