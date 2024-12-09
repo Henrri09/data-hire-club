@@ -36,28 +36,45 @@ export function EditProfileDialog({
 
   useEffect(() => {
     const loadProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            title: "Erro ao carregar perfil",
+            description: "Usuário não autenticado",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('bio, skills, logo_url')
           .eq('id', user.id)
           .single();
 
+        if (error) throw error;
+
         if (profile) {
           setDescription(profile.bio || "");
-          // Garantir que skills seja um array de strings
           const profileSkills = profile.skills as any;
           setSkills(Array.isArray(profileSkills) ? profileSkills.map(String) : []);
           setPhotoPreview(profile.logo_url || null);
         }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        toast({
+          title: "Erro ao carregar perfil",
+          description: "Ocorreu um erro ao carregar suas informações",
+          variant: "destructive",
+        });
       }
     };
 
     if (open) {
       loadProfile();
     }
-  }, [open]);
+  }, [open, toast]);
 
   const handleSave = async () => {
     setIsLoading(true);
