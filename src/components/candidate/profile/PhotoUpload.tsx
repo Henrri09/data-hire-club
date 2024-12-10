@@ -17,10 +17,17 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      // Validar o tipo do arquivo
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro no upload",
+          description: "Por favor, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      // Create preview
+      // Criar preview
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
@@ -29,20 +36,23 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
       };
       reader.readAsDataURL(file);
 
-      // Upload to Supabase Storage
+      // Upload para o Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { 
+        .upload(fileName, file, {
           upsert: true,
           contentType: file.type
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Erro no upload:', uploadError);
+        throw uploadError;
+      }
 
-      // Get public URL
+      // Obter URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
@@ -54,7 +64,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
         description: "Sua foto de perfil foi atualizada com sucesso.",
       });
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      console.error('Erro ao fazer upload da foto:', error);
       toast({
         title: "Erro ao atualizar foto",
         description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
