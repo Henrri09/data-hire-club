@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Upload } from "lucide-react"
 
@@ -60,12 +59,12 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
         .from('banners')
         .getPublicUrl(fileName)
 
-      // Create banner record
+      // Create banner record with minimal required info
       const { error: insertError } = await supabase
         .from('community_banners')
         .insert([{
+          title: 'Banner',
           image_url: publicUrl,
-          title: file.name, // Using filename as title for reference
           created_by: user.id,
           is_active: true
         }])

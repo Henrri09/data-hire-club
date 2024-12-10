@@ -65,10 +65,9 @@ export function EditProfileDialog({
         setDescription(profile.bio || "");
         setFullName(profile.full_name || "");
         setHeadline(profile.headline || "");
-        // Ensure skills is always a string array
-        const skillsArray = profile.skills as unknown as string[];
-        setSkills(Array.isArray(skillsArray) ? skillsArray.map(String) : []);
-        setPhotoPreview(profile.logo_url || null);
+        setSkills(Array.isArray(profile.skills) ? profile.skills.map(String) : []);
+        setPhotoUrl(profile.logo_url);
+        setPhotoPreview(profile.logo_url);
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
