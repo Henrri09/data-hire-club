@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileOverview } from "@/components/candidate/ProfileOverview";
@@ -16,12 +15,11 @@ interface Application {
     company: {
       company_name: string;
     };
-  };
+  } | null;
 }
 
 export default function CandidateDashboard() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
 
   const { data: applications = [], isLoading: isLoadingApplications } = useQuery({
     queryKey: ['applications'],
@@ -43,7 +41,7 @@ export default function CandidateDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Application[];
     },
   });
 
@@ -79,8 +77,12 @@ export default function CandidateDashboard() {
                         className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg bg-white border border-gray-100 hover:border-[#9b87f5]/30 transition-colors gap-4"
                       >
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{application.job.title}</h3>
-                          <p className="text-gray-600">{application.job.company.company_name}</p>
+                          <h3 className="font-semibold text-gray-900">
+                            {application.job?.title || "Vaga não disponível"}
+                          </h3>
+                          <p className="text-gray-600">
+                            {application.job?.company?.company_name || "Empresa não disponível"}
+                          </p>
                         </div>
                         <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
                           <span className="text-sm text-gray-500">
