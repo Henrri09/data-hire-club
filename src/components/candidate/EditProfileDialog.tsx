@@ -134,7 +134,7 @@ export function EditProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Editar Perfil</DialogTitle>
         </DialogHeader>
@@ -169,6 +169,7 @@ export function EditProfileDialog({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Conte um pouco sobre sua experiência..."
+              className="min-h-[100px]"
             />
           </div>
           <div className="grid gap-2">
@@ -179,7 +180,7 @@ export function EditProfileDialog({
             />
           </div>
         </div>
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

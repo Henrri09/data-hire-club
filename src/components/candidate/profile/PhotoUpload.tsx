@@ -67,7 +67,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
     <div className="space-y-4">
       <Label className="text-lg font-semibold">Foto do Perfil</Label>
       <div className="flex items-center justify-center">
-        <div className="relative w-32 h-32 group cursor-pointer">
+        <div className="relative w-24 h-24 group cursor-pointer">
           {currentPhotoUrl ? (
             <img
               src={currentPhotoUrl}
@@ -76,7 +76,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
             />
           ) : (
             <div className="w-full h-full rounded-full bg-[#E5DEFF] flex items-center justify-center border-4 border-[#9b87f5]/20">
-              <Upload className="w-8 h-8 text-[#9b87f5]/60" />
+              <Upload className="w-6 h-6 text-[#9b87f5]/60" />
             </div>
           )}
           <input
@@ -86,10 +86,10 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Upload className="w-8 h-8 text-white" />
+            <Upload className="w-6 h-6 text-white" />
           </div>
-          <div className="absolute -bottom-2 right-0 bg-[#9b87f5] rounded-full p-1.5 shadow-lg border-2 border-white">
-            <Upload className="w-4 h-4 text-white" />
+          <div className="absolute -bottom-1 right-0 bg-[#9b87f5] rounded-full p-1.5 shadow-lg border-2 border-white">
+            <Upload className="w-3 h-3 text-white" />
           </div>
         </div>
       </div>
