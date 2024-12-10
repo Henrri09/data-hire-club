@@ -66,7 +66,6 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
       const { error: insertError } = await supabase
         .from('community_banners')
         .insert([{
-          title: 'Banner',
           image_url: publicUrl,
           created_by: user.id,
           is_active: true

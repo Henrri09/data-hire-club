@@ -39,7 +39,8 @@ export function ProfileOverview() {
       const { data: applications, error } = await supabase
         .from('job_applications')
         .select('status')
-        .eq('candidate_id', user.id);
+        .eq('candidate_id', user.id)
+        .is('deleted_at', null);
 
       if (error) throw error;
 
