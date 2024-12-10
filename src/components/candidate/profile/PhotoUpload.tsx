@@ -4,11 +4,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
 
 interface PhotoUploadProps {
-  photoPreview: string | null;
-  onPhotoUpdate: (url: string) => void;
+  currentPhotoUrl: string | null;
+  onPhotoChange: (url: string) => void;
+  onPreviewChange: (url: string | null) => void;
 }
 
-export function PhotoUpload({ photoPreview, onPhotoUpdate }: PhotoUploadProps) {
+export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }: PhotoUploadProps) {
   const { toast } = useToast();
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +23,7 @@ export function PhotoUpload({ photoPreview, onPhotoUpdate }: PhotoUploadProps) {
         const reader = new FileReader();
         reader.onloadend = () => {
           if (typeof reader.result === 'string') {
-            onPhotoUpdate(reader.result);
+            onPreviewChange(reader.result);
           }
         };
         reader.readAsDataURL(file);
@@ -49,7 +50,7 @@ export function PhotoUpload({ photoPreview, onPhotoUpdate }: PhotoUploadProps) {
 
         if (updateError) throw updateError;
 
-        onPhotoUpdate(publicUrl);
+        onPhotoChange(publicUrl);
 
         toast({
           title: "Foto atualizada",
@@ -71,9 +72,9 @@ export function PhotoUpload({ photoPreview, onPhotoUpdate }: PhotoUploadProps) {
       <Label className="text-lg font-semibold">Foto do Perfil</Label>
       <div className="flex items-center justify-center">
         <div className="relative w-32 h-32 group cursor-pointer">
-          {photoPreview ? (
+          {currentPhotoUrl ? (
             <img
-              src={photoPreview}
+              src={currentPhotoUrl}
               alt="Preview"
               className="w-full h-full object-cover rounded-full border-4 border-[#9b87f5]/20"
             />
