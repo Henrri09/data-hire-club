@@ -13,57 +13,53 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
   const { toast } = useToast();
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Usuário não autenticado");
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-        // Create preview
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (typeof reader.result === 'string') {
-            onPreviewChange(reader.result);
-          }
-        };
-        reader.readAsDataURL(file);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
-        // Upload to Supabase Storage
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}.${fileExt}`;
-        const { error: uploadError, data } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, file, { upsert: true });
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          onPreviewChange(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
 
-        if (uploadError) throw uploadError;
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-
-        // Update profile
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ logo_url: publicUrl })
-          .eq('id', user.id);
-
-        if (updateError) throw updateError;
-
-        onPhotoChange(publicUrl);
-
-        toast({
-          title: "Foto atualizada",
-          description: "Sua foto de perfil foi atualizada com sucesso.",
+      const { error: uploadError, data } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type
         });
-      } catch (error) {
-        console.error('Error uploading photo:', error);
-        toast({
-          title: "Erro ao atualizar foto",
-          description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
-          variant: "destructive",
-        });
-      }
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      onPhotoChange(publicUrl);
+      
+      toast({
+        title: "Foto atualizada",
+        description: "Sua foto de perfil foi atualizada com sucesso.",
+      });
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Erro ao atualizar foto",
+        description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
+        variant: "destructive",
+      });
     }
   };
 

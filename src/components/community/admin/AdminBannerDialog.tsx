@@ -40,11 +40,18 @@ export function AdminBannerDialog({ open, onOpenChange }: AdminBannerDialogProps
   useEffect(() => {
     if (open) {
       fetchBanners()
+    } else {
+      setIsAddingBanner(false)
     }
   }, [open])
 
+  const handleClose = () => {
+    setIsAddingBanner(false)
+    onOpenChange(false)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Gerenciar Banners</DialogTitle>

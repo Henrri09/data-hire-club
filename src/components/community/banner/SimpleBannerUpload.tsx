@@ -1,63 +1,66 @@
-import { useState } from "react"
-import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Upload } from "lucide-react"
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Upload } from "lucide-react";
 
 interface SimpleBannerUploadProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
 export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBannerUploadProps) {
-  const { toast } = useToast()
-  const [isUploading, setIsUploading] = useState(false)
+  const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
-    if (!allowedTypes.includes(file.type)) {
-      toast({
-        title: "Formato não suportado",
-        description: "Por favor, use apenas imagens nos formatos JPG, PNG ou WebP",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Validate file size (max 2MB)
-    const maxSize = 2 * 1024 * 1024 // 2MB
-    if (file.size > maxSize) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O tamanho máximo permitido é 2MB",
-        variant: "destructive",
-      })
-      return
-    }
-
     try {
-      setIsUploading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Usuário não autenticado")
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Formato não suportado",
+          description: "Por favor, use apenas imagens nos formatos JPG, PNG ou WebP",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (max 2MB)
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        toast({
+          title: "Arquivo muito grande",
+          description: "O tamanho máximo permitido é 2MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setIsUploading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
       // Upload to Storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${crypto.randomUUID()}.${fileExt}`
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
         .from('banners')
-        .upload(fileName, file)
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: true
+        });
 
-      if (uploadError) throw uploadError
+      if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('banners')
-        .getPublicUrl(fileName)
+        .getPublicUrl(fileName);
 
       // Create banner record with minimal required info
       const { error: insertError } = await supabase
@@ -67,28 +70,28 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
           image_url: publicUrl,
           created_by: user.id,
           is_active: true
-        }])
+        }]);
 
-      if (insertError) throw insertError
+      if (insertError) throw insertError;
 
       toast({
         title: "Banner adicionado",
         description: "O banner foi enviado com sucesso",
-      })
+      });
 
-      onOpenChange(false)
-      onSuccess?.()
+      onOpenChange(false);
+      onSuccess?.();
     } catch (error) {
-      console.error('Error uploading banner:', error)
+      console.error('Error uploading banner:', error);
       toast({
         title: "Erro ao enviar banner",
         description: "Ocorreu um erro ao tentar enviar o banner",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -118,5 +121,5 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
