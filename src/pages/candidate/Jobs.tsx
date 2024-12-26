@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Menu, LogOut } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { JobsList } from "@/components/jobs/JobsList";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,7 +62,7 @@ export default function CandidateJobs() {
 
       <div className="flex flex-1 relative">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8 ml-64">
+        <main className="flex-1 p-4 md:p-8 ml-64 mb-96">
           <div className="max-w-5xl mx-auto">
             {!isCommunityRoute ? (
               <>
@@ -104,7 +102,7 @@ export default function CandidateJobs() {
         </main>
       </div>
 
-      <footer className="bg-black text-white py-8 relative">
+      <footer className="fixed bottom-0 w-full bg-black text-white py-12">
         <div className="container mx-auto px-4 ml-64">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
