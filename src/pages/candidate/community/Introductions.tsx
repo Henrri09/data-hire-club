@@ -24,6 +24,11 @@ interface Post {
   is_liked?: boolean
 }
 
+interface PinnedRuleType {
+  id: string
+  content: string
+}
+
 export default function Introductions() {
   const isMobile = useIsMobile()
   const [posts, setPosts] = useState<Post[]>([])
@@ -33,20 +38,22 @@ export default function Introductions() {
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [currentRule, setCurrentRule] = useState("")
+  const [currentRule, setCurrentRule] = useState<PinnedRuleType | null>(null)
   const postsPerPage = 10
 
   const fetchCurrentRule = async () => {
     const { data } = await supabase
       .from('community_pinned_rules')
-      .select('content')
+      .select('id, content')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle()
 
     if (data) {
-      setCurrentRule(data.content)
+      setCurrentRule(data)
+    } else {
+      setCurrentRule(null)
     }
   }
 
@@ -147,7 +154,7 @@ export default function Introductions() {
             
             {isAdmin && (
               <AdminControls 
-                currentRule={currentRule} 
+                currentRule={currentRule?.content || ""} 
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
@@ -159,7 +166,12 @@ export default function Introductions() {
             />
 
             <CommunityBanner />
-            <PinnedRule content={currentRule} />
+            <PinnedRule 
+              content={currentRule?.content || ""} 
+              ruleId={currentRule?.id}
+              isAdmin={isAdmin}
+              onUpdate={fetchCurrentRule}
+            />
             <CreatePost onPostCreated={() => fetchPosts(true)} />
             
             <div className="space-y-4">
