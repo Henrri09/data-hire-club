@@ -25,12 +25,24 @@ export function PostHeader({ author, created_at }: PostHeaderProps) {
     }
   }
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+  }
+
   return (
     <div className="flex flex-row items-center gap-4">
       <Avatar className="h-10 w-10 border">
-        <AvatarImage src={author.avatar} />
-        <AvatarFallback className="bg-primary/10 text-primary">
-          {author.name[0].toUpperCase()}
+        <AvatarImage 
+          src={author.avatar} 
+          className="object-cover"
+          alt={`Foto de perfil de ${author.name}`}
+        />
+        <AvatarFallback className="bg-primary/10">
+          {getInitials(author.name)}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col">
