@@ -36,6 +36,20 @@ export default function Introductions() {
   const [currentRule, setCurrentRule] = useState("")
   const postsPerPage = 10
 
+  const fetchCurrentRule = async () => {
+    const { data } = await supabase
+      .from('community_pinned_rules')
+      .select('content')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (data) {
+      setCurrentRule(data.content)
+    }
+  }
+
   useEffect(() => {
     const checkAdminStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -47,20 +61,6 @@ export default function Introductions() {
           .single()
         
         setIsAdmin(profile?.is_admin || false)
-      }
-    }
-
-    const fetchCurrentRule = async () => {
-      const { data } = await supabase
-        .from('community_pinned_rules')
-        .select('content')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
-
-      if (data) {
-        setCurrentRule(data.content)
       }
     }
 
@@ -132,6 +132,10 @@ export default function Introductions() {
     }
   }
 
+  useEffect(() => {
+    fetchPosts(true)
+  }, [searchQuery])
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <CandidateHeader />
@@ -144,7 +148,7 @@ export default function Introductions() {
             {isAdmin && (
               <AdminControls 
                 currentRule={currentRule} 
-                onRuleUpdate={() => fetchCurrentRule()}
+                onRuleUpdate={fetchCurrentRule}
               />
             )}
             
