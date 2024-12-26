@@ -54,7 +54,6 @@ export function ProfileTab() {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      // Validar tipo do arquivo
       if (!file.type.startsWith('image/')) {
         toast({
           variant: "destructive",
@@ -69,7 +68,6 @@ export function ProfileTab() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
-      // Upload para o bucket 'logos'
       const { error: uploadError } = await supabase.storage
         .from('logos')
         .upload(fileName, file, {
@@ -79,12 +77,10 @@ export function ProfileTab() {
 
       if (uploadError) throw uploadError;
 
-      // Obter URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('logos')
         .getPublicUrl(fileName);
 
-      // Atualizar perfil com nova URL do logo
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
@@ -113,7 +109,7 @@ export function ProfileTab() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -123,9 +119,9 @@ export function ProfileTab() {
 
       const formData = new FormData(e.target as HTMLFormElement);
       const updates = {
-        company_name: formData.get('companyName'),
-        industry: formData.get('industry'),
-        location: formData.get('location'),
+        company_name: formData.get('companyName')?.toString() || '',
+        industry: formData.get('industry')?.toString() || null,
+        location: formData.get('location')?.toString() || null,
       };
 
       const { error } = await supabase
