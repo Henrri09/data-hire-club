@@ -6,6 +6,7 @@ import { useToast } from "../ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarMenuItem } from "./sidebar/SidebarMenuItem";
 import { SidebarSubmenu } from "./sidebar/SidebarSubmenu";
+import { AddLinkDialog } from "./sidebar/AddLinkDialog";
 
 interface Profile {
   description: string;
@@ -30,6 +31,7 @@ interface SubMenuItem {
 export function CandidateSidebar() {
   const location = useLocation();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isAddLinkOpen, setIsAddLinkOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [internalLinks, setInternalLinks] = useState<SubMenuItem[]>([]);
   const { toast } = useToast();
@@ -63,11 +65,8 @@ export function CandidateSidebar() {
     }
   };
 
-  const handleAddLink = async () => {
-    toast({
-      title: "Adicionar link",
-      description: "Funcionalidade em desenvolvimento",
-    });
+  const handleAddLink = () => {
+    setIsAddLinkOpen(true);
   };
 
   const handleEditLink = async (item: SubMenuItem) => {
@@ -174,6 +173,12 @@ export function CandidateSidebar() {
         open={isEditProfileOpen} 
         onOpenChange={setIsEditProfileOpen}
         onProfileUpdate={handleProfileUpdate}
+      />
+
+      <AddLinkDialog
+        open={isAddLinkOpen}
+        onOpenChange={setIsAddLinkOpen}
+        onSuccess={fetchInternalLinks}
       />
     </aside>
   );
