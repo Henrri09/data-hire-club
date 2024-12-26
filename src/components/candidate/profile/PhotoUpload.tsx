@@ -1,6 +1,6 @@
 import { Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 
 interface PhotoUploadProps {
@@ -34,14 +34,9 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
         return;
       }
 
-      // Criar preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          onPreviewChange(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Criar preview imediato
+      const objectUrl = URL.createObjectURL(file);
+      onPreviewChange(objectUrl);
 
       // Gerar nome único para o arquivo
       const fileExt = file.name.split('.').pop();
@@ -62,7 +57,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
         throw uploadError;
       }
 
-      console.log('Upload concluído, obtendo URL pública');
+      console.log('Upload concluído, dados:', data);
 
       // Obter a URL pública do arquivo
       const { data: { publicUrl } } = supabase.storage
@@ -73,14 +68,17 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       // Atualizar o estado com a URL pública
       onPhotoChange(publicUrl);
-      onPreviewChange(publicUrl);
       
       toast({
         title: "Foto atualizada",
         description: "Sua foto de perfil foi atualizada com sucesso.",
       });
+
+      // Limpar o objeto URL criado para o preview
+      URL.revokeObjectURL(objectUrl);
     } catch (error) {
       console.error('Erro detalhado:', error);
+      onPreviewChange(currentPhotoUrl); // Reverter preview em caso de erro
       toast({
         title: "Erro ao atualizar foto",
         description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
