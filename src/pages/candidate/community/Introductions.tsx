@@ -5,11 +5,11 @@ import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { AdminBannerDialog } from "@/components/community/admin/AdminBannerDialog"
-import { AdminRulesDialog } from "@/components/community/admin/AdminRulesDialog"
 import { IntroductionsHeader } from "@/components/community/introductions/IntroductionsHeader"
 import { SearchBar } from "@/components/community/introductions/SearchBar"
 import { PostsList } from "@/components/community/introductions/PostsList"
+import { AdminControls } from "@/components/community/introductions/AdminControls"
+import { PinnedRule } from "@/components/community/PinnedRule"
 
 interface Post {
   id: string
@@ -33,8 +33,7 @@ export default function Introductions() {
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [showBannerDialog, setShowBannerDialog] = useState(false)
-  const [showRulesDialog, setShowRulesDialog] = useState(false)
+  const [currentRule, setCurrentRule] = useState("")
   const postsPerPage = 10
 
   useEffect(() => {
@@ -51,7 +50,22 @@ export default function Introductions() {
       }
     }
 
+    const fetchCurrentRule = async () => {
+      const { data } = await supabase
+        .from('community_pinned_rules')
+        .select('content')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (data) {
+        setCurrentRule(data.content)
+      }
+    }
+
     checkAdminStatus()
+    fetchCurrentRule()
   }, [])
 
   const fetchPosts = async (isNewSearch = false) => {
@@ -118,10 +132,6 @@ export default function Introductions() {
     }
   }
 
-  useEffect(() => {
-    fetchPosts()
-  }, [page])
-
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <CandidateHeader />
@@ -129,11 +139,14 @@ export default function Introductions() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <IntroductionsHeader
-              isAdmin={isAdmin}
-              onOpenBannerDialog={() => setShowBannerDialog(true)}
-              onOpenRulesDialog={() => setShowRulesDialog(true)}
-            />
+            <IntroductionsHeader isAdmin={isAdmin} />
+            
+            {isAdmin && (
+              <AdminControls 
+                currentRule={currentRule} 
+                onRuleUpdate={() => fetchCurrentRule()}
+              />
+            )}
             
             <SearchBar
               value={searchQuery}
@@ -142,6 +155,7 @@ export default function Introductions() {
             />
 
             <CommunityBanner />
+            <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={() => fetchPosts(true)} />
             
             <div className="space-y-4">
@@ -158,16 +172,6 @@ export default function Introductions() {
           </div>
         </main>
       </div>
-
-      <AdminBannerDialog 
-        open={showBannerDialog} 
-        onOpenChange={setShowBannerDialog} 
-      />
-      
-      <AdminRulesDialog
-        open={showRulesDialog}
-        onOpenChange={setShowRulesDialog}
-      />
     </div>
   )
 }
