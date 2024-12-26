@@ -22,20 +22,24 @@ export function CandidateHeader() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, logo_url, is_admin')
-          .eq('id', user.id)
-          .single();
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('full_name, logo_url, is_admin')
+            .eq('id', user.id)
+            .single();
 
-        if (error) {
-          console.error('Error loading profile:', error);
-          return;
+          if (error) {
+            console.error('Error loading profile:', error);
+            return;
+          }
+
+          setProfile(data);
         }
-
-        setProfile(data);
+      } catch (error) {
+        console.error('Error loading profile:', error);
       }
     };
 
@@ -85,7 +89,10 @@ export function CandidateHeader() {
         </Link>
         <div className="flex flex-1 items-center justify-end gap-4">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profile?.logo_url || undefined} />
+            <AvatarImage 
+              src={profile?.logo_url || undefined} 
+              className="object-cover"
+            />
             <AvatarFallback className="bg-white/20 text-white">
               {profile?.full_name ? getInitials(profile.full_name) : "?"}
             </AvatarFallback>
