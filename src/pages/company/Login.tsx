@@ -26,7 +26,14 @@ export default function CompanyLogin() {
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        // Verificar se o erro é de email não confirmado
+        if (authError.message.includes('Email not confirmed')) {
+          toast.error("Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.");
+          return;
+        }
+        throw authError;
+      }
 
       // Verificar se o usuário é uma empresa
       const { data: profileData, error: profileError } = await supabase
