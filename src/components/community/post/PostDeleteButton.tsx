@@ -3,6 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PostDeleteButtonProps {
   postId: string;
@@ -33,6 +44,11 @@ export function PostDeleteButton({
       console.log('Current user:', user.id);
       console.log('Post author:', authorId);
       console.log('Is admin:', isAdmin);
+
+      // Verificar se o usuário é o autor do post ou é admin
+      if (user.id !== authorId && !isAdmin) {
+        throw new Error('Unauthorized to delete this post');
+      }
 
       const { error } = await supabase
         .from('community_posts')
@@ -65,13 +81,30 @@ export function PostDeleteButton({
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={handleDelete}
-      disabled={isDeleting}
-    >
-      <Trash2 className="h-4 w-4 text-red-500" />
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={isDeleting}
+        >
+          <Trash2 className="h-4 w-4 text-red-500" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+          <AlertDialogDescription>
+            Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete}>
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
