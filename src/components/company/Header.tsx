@@ -54,10 +54,13 @@ export function CompanyHeader() {
         </Link>
         <div className="flex flex-1 items-center justify-end gap-4">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profile?.logo_url || undefined} />
-            <AvatarFallback className="bg-white/20 text-white">
-              {profile?.company_name ? getInitials(profile.company_name) : ''}
-            </AvatarFallback>
+            {profile?.logo_url ? (
+              <AvatarImage src={profile.logo_url} alt="Logo da empresa" />
+            ) : (
+              <AvatarFallback className="bg-white/20 text-white">
+                {profile?.company_name ? getInitials(profile.company_name) : ''}
+              </AvatarFallback>
+            )}
           </Avatar>
           <Button 
             variant="ghost" 
