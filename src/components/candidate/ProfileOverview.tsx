@@ -4,8 +4,6 @@ import { EditProfileDialog } from "./EditProfileDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { ProfileHeader } from "./profile/ProfileHeader";
-import { ApplicationsChart } from "./profile/ApplicationsChart";
-import { useQuery } from "@tanstack/react-query";
 
 interface Profile {
   description: string;
@@ -35,36 +33,6 @@ export function ProfileOverview() {
     portfolio_url: null
   });
   const { toast } = useToast();
-
-  const { data: applicationData = [
-    { name: 'Pendentes', value: 0 },
-    { name: 'Rejeitadas', value: 0 },
-    { name: 'Aceitas', value: 0 },
-  ], refetch: refetchApplications } = useQuery({
-    queryKey: ['applications'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
-
-      const { data: applications, error } = await supabase
-        .from('job_applications')
-        .select('status')
-        .eq('candidate_id', user.id)
-        .is('deleted_at', null);
-
-      if (error) throw error;
-
-      const pending = applications?.filter(app => app.status === 'pending').length || 0;
-      const rejected = applications?.filter(app => app.status === 'rejected').length || 0;
-      const accepted = applications?.filter(app => app.status === 'accepted').length || 0;
-
-      return [
-        { name: 'Pendentes', value: pending },
-        { name: 'Rejeitadas', value: rejected },
-        { name: 'Aceitas', value: accepted },
-      ];
-    },
-  });
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -125,25 +93,6 @@ export function ProfileOverview() {
     };
 
     loadProfile();
-
-    const channel = supabase
-      .channel('job_applications_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'job_applications'
-        },
-        () => {
-          refetchApplications();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [toast]);
 
   const handleProfileUpdate = (updatedProfile: Profile) => {
@@ -151,7 +100,7 @@ export function ProfileOverview() {
   };
 
   return (
-    <div className="grid gap-8 md:grid-cols-2">
+    <div className="max-w-4xl mx-auto">
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-gray-900">Seu Perfil</CardTitle>
@@ -161,16 +110,6 @@ export function ProfileOverview() {
             profile={profile} 
             onEditClick={() => setIsDialogOpen(true)} 
           />
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-gray-900">Candidaturas</CardTitle>
-          <p className="text-sm text-gray-500">Status das suas candidaturas</p>
-        </CardHeader>
-        <CardContent>
-          <ApplicationsChart applicationData={applicationData} />
         </CardContent>
       </Card>
 
