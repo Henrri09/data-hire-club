@@ -39,14 +39,16 @@ export default function CompanyRegister() {
             company_name: companyName,
             full_name: responsibleName,
           },
+          emailRedirectTo: `${window.location.origin}/company/login`,
         },
       });
 
       if (error) throw error;
 
-      toast.success("Registro realizado com sucesso!");
+      toast.success("Registro realizado com sucesso! Por favor, verifique seu email para confirmar sua conta.");
       navigate('/company/login');
     } catch (error: any) {
+      console.error('Registration error:', error);
       toast.error(error.message || "Erro ao realizar registro");
     } finally {
       setIsLoading(false);
