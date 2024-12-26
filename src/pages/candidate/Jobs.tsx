@@ -6,25 +6,12 @@ import { JobsList } from "@/components/jobs/JobsList";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
   const location = useLocation();
-
-  // Simulando dados do usuário (substituir quando tivermos autenticação)
-  const user = {
-    name: "João Silva",
-    photoUrl: null
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase();
-  };
 
   const SidebarContent = () => (
     <div className="h-full py-4">
@@ -42,20 +29,24 @@ export default function CandidateJobs() {
             <>
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="mr-4">
-                    <Menu className="h-6 w-6" />
-                  </button>
+                  <Button variant="ghost" size="icon" className="mr-2 text-white hover:text-white/80">
+                    <Menu className="h-5 w-5" />
+                  </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-64 p-0">
                   <SidebarContent />
                 </SheetContent>
               </Sheet>
-              <span className="font-bold">Data Hire Club</span>
+              <Link to="/" className="font-bold text-white hover:text-white/90">
+                Data Hire Club
+              </Link>
             </>
           ) : (
-            <Link to="/" className="mr-6 flex items-center space-x-2">
-              <span className="font-bold">Data Hire Club</span>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/" className="font-bold text-white hover:text-white/90">
+                Data Hire Club
+              </Link>
+            </div>
           )}
         </div>
       </div>
