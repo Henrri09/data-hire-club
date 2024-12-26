@@ -64,13 +64,20 @@ export function EditProfileDialog({
         return;
       }
 
+      console.log('Carregando perfil do usuário:', user.id);
+
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('bio, skills, logo_url, full_name, headline, location, experience_level, linkedin_url, github_url, portfolio_url')
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao carregar perfil:', error);
+        throw error;
+      }
+
+      console.log('Perfil carregado:', profile);
 
       if (profile) {
         setDescription(profile.bio || "");
@@ -107,6 +114,8 @@ export function EditProfileDialog({
         return;
       }
 
+      console.log('Salvando perfil com foto:', photoUrl);
+
       const updates = {
         id: user.id,
         bio: description,
@@ -127,7 +136,12 @@ export function EditProfileDialog({
         .update(updates)
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao salvar perfil:', error);
+        throw error;
+      }
+
+      console.log('Perfil atualizado com sucesso');
 
       onProfileUpdate({
         description,

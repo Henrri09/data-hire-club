@@ -15,7 +15,14 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
-      if (!file) return;
+      if (!file) {
+        toast({
+          title: "Erro no upload",
+          description: "Nenhum arquivo selecionado.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Validar o tipo do arquivo
       if (!file.type.startsWith('image/')) {
@@ -36,24 +43,33 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
       };
       reader.readAsDataURL(file);
 
-      // Upload para o Supabase Storage
+      // Gerar nome único para o arquivo
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).slice(2)}_${Date.now()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      console.log('Iniciando upload do arquivo:', fileName);
 
       // Upload do arquivo
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Erro no upload:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Upload concluído, obtendo URL pública');
 
       // Obter a URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
+
+      console.log('URL pública obtida:', publicUrl);
 
       onPhotoChange(publicUrl);
       
@@ -62,7 +78,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
         description: "Sua foto de perfil foi atualizada com sucesso.",
       });
     } catch (error) {
-      console.error('Erro ao fazer upload da foto:', error);
+      console.error('Erro detalhado:', error);
       toast({
         title: "Erro ao atualizar foto",
         description: "Ocorreu um erro ao tentar atualizar sua foto de perfil.",
