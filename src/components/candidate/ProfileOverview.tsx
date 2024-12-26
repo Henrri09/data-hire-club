@@ -13,6 +13,11 @@ interface Profile {
   photoUrl: string | null;
   full_name: string | null;
   headline: string | null;
+  location: string | null;
+  experience_level: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
+  portfolio_url: string | null;
 }
 
 export function ProfileOverview() {
@@ -23,6 +28,11 @@ export function ProfileOverview() {
     photoUrl: null,
     full_name: null,
     headline: null,
+    location: null,
+    experience_level: null,
+    linkedin_url: null,
+    github_url: null,
+    portfolio_url: null
   });
   const { toast } = useToast();
 
@@ -71,7 +81,18 @@ export function ProfileOverview() {
 
         const { data: profileData, error } = await supabase
           .from('profiles')
-          .select('full_name, bio, skills, logo_url, headline')
+          .select(`
+            full_name,
+            bio,
+            skills,
+            logo_url,
+            headline,
+            location,
+            experience_level,
+            linkedin_url,
+            github_url,
+            portfolio_url
+          `)
           .eq('id', user.id)
           .single();
 
@@ -86,6 +107,11 @@ export function ProfileOverview() {
             photoUrl: profileData.logo_url,
             full_name: profileData.full_name,
             headline: profileData.headline,
+            location: profileData.location,
+            experience_level: profileData.experience_level,
+            linkedin_url: profileData.linkedin_url,
+            github_url: profileData.github_url,
+            portfolio_url: profileData.portfolio_url
           });
         }
       } catch (error) {
@@ -100,7 +126,6 @@ export function ProfileOverview() {
 
     loadProfile();
 
-    // Inscrever-se para atualizações em tempo real
     const channel = supabase
       .channel('job_applications_changes')
       .on(
@@ -119,7 +144,7 @@ export function ProfileOverview() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [toast, refetchApplications]);
+  }, [toast]);
 
   const handleProfileUpdate = (updatedProfile: Profile) => {
     setProfile(updatedProfile);
