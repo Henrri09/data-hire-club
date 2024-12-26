@@ -1,28 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { SidebarMenuItem } from "./sidebar/SidebarMenuItem";
+import { SidebarSubmenu } from "./sidebar/SidebarSubmenu";
 
 interface Profile {
   description: string;
   skills: string[];
   photoUrl: string | null;
+  is_admin?: boolean;
+}
+
+interface SubMenuItem {
+  id: string;
+  title: string;
+  url: string;
 }
 
 export function CandidateSidebar() {
   const location = useLocation();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [internalLinks, setInternalLinks] = useState<SubMenuItem[]>([]);
   const { toast } = useToast();
 
-  const handleProfileUpdate = (profile: Profile) => {
-    console.log("Perfil atualizado:", profile);
-    
+  useEffect(() => {
+    checkAdminStatus();
+    fetchInternalLinks();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+      
+      setIsAdmin(profile?.is_admin || false);
+    }
+  };
+
+  const fetchInternalLinks = async () => {
+    const { data, error } = await supabase
+      .from('community_external_links')
+      .select('*')
+      .order('order_index');
+
+    if (data) {
+      setInternalLinks(data);
+    }
+  };
+
+  const handleAddLink = async () => {
+    // Implementar lógica de adicionar link
     toast({
-      title: "Perfil atualizado com sucesso",
-      description: "Suas informações foram salvas.",
+      title: "Adicionar link",
+      description: "Funcionalidade em desenvolvimento",
+    });
+  };
+
+  const handleEditLink = async (item: SubMenuItem) => {
+    // Implementar lógica de editar link
+    toast({
+      title: "Editar link",
+      description: "Funcionalidade em desenvolvimento",
+    });
+  };
+
+  const handleDeleteLink = async (id: string) => {
+    // Implementar lógica de deletar link
+    toast({
+      title: "Deletar link",
+      description: "Funcionalidade em desenvolvimento",
     });
   };
 
@@ -54,11 +108,6 @@ export function CandidateSidebar() {
       icon: MessageSquare,
       label: "Tire suas dúvidas",
       path: "/candidate/jobs/community/questions"
-    },
-    {
-      icon: Link2,
-      label: "Links externos",
-      path: "/candidate/jobs/community/links"
     }
   ];
 
@@ -70,17 +119,11 @@ export function CandidateSidebar() {
             Menu Principal
           </h2>
           {menuItems.map((item) => (
-            <Link
+            <SidebarMenuItem
               key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs",
-                location.pathname === item.path && "text-[#9b87f5] font-medium bg-gray-100"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </Link>
+              {...item}
+              isActive={location.pathname === item.path}
+            />
           ))}
         </div>
 
@@ -89,26 +132,26 @@ export function CandidateSidebar() {
             Comunidade
           </h2>
           {communityItems.map((item) => (
-            <Link
+            <SidebarMenuItem
               key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs",
-                location.pathname === item.path && "text-[#9b87f5] font-medium bg-gray-100"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </Link>
+              {...item}
+              isActive={location.pathname === item.path}
+            />
           ))}
+          
+          <SidebarSubmenu
+            isAdmin={isAdmin}
+            items={internalLinks}
+            onAddItem={handleAddLink}
+            onEditItem={handleEditLink}
+            onDeleteItem={handleDeleteLink}
+          />
         </div>
 
         <div className="space-y-2">
           <button
             onClick={() => setIsEditProfileOpen(true)}
-            className={cn(
-              "w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#9b87f5] hover:bg-gray-100 transition-colors text-xs"
-            )}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors text-xs"
           >
             <UserCog className="h-4 w-4" />
             <span>Editar Perfil</span>
