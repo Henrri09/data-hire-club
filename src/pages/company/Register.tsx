@@ -2,10 +2,57 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function CompanyRegister() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+    const companyName = formData.get('companyName') as string;
+    const responsibleName = formData.get('responsibleName') as string;
+
+    if (password !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            user_type: 'company',
+            company_name: companyName,
+            full_name: responsibleName,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success("Registro realizado com sucesso!");
+      navigate('/company/login');
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao realizar registro");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
@@ -37,11 +84,12 @@ export default function CompanyRegister() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="companyName">Nome da Empresa</Label>
                 <Input 
                   id="companyName" 
+                  name="companyName"
                   placeholder="Nome da empresa" 
                   className="bg-white"
                   required 
@@ -51,6 +99,7 @@ export default function CompanyRegister() {
                 <Label htmlFor="responsibleName">Nome do Responsável</Label>
                 <Input 
                   id="responsibleName" 
+                  name="responsibleName"
                   placeholder="Nome completo" 
                   className="bg-white"
                   required 
@@ -60,6 +109,7 @@ export default function CompanyRegister() {
                 <Label htmlFor="email">E-mail</Label>
                 <Input 
                   id="email" 
+                  name="email"
                   type="email" 
                   placeholder="empresa@email.com" 
                   className="bg-white"
@@ -70,6 +120,7 @@ export default function CompanyRegister() {
                 <Label htmlFor="password">Senha</Label>
                 <Input 
                   id="password" 
+                  name="password"
                   type="password" 
                   placeholder="••••••••" 
                   className="bg-white"
@@ -80,14 +131,19 @@ export default function CompanyRegister() {
                 <Label htmlFor="confirmPassword">Confirme a Senha</Label>
                 <Input 
                   id="confirmPassword" 
+                  name="confirmPassword"
                   type="password" 
                   placeholder="••••••••" 
                   className="bg-white"
                   required 
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]">
-                Cadastrar Empresa
+              <Button 
+                type="submit" 
+                className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
+                disabled={isLoading}
+              >
+                {isLoading ? "Cadastrando..." : "Cadastrar Empresa"}
               </Button>
               <p className="text-center text-sm text-gray-600">
                 Já tem uma conta?{" "}
