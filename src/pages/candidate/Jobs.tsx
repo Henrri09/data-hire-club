@@ -62,7 +62,7 @@ export default function CandidateJobs() {
 
       <div className="flex flex-1 relative">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8 ml-64 mb-96">
+        <main className="flex-1 p-4 md:p-8 ml-64">
           <div className="max-w-5xl mx-auto">
             {!isCommunityRoute ? (
               <>
@@ -101,38 +101,6 @@ export default function CandidateJobs() {
           </div>
         </main>
       </div>
-
-      <footer className="fixed bottom-0 w-full bg-black text-white py-12">
-        <div className="container mx-auto px-4 ml-64">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-lg md:text-xl font-bold mb-4">Data Hire Club</h4>
-              <p className="text-gray-300">
-                Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg md:text-xl font-bold mb-4">Contato</h4>
-              <p className="text-gray-300">
-                Email: contato@datahireclub.com.br<br />
-                Tel: (11) 4002-8922<br />
-                São Paulo, SP
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg md:text-xl font-bold mb-4">Links Úteis</h4>
-              <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">Sobre Nós</Link></li>
-                <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">Termos de Uso</Link></li>
-                <li><Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">Política de Privacidade</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-300">
-            <p>&copy; 2024 Data Hire Club. Todos os direitos reservados.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
