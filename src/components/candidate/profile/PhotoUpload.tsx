@@ -40,20 +40,21 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).slice(2)}_${Date.now()}.${fileExt}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      // Upload do arquivo
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(`public/${fileName}`, file, {
+        .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL
+      // Obter a URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(`public/${fileName}`);
-      
+        .getPublicUrl(fileName);
+
       onPhotoChange(publicUrl);
       
       toast({
