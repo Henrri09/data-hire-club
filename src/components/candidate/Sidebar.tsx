@@ -12,6 +12,13 @@ interface Profile {
   skills: string[];
   photoUrl: string | null;
   is_admin?: boolean;
+  full_name?: string | null;
+  headline?: string | null;
+  location?: string | null;
+  experience_level?: string | null;
+  linkedin_url?: string | null;
+  github_url?: string | null;
+  portfolio_url?: string | null;
 }
 
 interface SubMenuItem {
@@ -57,7 +64,6 @@ export function CandidateSidebar() {
   };
 
   const handleAddLink = async () => {
-    // Implementar lógica de adicionar link
     toast({
       title: "Adicionar link",
       description: "Funcionalidade em desenvolvimento",
@@ -65,7 +71,6 @@ export function CandidateSidebar() {
   };
 
   const handleEditLink = async (item: SubMenuItem) => {
-    // Implementar lógica de editar link
     toast({
       title: "Editar link",
       description: "Funcionalidade em desenvolvimento",
@@ -73,10 +78,16 @@ export function CandidateSidebar() {
   };
 
   const handleDeleteLink = async (id: string) => {
-    // Implementar lógica de deletar link
     toast({
       title: "Deletar link",
       description: "Funcionalidade em desenvolvimento",
+    });
+  };
+
+  const handleProfileUpdate = (profile: Profile) => {
+    toast({
+      title: "Perfil atualizado",
+      description: "Suas informações foram atualizadas com sucesso",
     });
   };
 

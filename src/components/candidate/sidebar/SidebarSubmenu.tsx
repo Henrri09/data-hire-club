@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, Edit, Plus, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 interface SubMenuItem {
   id: string;
@@ -24,9 +17,14 @@ interface SidebarSubmenuProps {
   onDeleteItem: (id: string) => void;
 }
 
-export function SidebarSubmenu({ isAdmin, items, onAddItem, onEditItem, onDeleteItem }: SidebarSubmenuProps) {
+export function SidebarSubmenu({
+  isAdmin,
+  items,
+  onAddItem,
+  onEditItem,
+  onDeleteItem
+}: SidebarSubmenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
 
   return (
     <div className="relative">
@@ -46,6 +44,8 @@ export function SidebarSubmenu({ isAdmin, items, onAddItem, onEditItem, onDelete
             <div key={item.id} className="flex items-center group">
               <a
                 href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md px-3 py-2"
               >
                 {item.title}
