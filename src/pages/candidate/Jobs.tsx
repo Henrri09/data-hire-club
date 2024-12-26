@@ -1,17 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, LogOut, User } from "lucide-react";
 import { JobsList } from "@/components/jobs/JobsList";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
   const location = useLocation();
+  const [profile, setProfile] = useState<{ full_name: string | null } | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error loading profile:', error);
+          return;
+        }
+
+        setProfile(data);
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
 
   const SidebarContent = () => (
     <div className="h-full py-4">
@@ -23,7 +53,7 @@ export default function CandidateJobs() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <div className="sticky top-0 z-50 w-full border-b bg-[#8B5CF6] text-white">
+      <div className="sticky top-0 z-50 w-full border-b bg-black text-white">
         <div className="container flex h-14 items-center justify-between">
           {isMobile ? (
             <>
@@ -48,12 +78,28 @@ export default function CandidateJobs() {
               </Link>
             </div>
           )}
+          <div className="flex items-center gap-4">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src="/placeholder.svg" alt="Profile" />
+              <AvatarFallback>
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleLogout}
+              className="text-white hover:text-white/80"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="flex flex-1 relative">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8 ml-64">
+        <main className="flex-1 p-4 md:p-8 ml-0 md:ml-64">
           <div className="max-w-5xl mx-auto">
             {!isCommunityRoute ? (
               <>
