@@ -12,7 +12,6 @@ export default function CompanyLogin() {
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
         <div className="max-w-xl">
           <h1 className="text-5xl font-bold mb-6">Data Hire Club para Empresas</h1>
-          <p className="text-2xl mb-8">Portal Empresarial</p>
           <p className="text-xl opacity-90">
             Encontre os melhores talentos em dados para sua empresa.
           </p>
