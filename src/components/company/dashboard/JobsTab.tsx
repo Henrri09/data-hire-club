@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit2, MoreVertical, Trash2 } from "lucide-react";
@@ -21,8 +21,8 @@ export function JobsTab() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Fetch jobs on component mount
-  useState(() => {
+  // Changed from useState to useEffect
+  useEffect(() => {
     fetchJobs();
   }, []);
 
