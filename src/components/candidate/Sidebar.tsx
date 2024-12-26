@@ -63,8 +63,8 @@ export function CandidateSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-gray-50 border-r min-h-[calc(100vh-3.5rem)] overflow-y-auto">
-      <nav className="sticky top-0 space-y-6 p-4">
+    <aside className="w-64 bg-gray-50 border-r fixed top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+      <nav className="space-y-6 p-4">
         <div className="space-y-2">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
             Menu Principal
