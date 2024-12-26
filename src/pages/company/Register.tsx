@@ -6,11 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CompanyRegister() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +25,11 @@ export default function CompanyRegister() {
     const responsibleName = formData.get('responsibleName') as string;
 
     if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
+      toast({
+        variant: "destructive",
+        title: "Erro na validação",
+        description: "As senhas não coincidem",
+      });
       setIsLoading(false);
       return;
     }
@@ -45,11 +50,19 @@ export default function CompanyRegister() {
 
       if (error) throw error;
 
-      toast.success("Registro realizado com sucesso! Por favor, verifique seu email para confirmar sua conta.");
+      toast({
+        title: "Cadastro realizado com sucesso!",
+        description: "Enviamos um email de confirmação para o seu endereço. Por favor, verifique sua caixa de entrada para ativar sua conta.",
+      });
+      
       navigate('/company/login');
     } catch (error: any) {
       console.error('Registration error:', error);
-      toast.error(error.message || "Erro ao realizar registro");
+      toast({
+        variant: "destructive",
+        title: "Erro no cadastro",
+        description: error.message || "Erro ao realizar registro",
+      });
     } finally {
       setIsLoading(false);
     }
