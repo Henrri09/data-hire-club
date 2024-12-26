@@ -38,25 +38,24 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       // Upload para o Supabase Storage
       const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${Math.random().toString(36).slice(2)}_${Date.now()}.${fileExt}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
-          upsert: true,
-          contentType: file.type
+        .upload(`public/${fileName}`, file, {
+          cacheControl: '3600',
+          upsert: false
         });
 
-      if (uploadError) {
-        console.error('Erro no upload:', uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Obter URL pública
+      // Get the public URL without any port number
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName);
+        .getPublicUrl(`public/${fileName}`);
 
+      console.log('Upload successful, public URL:', publicUrl);
+      
       onPhotoChange(publicUrl);
       
       toast({
