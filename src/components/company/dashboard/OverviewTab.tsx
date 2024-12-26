@@ -27,9 +27,9 @@ export function OverviewTab() {
       if (!user) return;
 
       // Fetch active jobs count
-      const { data: activeJobs } = await supabase
+      const { count: activeJobsCount } = await supabase
         .from('jobs')
-        .select('id', { count: 'exact' })
+        .select('*', { count: 'exact', head: true })
         .eq('company_id', user.id)
         .eq('status', 'active')
         .is('deleted_at', null);
@@ -63,7 +63,7 @@ export function OverviewTab() {
         sum + (job.views_count || 0), 0) || 0;
 
       setStats({
-        activeJobs: activeJobs?.count || 0,
+        activeJobs: activeJobsCount || 0,
         totalApplications,
         totalViews
       });
