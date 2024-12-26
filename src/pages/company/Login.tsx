@@ -21,21 +21,26 @@ export default function CompanyLogin() {
     const password = formData.get('password') as string;
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
 
       // Verificar se o usuário é uma empresa
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('user_type')
-        .eq('id', data.user.id)
-        .single();
+        .eq('id', authData.user.id)
+        .maybeSingle();
 
       if (profileError) throw profileError;
+
+      if (!profileData) {
+        await supabase.auth.signOut();
+        throw new Error('Perfil não encontrado. Por favor, registre-se primeiro.');
+      }
 
       if (profileData.user_type !== 'company') {
         await supabase.auth.signOut();
@@ -45,6 +50,7 @@ export default function CompanyLogin() {
       toast.success("Login realizado com sucesso!");
       navigate('/company/dashboard');
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error(error.message || "Erro ao realizar login");
     } finally {
       setIsLoading(false);
