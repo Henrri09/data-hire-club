@@ -88,7 +88,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
         variant: "destructive",
       });
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
     }
   };
 

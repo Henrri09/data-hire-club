@@ -8,7 +8,6 @@ import { SimpleBannerUpload } from "./banner/SimpleBannerUpload"
 
 interface Banner {
   id: string
-  title: string
   is_active: boolean
 }
 
@@ -63,7 +62,6 @@ export function AdminPanel() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Título</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Ações</TableHead>
             </TableRow>
@@ -71,7 +69,6 @@ export function AdminPanel() {
           <TableBody>
             {banners.map((banner) => (
               <TableRow key={banner.id}>
-                <TableCell>{banner.title}</TableCell>
                 <TableCell>{banner.is_active ? "Ativo" : "Inativo"}</TableCell>
                 <TableCell>
                   <Button
