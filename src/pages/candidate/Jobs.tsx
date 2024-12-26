@@ -10,11 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 
+interface Profile {
+  full_name: string | null;
+  logo_url: string | null;
+}
+
 export default function CandidateJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
   const location = useLocation();
-  const [profile, setProfile] = useState<{ full_name: string | null } | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -22,7 +27,7 @@ export default function CandidateJobs() {
       if (user) {
         const { data, error } = await supabase
           .from('profiles')
-          .select('full_name')
+          .select('full_name, logo_url')
           .eq('id', user.id)
           .single();
 
@@ -41,6 +46,15 @@ export default function CandidateJobs() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = '/';
+  };
+
+  const getInitials = (name: string | null) => {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .map(word => word[0])
+      .join("")
+      .toUpperCase();
   };
 
   const SidebarContent = () => (
@@ -80,9 +94,12 @@ export default function CandidateJobs() {
           )}
           <div className="flex items-center gap-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Profile" />
-              <AvatarFallback>
-                <User className="h-4 w-4" />
+              <AvatarImage 
+                src={profile?.logo_url || undefined} 
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-white/20 text-white">
+                {profile?.full_name ? getInitials(profile.full_name) : "?"}
               </AvatarFallback>
             </Avatar>
             <Button 
