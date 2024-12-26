@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Upload } from "lucide-react";
+import { LogoUpload } from "./LogoUpload";
 
 interface CompanyProfile {
   company_name: string;
@@ -17,7 +17,6 @@ interface CompanyProfile {
 export function ProfileTab() {
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -29,14 +28,14 @@ export function ProfileTab() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile, error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('company_name, logo_url, industry, location')
         .eq('id', user.id)
         .single();
 
       if (error) throw error;
-      setProfile(profile);
+      setProfile(data);
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
       toast({
@@ -49,63 +48,26 @@ export function ProfileTab() {
     }
   };
 
-  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoChange = async (logoUrl: string) => {
     try {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        toast({
-          variant: "destructive",
-          title: "Tipo de arquivo inválido",
-          description: "Por favor, selecione apenas imagens",
-        });
-        return;
-      }
-
-      setIsUploading(true);
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('logos')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('logos')
-        .getPublicUrl(fileName);
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('profiles')
-        .update({ logo_url: publicUrl })
+        .update({ logo_url: logoUrl })
         .eq('id', user.id);
 
-      if (updateError) throw updateError;
+      if (error) throw error;
 
-      setProfile(prev => prev ? { ...prev, logo_url: publicUrl } : null);
-      
-      toast({
-        title: "Logo atualizado",
-        description: "O logo da empresa foi atualizado com sucesso",
-      });
+      setProfile(prev => prev ? { ...prev, logo_url: logoUrl } : null);
     } catch (error) {
-      console.error('Erro ao fazer upload:', error);
+      console.error('Erro ao atualizar logo:', error);
       toast({
         variant: "destructive",
-        title: "Erro no upload",
-        description: "Não foi possível fazer upload do logo",
+        title: "Erro",
+        description: "Não foi possível atualizar o logo",
       });
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -171,36 +133,11 @@ export function ProfileTab() {
       <CardContent>
         <div className="mb-6">
           <Label>Logo da Empresa</Label>
-          <div className="mt-2 flex items-center space-x-4">
-            <div className="relative w-24 h-24 group cursor-pointer">
-              {profile?.logo_url ? (
-                <img
-                  src={profile.logo_url}
-                  alt="Logo da empresa"
-                  className="w-full h-full object-cover rounded-lg border-2 border-[#7779f5]/20"
-                />
-              ) : (
-                <div className="w-full h-full rounded-lg bg-[#E5DEFF] flex items-center justify-center border-2 border-[#7779f5]/20">
-                  <Upload className="w-6 h-6 text-[#7779f5]/60" />
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                disabled={isUploading}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-              <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Upload className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-gray-600">
-                Clique para fazer upload do logo da sua empresa.
-                Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB
-              </p>
-            </div>
+          <div className="mt-2">
+            <LogoUpload
+              currentLogoUrl={profile?.logo_url || null}
+              onLogoChange={handleLogoChange}
+            />
           </div>
         </div>
 
