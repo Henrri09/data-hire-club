@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
-import { PhotoUpload } from "./profile/PhotoUpload";
+import { PhotoUploadField } from "./profile/PhotoUploadField";
 import { SkillsInput } from "./profile/SkillsInput";
 import { ProfileBasicInfo } from "./profile/ProfileBasicInfo";
 import { ProfileLinks } from "./profile/ProfileLinks";
@@ -36,7 +36,6 @@ export function EditProfileDialog({
   const [description, setDescription] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [headline, setHeadline] = useState("");
   const [location, setLocation] = useState("");
@@ -90,7 +89,6 @@ export function EditProfileDialog({
         setPortfolioUrl(profile.portfolio_url || "");
         setSkills(Array.isArray(profile.skills) ? profile.skills.map(String) : []);
         setPhotoUrl(profile.logo_url);
-        setPhotoPreview(profile.logo_url);
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
@@ -179,10 +177,9 @@ export function EditProfileDialog({
           <DialogTitle>Editar Perfil</DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-          <PhotoUpload
-            currentPhotoUrl={photoPreview}
+          <PhotoUploadField
+            currentPhotoUrl={photoUrl}
             onPhotoChange={setPhotoUrl}
-            onPreviewChange={setPhotoPreview}
           />
           
           <ProfileBasicInfo
