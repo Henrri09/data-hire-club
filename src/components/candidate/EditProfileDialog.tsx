@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Label } from "../ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { PhotoUpload } from "./profile/PhotoUpload";
@@ -14,6 +16,11 @@ interface Profile {
   photoUrl: string | null;
   full_name: string | null;
   headline: string | null;
+  location: string | null;
+  experience_level: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
+  portfolio_url: string | null;
 }
 
 interface EditProfileDialogProps {
@@ -33,6 +40,11 @@ export function EditProfileDialog({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [headline, setHeadline] = useState("");
+  const [location, setLocation] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,7 +67,7 @@ export function EditProfileDialog({
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('bio, skills, logo_url, full_name, headline')
+        .select('bio, skills, logo_url, full_name, headline, location, experience_level, linkedin_url, github_url, portfolio_url')
         .eq('id', user.id)
         .single();
 
@@ -65,6 +77,11 @@ export function EditProfileDialog({
         setDescription(profile.bio || "");
         setFullName(profile.full_name || "");
         setHeadline(profile.headline || "");
+        setLocation(profile.location || "");
+        setExperienceLevel(profile.experience_level || "");
+        setLinkedinUrl(profile.linkedin_url || "");
+        setGithubUrl(profile.github_url || "");
+        setPortfolioUrl(profile.portfolio_url || "");
         setSkills(Array.isArray(profile.skills) ? profile.skills.map(String) : []);
         setPhotoUrl(profile.logo_url);
         setPhotoPreview(profile.logo_url);
@@ -98,6 +115,11 @@ export function EditProfileDialog({
         logo_url: photoUrl,
         full_name: fullName,
         headline: headline,
+        location: location,
+        experience_level: experienceLevel,
+        linkedin_url: linkedinUrl,
+        github_url: githubUrl,
+        portfolio_url: portfolioUrl,
         updated_at: new Date().toISOString(),
       };
 
@@ -114,6 +136,11 @@ export function EditProfileDialog({
         photoUrl,
         full_name: fullName,
         headline,
+        location,
+        experience_level: experienceLevel,
+        linkedin_url: linkedinUrl,
+        github_url: githubUrl,
+        portfolio_url: portfolioUrl,
       });
 
       toast({
@@ -144,8 +171,9 @@ export function EditProfileDialog({
             onPhotoChange={setPhotoUrl}
             onPreviewChange={setPhotoPreview}
           />
+          
           <div className="grid gap-2">
-            <label htmlFor="name">Nome Completo</label>
+            <Label htmlFor="name">Nome Completo</Label>
             <Input
               id="name"
               value={fullName}
@@ -153,8 +181,9 @@ export function EditProfileDialog({
               placeholder="Seu nome completo"
             />
           </div>
+
           <div className="grid gap-2">
-            <label htmlFor="headline">Título Profissional</label>
+            <Label htmlFor="headline">Título Profissional</Label>
             <Input
               id="headline"
               value={headline}
@@ -162,8 +191,34 @@ export function EditProfileDialog({
               placeholder="Ex: Analista de Dados Senior"
             />
           </div>
+
           <div className="grid gap-2">
-            <label htmlFor="description">Sobre Você</label>
+            <Label htmlFor="location">Localização</Label>
+            <Input
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Ex: São Paulo, SP"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="experience">Nível de Experiência</Label>
+            <Select value={experienceLevel} onValueChange={setExperienceLevel}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione seu nível de experiência" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="junior">Júnior (0-2 anos)</SelectItem>
+                <SelectItem value="pleno">Pleno (2-5 anos)</SelectItem>
+                <SelectItem value="senior">Sênior (5+ anos)</SelectItem>
+                <SelectItem value="specialist">Especialista/Tech Lead</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="description">Sobre Você</Label>
             <Textarea
               id="description"
               value={description}
@@ -172,11 +227,42 @@ export function EditProfileDialog({
               className="min-h-[100px]"
             />
           </div>
+
           <div className="grid gap-2">
-            <label>Habilidades</label>
+            <Label>Habilidades</Label>
             <SkillsInput
               skills={skills}
               onSkillsChange={setSkills}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="linkedin">LinkedIn URL</Label>
+            <Input
+              id="linkedin"
+              value={linkedinUrl}
+              onChange={(e) => setLinkedinUrl(e.target.value)}
+              placeholder="https://linkedin.com/in/seu-perfil"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="github">GitHub URL</Label>
+            <Input
+              id="github"
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+              placeholder="https://github.com/seu-usuario"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="portfolio">Portfolio/Website</Label>
+            <Input
+              id="portfolio"
+              value={portfolioUrl}
+              onChange={(e) => setPortfolioUrl(e.target.value)}
+              placeholder="https://seu-portfolio.com"
             />
           </div>
         </div>
