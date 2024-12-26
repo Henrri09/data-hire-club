@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { ImageIcon } from "lucide-react"
 
 interface PostHeaderProps {
   author: {
@@ -41,8 +42,8 @@ export function PostHeader({ author, created_at }: PostHeaderProps) {
           className="object-cover"
           alt={`Foto de perfil de ${author.name}`}
         />
-        <AvatarFallback className="bg-primary/10">
-          {getInitials(author.name)}
+        <AvatarFallback className="bg-[#9b87f5]/10">
+          <ImageIcon className="h-5 w-5 text-[#9b87f5]" />
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col">
