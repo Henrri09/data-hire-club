@@ -13,6 +13,7 @@ import Introductions from "./pages/candidate/community/Introductions";
 import Learning from "./pages/candidate/community/Learning";
 import Questions from "./pages/candidate/community/Questions";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { CompleteProfile } from "./components/auth/CompleteProfile";
 
 function App() {
   return (
@@ -23,7 +24,11 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        {/* Rotas protegidas para candidatos */}
+        <Route path="/complete-profile" element={
+          <ProtectedRoute>
+            <CompleteProfile />
+          </ProtectedRoute>
+        } />
         <Route path="/candidate/dashboard" element={
           <ProtectedRoute requiredUserType="candidate">
             <CandidateDashboard />
