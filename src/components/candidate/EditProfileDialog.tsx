@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Label } from "../ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { PhotoUpload } from "./profile/PhotoUpload";
 import { SkillsInput } from "./profile/SkillsInput";
+import { ProfileBasicInfo } from "./profile/ProfileBasicInfo";
+import { ProfileLinks } from "./profile/ProfileLinks";
+import { ProfileBio } from "./profile/ProfileBio";
 
 interface Profile {
   description: string;
@@ -165,106 +164,44 @@ export function EditProfileDialog({
         <DialogHeader>
           <DialogTitle>Editar Perfil</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 py-4">
           <PhotoUpload
             currentPhotoUrl={photoPreview}
             onPhotoChange={setPhotoUrl}
             onPreviewChange={setPhotoPreview}
           />
           
-          <div className="grid gap-2">
-            <Label htmlFor="name">Nome Completo</Label>
-            <Input
-              id="name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Seu nome completo"
-            />
-          </div>
+          <ProfileBasicInfo
+            fullName={fullName}
+            headline={headline}
+            location={location}
+            experienceLevel={experienceLevel}
+            onFullNameChange={setFullName}
+            onHeadlineChange={setHeadline}
+            onLocationChange={setLocation}
+            onExperienceLevelChange={setExperienceLevel}
+          />
+
+          <ProfileBio
+            description={description}
+            onDescriptionChange={setDescription}
+          />
 
           <div className="grid gap-2">
-            <Label htmlFor="headline">Título Profissional</Label>
-            <Input
-              id="headline"
-              value={headline}
-              onChange={(e) => setHeadline(e.target.value)}
-              placeholder="Ex: Analista de Dados Senior"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="location">Localização</Label>
-            <Input
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Ex: São Paulo, SP"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="experience">Nível de Experiência</Label>
-            <Select value={experienceLevel} onValueChange={setExperienceLevel}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione seu nível de experiência" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="junior">Júnior (0-2 anos)</SelectItem>
-                <SelectItem value="pleno">Pleno (2-5 anos)</SelectItem>
-                <SelectItem value="senior">Sênior (5+ anos)</SelectItem>
-                <SelectItem value="specialist">Especialista/Tech Lead</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="description">Sobre Você</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Conte um pouco sobre sua experiência..."
-              className="min-h-[100px]"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label>Habilidades</Label>
             <SkillsInput
               skills={skills}
               onSkillsChange={setSkills}
             />
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="linkedin">LinkedIn URL</Label>
-            <Input
-              id="linkedin"
-              value={linkedinUrl}
-              onChange={(e) => setLinkedinUrl(e.target.value)}
-              placeholder="https://linkedin.com/in/seu-perfil"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="github">GitHub URL</Label>
-            <Input
-              id="github"
-              value={githubUrl}
-              onChange={(e) => setGithubUrl(e.target.value)}
-              placeholder="https://github.com/seu-usuario"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="portfolio">Portfolio/Website</Label>
-            <Input
-              id="portfolio"
-              value={portfolioUrl}
-              onChange={(e) => setPortfolioUrl(e.target.value)}
-              placeholder="https://seu-portfolio.com"
-            />
-          </div>
+          <ProfileLinks
+            linkedinUrl={linkedinUrl}
+            githubUrl={githubUrl}
+            portfolioUrl={portfolioUrl}
+            onLinkedinUrlChange={setLinkedinUrl}
+            onGithubUrlChange={setGithubUrl}
+            onPortfolioUrlChange={setPortfolioUrl}
+          />
         </div>
         <div className="flex justify-end gap-4 mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>

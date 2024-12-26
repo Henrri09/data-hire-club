@@ -478,13 +478,17 @@ export type Database = {
           company_size: string | null
           created_at: string
           email: string
+          experience_level: string | null
           full_name: string | null
+          github_url: string | null
           headline: string | null
           id: string
           industry: string | null
           is_admin: boolean | null
+          linkedin_url: string | null
           location: string | null
           logo_url: string | null
+          portfolio_url: string | null
           resume_url: string | null
           skills: Json | null
           updated_at: string
@@ -497,13 +501,17 @@ export type Database = {
           company_size?: string | null
           created_at?: string
           email: string
+          experience_level?: string | null
           full_name?: string | null
+          github_url?: string | null
           headline?: string | null
           id: string
           industry?: string | null
           is_admin?: boolean | null
+          linkedin_url?: string | null
           location?: string | null
           logo_url?: string | null
+          portfolio_url?: string | null
           resume_url?: string | null
           skills?: Json | null
           updated_at?: string
@@ -516,13 +524,17 @@ export type Database = {
           company_size?: string | null
           created_at?: string
           email?: string
+          experience_level?: string | null
           full_name?: string | null
+          github_url?: string | null
           headline?: string | null
           id?: string
           industry?: string | null
           is_admin?: boolean | null
+          linkedin_url?: string | null
           location?: string | null
           logo_url?: string | null
+          portfolio_url?: string | null
           resume_url?: string | null
           skills?: Json | null
           updated_at?: string
