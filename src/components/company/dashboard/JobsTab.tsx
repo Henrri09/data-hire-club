@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit2, MoreVertical, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { JobPostingForm } from "./JobPostingForm";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { JobListItem } from "./job/JobListItem";
 
 interface Job {
   id: string;
@@ -17,11 +13,8 @@ interface Job {
 
 export function JobsTab() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Changed from useState to useEffect
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -87,9 +80,7 @@ export function JobsTab() {
     });
   };
 
-  const handleEditSubmit = async (formData: any) => {
-    if (!selectedJob) return;
-
+  const handleEdit = async (formData: any) => {
     const { error } = await supabase
       .from('jobs')
       .update({
@@ -101,7 +92,7 @@ export function JobsTab() {
         salary_range: `${formData.faixaSalarialMin} - ${formData.faixaSalarialMax}`,
         external_link: formData.linkExterno,
       })
-      .eq('id', selectedJob.id);
+      .eq('id', formData.id);
 
     if (error) {
       toast({
@@ -112,7 +103,6 @@ export function JobsTab() {
       return;
     }
 
-    setIsEditDialogOpen(false);
     fetchJobs();
     toast({
       title: "Vaga atualizada",
@@ -131,78 +121,13 @@ export function JobsTab() {
       <CardContent>
         <div className="space-y-4">
           {jobs.map((job) => (
-            <div key={job.id} className="border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">{job.title}</h3>
-                  <p className="text-sm text-gray-600">
-                    {job.applications_count} candidatura{job.applications_count !== 1 ? 's' : ''}
-                  </p>
-                  <span className={`text-sm ${
-                    job.status === 'active' ? 'text-green-600' : 'text-gray-600'
-                  }`}>
-                    {job.status === 'active' ? 'Ativa' : 'Inativa'}
-                  </span>
-                </div>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <Dialog open={isEditDialogOpen && selectedJob?.id === job.id} onOpenChange={(open) => {
-                      setIsEditDialogOpen(open);
-                      if (!open) setSelectedJob(null);
-                    }}>
-                      <DialogTrigger asChild>
-                        <DropdownMenuItem onSelect={(e) => {
-                          e.preventDefault();
-                          setSelectedJob(job);
-                          setIsEditDialogOpen(true);
-                        }}>
-                          <Edit2 className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Editar Vaga</DialogTitle>
-                        </DialogHeader>
-                        <JobPostingForm
-                          formData={{
-                            titulo: job.title,
-                            descricao: "",
-                            local: "",
-                            senioridade: "",
-                            tipoContratacao: "",
-                            faixaSalarialMin: "",
-                            faixaSalarialMax: "",
-                            linkExterno: "",
-                          }}
-                          handleInputChange={() => {}}
-                          handleSubmit={handleEditSubmit}
-                          onCancel={() => setIsEditDialogOpen(false)}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                    
-                    <DropdownMenuItem onSelect={() => handleStatusChange(job.id, job.status === 'active' ? 'inactive' : 'active')}>
-                      {job.status === 'active' ? 'Desativar' : 'Ativar'}
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem 
-                      className="text-red-600"
-                      onSelect={() => handleDelete(job.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Excluir
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
+            <JobListItem
+              key={job.id}
+              job={job}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
           ))}
         </div>
       </CardContent>
