@@ -7,6 +7,8 @@ import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { CommunityHeader } from "@/components/community/CommunityHeader"
+import { PinnedRule } from "@/components/community/PinnedRule"
+import { AdminControls } from "@/components/community/introductions/AdminControls"
 
 interface Post {
   id: string
@@ -25,10 +27,12 @@ export default function Learning() {
   const [posts, setPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [currentRule, setCurrentRule] = useState("")
 
   useEffect(() => {
     fetchPosts()
     checkAdminStatus()
+    fetchCurrentRule()
   }, [])
 
   const checkAdminStatus = async () => {
@@ -41,6 +45,23 @@ export default function Learning() {
         .single()
       
       setIsAdmin(profile?.is_admin || false)
+    }
+  }
+
+  const fetchCurrentRule = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_pinned_rules')
+        .select('content')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .maybeSingle()
+
+      if (error) throw error
+      
+      setCurrentRule(data?.content || "")
+    } catch (error) {
+      console.error('Error fetching current rule:', error)
     }
   }
 
@@ -82,6 +103,13 @@ export default function Learning() {
             />
 
             <CommunityBanner />
+            {isAdmin && (
+              <AdminControls
+                currentRule={currentRule}
+                onRuleUpdate={fetchCurrentRule}
+              />
+            )}
+            <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={fetchPosts} />
             
             <div className="space-y-4">

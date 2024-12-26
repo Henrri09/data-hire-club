@@ -4,29 +4,22 @@ import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { AdminBannerDialog } from "@/components/community/admin/AdminBannerDialog"
-import { AdminRulesDialog } from "@/components/community/admin/AdminRulesDialog"
+import { AdminControls } from "@/components/community/introductions/AdminControls"
 import { Button } from "@/components/ui/button"
 import { Settings2 } from "lucide-react"
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostsList } from "@/components/community/introductions/PostsList"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { PinnedRule } from "@/components/community/PinnedRule"
 
 export default function Questions() {
   const isMobile = useIsMobile()
   const [isAdmin, setIsAdmin] = useState(false)
-  const [showBannerDialog, setShowBannerDialog] = useState(false)
-  const [showRulesDialog, setShowRulesDialog] = useState(false)
   const [posts, setPosts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [currentRule, setCurrentRule] = useState("")
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -44,7 +37,25 @@ export default function Questions() {
 
     checkAdminStatus()
     loadPosts()
+    fetchCurrentRule()
   }, [])
+
+  const fetchCurrentRule = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_pinned_rules')
+        .select('content')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .maybeSingle()
+
+      if (error) throw error
+      
+      setCurrentRule(data?.content || "")
+    } catch (error) {
+      console.error('Error fetching current rule:', error)
+    }
+  }
 
   const loadPosts = async () => {
     try {
@@ -147,26 +158,16 @@ export default function Questions() {
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold">Tire suas Dúvidas</h1>
-              {isAdmin && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Settings2 className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setShowBannerDialog(true)}>
-                      Gerenciar Banner
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowRulesDialog(true)}>
-                      Gerenciar Regras
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
             </div>
 
             <CommunityBanner />
+            {isAdmin && (
+              <AdminControls
+                currentRule={currentRule}
+                onRuleUpdate={fetchCurrentRule}
+              />
+            )}
+            <PinnedRule content={currentRule} />
             
             <div className="mt-6">
               <CreatePost onPostCreated={loadPosts} />
@@ -183,16 +184,6 @@ export default function Questions() {
           </div>
         </main>
       </div>
-
-      <AdminBannerDialog 
-        open={showBannerDialog} 
-        onOpenChange={setShowBannerDialog} 
-      />
-      
-      <AdminRulesDialog
-        open={showRulesDialog}
-        onOpenChange={setShowRulesDialog}
-      />
     </div>
   )
 }
