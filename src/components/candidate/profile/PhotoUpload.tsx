@@ -49,8 +49,8 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       console.log('Iniciando upload do arquivo:', fileName);
 
-      // Upload do arquivo
-      const { error: uploadError } = await supabase.storage
+      // Upload do arquivo para o bucket 'avatars'
+      const { data, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -64,14 +64,16 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       console.log('Upload concluído, obtendo URL pública');
 
-      // Obter a URL pública
+      // Obter a URL pública do arquivo
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
       console.log('URL pública obtida:', publicUrl);
 
+      // Atualizar o estado com a URL pública
       onPhotoChange(publicUrl);
+      onPreviewChange(publicUrl);
       
       toast({
         title: "Foto atualizada",
