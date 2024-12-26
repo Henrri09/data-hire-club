@@ -62,9 +62,9 @@ export default function CandidateJobs() {
         </div>
       </div>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 ml-64">
           <div className="max-w-5xl mx-auto">
             {!isCommunityRoute ? (
               <>
@@ -104,8 +104,8 @@ export default function CandidateJobs() {
         </main>
       </div>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4">
+      <footer className="bg-black text-white py-8 relative">
+        <div className="container mx-auto px-4 ml-64">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h4 className="text-lg md:text-xl font-bold mb-4">Data Hire Club</h4>
