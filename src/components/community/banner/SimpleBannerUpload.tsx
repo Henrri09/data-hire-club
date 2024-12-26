@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
 
 interface SimpleBannerUploadProps {
@@ -42,8 +42,12 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
       }
 
       setIsUploading(true);
+
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
 
       // Upload to Storage
       const fileExt = file.name.split('.').pop();
@@ -62,7 +66,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
         .from('banners')
         .getPublicUrl(fileName);
 
-      // Create banner record with minimal required info
+      // Create banner record
       const { error: insertError } = await supabase
         .from('community_banners')
         .insert([{
@@ -80,6 +84,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
 
       onOpenChange(false);
       onSuccess?.();
+
     } catch (error) {
       console.error('Error uploading banner:', error);
       toast({
@@ -97,9 +102,12 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Adicionar Banner</DialogTitle>
+          <DialogDescription>
+            Faça upload de uma imagem para o banner da comunidade
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-[#9b87f5]/40 rounded-lg p-12 text-center">
+          <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-[#9b87f5]/40 rounded-lg p-12 text-center">
             <Upload className="h-10 w-10 text-[#9b87f5] mb-4" />
             <div className="space-y-2">
               <h3 className="font-semibold text-lg">Arraste sua imagem ou clique para selecionar</h3>
@@ -113,7 +121,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
               type="file"
               onChange={handleFileUpload}
               accept="image/jpeg,image/png,image/webp"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               disabled={isUploading}
             />
           </div>
