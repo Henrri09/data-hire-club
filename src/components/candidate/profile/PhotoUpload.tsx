@@ -49,12 +49,10 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL without any port number
+      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(`public/${fileName}`);
-
-      console.log('Upload successful, public URL:', publicUrl);
       
       onPhotoChange(publicUrl);
       
