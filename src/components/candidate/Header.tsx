@@ -73,25 +73,32 @@ export function CandidateHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-black text-white">
-      <div className="container flex h-14 items-center">
-        {isMobile && (
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2 text-white hover:text-white/80">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0">
-              <CandidateSidebar />
-            </SheetContent>
-          </Sheet>
-        )}
-        
-        <Link to="/" className="mr-6 flex items-center space-x-2">
-          <span className="font-bold">Data Hire Club</span>
-        </Link>
-        <div className="flex flex-1 items-center justify-end gap-4">
-          {userId && <LevelBadge userId={userId} showPoints />}
+      <div className="container flex h-14 items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          {isMobile && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0">
+                <CandidateSidebar />
+              </SheetContent>
+            </Sheet>
+          )}
+          
+          <Link to="/" className="flex items-center">
+            <span className="font-bold whitespace-nowrap">Data Hire Club</span>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {userId && (
+            <div className="hidden sm:block">
+              <LevelBadge userId={userId} showPoints />
+            </div>
+          )}
           <Avatar className="h-8 w-8">
             <AvatarImage 
               src={profile?.logo_url || undefined} 
