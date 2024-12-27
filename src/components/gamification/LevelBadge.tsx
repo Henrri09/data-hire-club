@@ -33,15 +33,48 @@ export function LevelBadge({ userId, showPoints = false }: LevelBadgeProps) {
   useEffect(() => {
     const loadUserLevel = async () => {
       try {
+        // First try to get existing points
         const { data: pointsData, error: pointsError } = await supabase
           .from('user_points')
           .select('total_points, current_level')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         if (pointsError) throw pointsError;
 
-        if (pointsData) {
+        // If no points exist, create initial record
+        if (!pointsData) {
+          const { data: newPointsData, error: createError } = await supabase
+            .from('user_points')
+            .insert([
+              { user_id: userId, total_points: 0, current_level: 1 }
+            ])
+            .select('total_points, current_level')
+            .single();
+
+          if (createError) throw createError;
+          
+          if (newPointsData) {
+            const { data: currentLevelData } = await supabase
+              .from('gamification_levels')
+              .select('name')
+              .eq('level', 1)
+              .single();
+
+            const { data: nextLevelData } = await supabase
+              .from('gamification_levels')
+              .select('name, points_required')
+              .eq('level', 2)
+              .single();
+
+            setUserLevel({
+              ...newPointsData,
+              current_level_info: currentLevelData,
+              next_level: nextLevelData
+            });
+          }
+        } else {
+          // Get current and next level info
           const { data: currentLevelData } = await supabase
             .from('gamification_levels')
             .select('name')
