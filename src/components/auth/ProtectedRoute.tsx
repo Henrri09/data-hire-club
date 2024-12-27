@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -31,6 +32,11 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
+          toast({
+            title: "Sessão expirada",
+            description: "Por favor, faça login novamente",
+            variant: "destructive",
+          });
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -45,10 +51,35 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
     };
 
     checkAuth();
+
+    // Configurar listener para mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setUserType(null);
+      } else if (event === 'SIGNED_IN' && session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', session.user.id)
+          .single();
+
+        setUserType(profile?.user_type || null);
+        setIsAuthenticated(true);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [toast]);
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

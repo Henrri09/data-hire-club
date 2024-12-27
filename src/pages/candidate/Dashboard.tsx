@@ -3,9 +3,39 @@ import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { ProfileOverview } from "@/components/candidate/ProfileOverview";
 import { Leaderboard } from "@/components/gamification/Leaderboard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function CandidateDashboard() {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Session check error:', error);
+        toast({
+          title: "Erro ao verificar sessão",
+          description: "Por favor, faça login novamente",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!session) {
+        toast({
+          title: "Sessão expirada",
+          description: "Por favor, faça login novamente",
+          variant: "destructive",
+        });
+      }
+    };
+
+    checkSession();
+  }, [toast]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
