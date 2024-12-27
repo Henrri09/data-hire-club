@@ -82,7 +82,6 @@ export function JobsList({ searchQuery }: JobsListProps) {
 
   if (isLoading) return <JobsLoadingState />;
   if (error) return <JobsErrorState />;
-  if (!jobs) return <JobsErrorState />;
 
   const uniqueTypes = Array.from(new Set(jobs.map(job => job.type))) as string[];
   const uniqueSeniorities = Array.from(new Set(jobs.map(job => job.seniority))) as string[];
