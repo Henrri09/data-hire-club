@@ -67,6 +67,7 @@ export default function Learning() {
 
   const fetchPosts = async () => {
     try {
+      setIsLoading(true)
       const { data, error } = await supabase
         .from('community_posts')
         .select(`
@@ -75,14 +76,26 @@ export default function Learning() {
           created_at,
           likes_count,
           comments_count,
-          author:profiles(id, full_name)
+          author:profiles!community_posts_author_id_fkey(id, full_name)
         `)
         .eq('post_type', 'learning')
         .order('created_at', { ascending: false })
 
       if (error) throw error
 
-      setPosts(data || [])
+      const formattedPosts = (data || []).map(post => ({
+        id: post.id,
+        content: post.content,
+        created_at: post.created_at,
+        likes_count: post.likes_count,
+        comments_count: post.comments_count,
+        author: {
+          id: post.author.id,
+          full_name: post.author.full_name
+        }
+      }))
+
+      setPosts(formattedPosts)
     } catch (error) {
       console.error('Error fetching posts:', error)
     } finally {

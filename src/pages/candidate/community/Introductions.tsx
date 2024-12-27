@@ -95,7 +95,7 @@ export default function Introductions() {
           created_at,
           likes_count,
           comments_count,
-          author:profiles(id, full_name)
+          author:profiles!community_posts_author_id_fkey(id, full_name)
         `)
         .eq('post_type', 'introduction')
         .order('created_at', { ascending: false })
@@ -109,7 +109,18 @@ export default function Introductions() {
 
       if (error) throw error
 
-      let postsWithLikes = posts || []
+      let postsWithLikes = (posts || []).map(post => ({
+        id: post.id,
+        content: post.content,
+        created_at: post.created_at,
+        likes_count: post.likes_count,
+        comments_count: post.comments_count,
+        author: {
+          id: post.author.id,
+          full_name: post.author.full_name
+        }
+      }))
+
       if (user) {
         const { data: likes } = await supabase
           .from('community_post_likes')

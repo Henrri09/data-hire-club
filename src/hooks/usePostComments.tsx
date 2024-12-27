@@ -29,13 +29,25 @@ export function usePostComments(postId: string) {
             id,
             content,
             created_at,
-            author:profiles(id, full_name)
+            author:profiles!community_post_comments_author_id_fkey(id, full_name)
           `)
           .eq('post_id', postId)
           .order('created_at', { ascending: false })
 
         if (error) throw error
-        setPostComments(data || [])
+
+        // Transform the data to match our Comment interface
+        const formattedComments: Comment[] = (data || []).map(comment => ({
+          id: comment.id,
+          content: comment.content,
+          created_at: comment.created_at,
+          author: {
+            id: comment.author.id,
+            full_name: comment.author.full_name
+          }
+        }))
+
+        setPostComments(formattedComments)
         setShowComments(true)
       } catch (error) {
         console.error('Error loading comments:', error)
@@ -78,19 +90,31 @@ export function usePostComments(postId: string) {
           id,
           content,
           created_at,
-          author:profiles(id, full_name)
+          author:profiles!community_post_comments_author_id_fkey(id, full_name)
         `)
         .single()
 
       if (error) throw error
 
-      setPostComments(prev => [data, ...prev])
-      setNewComment("")
-      
-      toast({
-        title: "Comentário adicionado",
-        description: "Seu comentário foi publicado com sucesso.",
-      })
+      if (data) {
+        const newCommentData: Comment = {
+          id: data.id,
+          content: data.content,
+          created_at: data.created_at,
+          author: {
+            id: data.author.id,
+            full_name: data.author.full_name
+          }
+        }
+
+        setPostComments(prev => [newCommentData, ...prev])
+        setNewComment("")
+        
+        toast({
+          title: "Comentário adicionado",
+          description: "Seu comentário foi publicado com sucesso.",
+        })
+      }
     } catch (error) {
       console.error('Error posting comment:', error)
       toast({
