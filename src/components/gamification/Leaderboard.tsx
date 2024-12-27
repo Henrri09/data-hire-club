@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { LevelBadge } from "./LevelBadge";
 import { Skeleton } from "../ui/skeleton";
 import { Trophy } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LeaderboardUser {
   id: string;
@@ -15,6 +16,7 @@ interface LeaderboardUser {
 export function Leaderboard() {
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadLeaderboard = async () => {
@@ -55,38 +57,72 @@ export function Leaderboard() {
     return <Skeleton className="w-full h-64" />;
   }
 
+  if (isMobile) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Trophy className="w-5 h-5 text-yellow-500" />
+          <h2 className="text-lg font-semibold">Top 10 da Comunidade</h2>
+        </div>
+        <div className="space-y-4">
+          {users.map((user, index) => (
+            <div 
+              key={user.id}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
+              <div className="flex items-center gap-3">
+                <span className="font-medium text-gray-600 min-w-[24px]">
+                  {index + 1}º
+                </span>
+                <div className="flex flex-col">
+                  <span className="font-medium">{user.full_name}</span>
+                  <LevelBadge userId={user.id} />
+                </div>
+              </div>
+              <span className="font-medium text-primary">
+                {user.total_points} pts
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <div className="flex items-center gap-2 mb-4">
         <Trophy className="w-5 h-5 text-yellow-500" />
         <h2 className="text-lg font-semibold">Top 10 da Comunidade</h2>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-16">Pos.</TableHead>
-            <TableHead>Nome</TableHead>
-            <TableHead>Nível</TableHead>
-            <TableHead className="text-right">Pontos</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user, index) => (
-            <TableRow key={user.id}>
-              <TableCell className="font-medium">
-                {index + 1}º
-              </TableCell>
-              <TableCell>{user.full_name}</TableCell>
-              <TableCell>
-                <LevelBadge userId={user.id} />
-              </TableCell>
-              <TableCell className="text-right">
-                {user.total_points} pts
-              </TableCell>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-16">Pos.</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead>Nível</TableHead>
+              <TableHead className="text-right">Pontos</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {users.map((user, index) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">
+                  {index + 1}º
+                </TableCell>
+                <TableCell>{user.full_name}</TableCell>
+                <TableCell>
+                  <LevelBadge userId={user.id} />
+                </TableCell>
+                <TableCell className="text-right">
+                  {user.total_points} pts
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
