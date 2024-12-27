@@ -100,12 +100,12 @@ export function ProfileOverview() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full px-4 sm:px-0 max-w-4xl mx-auto">
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <CardHeader className="space-y-1">
+        <CardHeader className="space-y-1 px-4 sm:px-6">
           <CardTitle className="text-2xl font-bold text-gray-900">Seu Perfil</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <ProfileHeader 
             profile={profile} 
             onEditClick={() => setIsDialogOpen(true)} 

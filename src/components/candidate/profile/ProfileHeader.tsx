@@ -42,44 +42,46 @@ export function ProfileHeader({ profile, onEditClick }: ProfileHeaderProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start gap-4">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
         <Avatar className="h-20 w-20">
-          <AvatarImage src={profile.photoUrl || undefined} />
+          <AvatarImage src={profile.photoUrl || undefined} className="object-cover" />
           <AvatarFallback className="bg-[#9b87f5] text-white text-xl">
             {getInitials(profile.full_name)}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1">
-          <h3 className="text-xl font-semibold text-gray-900">
-            {profile.full_name || "Complete seu perfil"}
-          </h3>
-          <p className="text-gray-600 mt-1">{profile.headline || "Adicione sua profissão"}</p>
+        <div className="flex-1 space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <h3 className="text-xl font-semibold text-gray-900">
+              {profile.full_name || "Complete seu perfil"}
+            </h3>
+            <Button 
+              onClick={onEditClick}
+              className="bg-[#9b87f5] hover:bg-[#9b87f5]/90 w-full sm:w-auto"
+            >
+              Editar Perfil
+            </Button>
+          </div>
+          <p className="text-gray-600">{profile.headline || "Adicione sua profissão"}</p>
           
-          <div className="flex flex-wrap gap-3 mt-3">
+          <div className="flex flex-wrap gap-3 mt-2">
             {profile.location && (
               <div className="flex items-center text-gray-600 text-sm">
-                <MapPin className="h-4 w-4 mr-1" />
-                {profile.location}
+                <MapPin className="h-4 w-4 mr-1 shrink-0" />
+                <span className="truncate">{profile.location}</span>
               </div>
             )}
             {profile.experience_level && (
               <div className="flex items-center text-gray-600 text-sm">
-                <Briefcase className="h-4 w-4 mr-1" />
-                {formatExperienceLevel(profile.experience_level)}
+                <Briefcase className="h-4 w-4 mr-1 shrink-0" />
+                <span className="truncate">{formatExperienceLevel(profile.experience_level)}</span>
               </div>
             )}
           </div>
         </div>
-        <Button 
-          onClick={onEditClick}
-          className="bg-[#9b87f5] hover:bg-[#9b87f5]/90"
-        >
-          Editar Perfil
-        </Button>
       </div>
 
       {profile.description && (
-        <p className="text-gray-600 text-sm">{profile.description}</p>
+        <p className="text-gray-600 text-sm whitespace-pre-wrap">{profile.description}</p>
       )}
 
       {profile.skills.length > 0 && (
