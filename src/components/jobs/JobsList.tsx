@@ -21,7 +21,7 @@ export function JobsList({ searchQuery }: JobsListProps) {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const { trackJobSearch } = useAnalytics();
 
-  const { jobs, isLoading, error } = useJobsData(searchQuery);
+  const { data: jobs = [], isLoading, error } = useJobsData(searchQuery);
 
   const filterJobs = useCallback(() => {
     let filtered = jobs;
@@ -81,9 +81,9 @@ export function JobsList({ searchQuery }: JobsListProps) {
   if (isLoading) return <JobsLoadingState />;
   if (error) return <JobsErrorState />;
 
-  const uniqueTypes = Array.from(new Set(jobs.map(job => job.type)));
-  const uniqueSeniorities = Array.from(new Set(jobs.map(job => job.seniority)));
-  const uniqueContracts = Array.from(new Set(jobs.map(job => job.contract_type)));
+  const uniqueTypes = Array.from(new Set(jobs.map(job => job.type))) as string[];
+  const uniqueSeniorities = Array.from(new Set(jobs.map(job => job.seniority))) as string[];
+  const uniqueContracts = Array.from(new Set(jobs.map(job => job.contract_type))) as string[];
 
   return (
     <div className="space-y-6">
