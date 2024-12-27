@@ -24,8 +24,6 @@ export function JobsList({ searchQuery }: JobsListProps) {
   const { data: jobs = [], isLoading, error } = useJobsData(searchQuery);
 
   const filterJobs = useCallback(() => {
-    if (!jobs) return [];
-    
     let filtered = [...jobs];
 
     if (searchQuery) {
