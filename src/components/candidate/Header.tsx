@@ -8,6 +8,7 @@ import { CandidateSidebar } from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
+import { LevelBadge } from "../gamification/LevelBadge";
 
 interface Profile {
   full_name: string | null;
@@ -18,6 +19,7 @@ interface Profile {
 export function CandidateHeader() {
   const isMobile = useIsMobile();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export function CandidateHeader() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          setUserId(user.id);
           const { data, error } = await supabase
             .from('profiles')
             .select('full_name, logo_url, is_admin')
@@ -88,6 +91,7 @@ export function CandidateHeader() {
           <span className="font-bold">Data Hire Club</span>
         </Link>
         <div className="flex flex-1 items-center justify-end gap-4">
+          {userId && <LevelBadge userId={userId} showPoints />}
           <Avatar className="h-8 w-8">
             <AvatarImage 
               src={profile?.logo_url || undefined} 

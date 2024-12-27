@@ -331,6 +331,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gamification_levels: {
+        Row: {
+          badge_url: string | null
+          created_at: string
+          id: number
+          level: number
+          name: string
+          points_required: number
+          updated_at: string
+        }
+        Insert: {
+          badge_url?: string | null
+          created_at?: string
+          id?: number
+          level: number
+          name: string
+          points_required: number
+          updated_at?: string
+        }
+        Update: {
+          badge_url?: string | null
+          created_at?: string
+          id?: number
+          level?: number
+          name?: string
+          points_required?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           candidate_id: string
@@ -471,6 +501,44 @@ export type Database = {
           },
         ]
       }
+      points_history: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          points: number
+          reference_id: string | null
+          reference_type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          points: number
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          points?: number
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null
@@ -542,6 +610,41 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      user_points: {
+        Row: {
+          created_at: string
+          current_level: number
+          id: string
+          total_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_level?: number
+          id?: string
+          total_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_level?: number
+          id?: string
+          total_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_points_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

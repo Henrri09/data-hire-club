@@ -2,11 +2,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ImageIcon } from "lucide-react"
+import { LevelBadge } from "../gamification/LevelBadge"
 
 interface PostHeaderProps {
   author: {
     name: string
     avatar?: string
+    id: string
   }
   created_at: string
 }
@@ -47,7 +49,10 @@ export function PostHeader({ author, created_at }: PostHeaderProps) {
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col">
-        <h3 className="font-semibold text-gray-900">{author.name}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold text-gray-900">{author.name}</h3>
+          <LevelBadge userId={author.id} />
+        </div>
         <p className="text-sm text-gray-500">{formatDate(created_at)}</p>
       </div>
     </div>
