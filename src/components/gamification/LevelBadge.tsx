@@ -42,11 +42,11 @@ export function LevelBadge({ userId, showPoints = false }: LevelBadgeProps) {
 
         if (pointsError) throw pointsError;
 
-        // If no points exist, create initial record
+        // If no points exist, create initial record using upsert to handle race conditions
         if (!pointsData) {
           const { data: newPointsData, error: createError } = await supabase
             .from('user_points')
-            .insert([
+            .upsert([
               { user_id: userId, total_points: 0, current_level: 1 }
             ])
             .select('total_points, current_level')
