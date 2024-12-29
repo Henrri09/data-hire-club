@@ -42,19 +42,48 @@ export function LevelBadge({ userId, showPoints = false }: LevelBadgeProps) {
 
         if (pointsError) throw pointsError;
 
-        // If no points exist, create initial record using upsert to handle race conditions
+        // If no points exist, create initial record
         if (!pointsData) {
           const { data: newPointsData, error: createError } = await supabase
             .from('user_points')
-            .upsert([
+            .insert([
               { user_id: userId, total_points: 0, current_level: 1 }
             ])
             .select('total_points, current_level')
             .single();
 
-          if (createError) throw createError;
-          
-          if (newPointsData) {
+          if (createError) {
+            // If insert fails due to race condition, try to fetch again
+            if (createError.code === '23505') {
+              const { data: retryData } = await supabase
+                .from('user_points')
+                .select('total_points, current_level')
+                .eq('user_id', userId)
+                .single();
+              
+              if (retryData) {
+                const { data: currentLevelData } = await supabase
+                  .from('gamification_levels')
+                  .select('name')
+                  .eq('level', retryData.current_level)
+                  .single();
+
+                const { data: nextLevelData } = await supabase
+                  .from('gamification_levels')
+                  .select('name, points_required')
+                  .eq('level', retryData.current_level + 1)
+                  .single();
+
+                setUserLevel({
+                  ...retryData,
+                  current_level_info: currentLevelData,
+                  next_level: nextLevelData
+                });
+              }
+            } else {
+              throw createError;
+            }
+          } else if (newPointsData) {
             const { data: currentLevelData } = await supabase
               .from('gamification_levels')
               .select('name')
