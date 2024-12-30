@@ -32,7 +32,6 @@ export default function CompanyDashboard() {
   const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
-    console.log('Field changed:', field, value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -65,23 +64,24 @@ export default function CompanyDashboard() {
     setIsSubmitting(true);
     
     try {
-      console.log('Attempting to insert job with data:', {
-        company_id: user.id,
-        title: formData.titulo,
-        description: formData.descricao,
-        location: formData.local,
-        experience_level: formData.senioridade,
-        contract_type: formData.tipoContratacao,
-        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
-          ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
-          : null,
-        external_link: formData.linkExterno,
-      });
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (companyError) {
+        throw companyError;
+      }
+
+      if (!companyData) {
+        throw new Error('Empresa não encontrada');
+      }
 
       const { data, error } = await supabase
         .from('jobs')
         .insert({
-          company_id: user.id,
+          company_id: companyData.id,
           title: formData.titulo,
           description: formData.descricao,
           location: formData.local,
@@ -112,11 +112,11 @@ export default function CompanyDashboard() {
       // Reset form and close dialog
       setFormData(initialFormData);
       setIsDialogOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error posting job:', error);
       toast({
         title: "Erro ao publicar vaga",
-        description: "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
+        description: error.message || "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
         variant: "destructive"
       });
     } finally {
