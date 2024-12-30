@@ -21,11 +21,16 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
         setIsLoading(true);
         setError(null);
 
+        console.log('Fetching jobs with search query:', searchQuery);
+
         let query = supabase
           .from('jobs')
           .select(`
             *,
-            company:companies(*)
+            companies (
+              company_name,
+              location
+            )
           `)
           .eq('status', 'active')
           .is('deleted_at', null);
@@ -36,7 +41,18 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
 
         const { data, error: fetchError } = await query;
 
-        if (fetchError) throw fetchError;
+        if (fetchError) {
+          console.error('Error fetching jobs:', fetchError);
+          throw fetchError;
+        }
+
+        if (!data) {
+          console.log('No jobs found');
+          setJobs([]);
+          return;
+        }
+
+        console.log('Jobs fetched successfully:', data);
 
         const formattedJobs: Job[] = (data as JobResponse[]).map(job => ({
           id: job.id,
@@ -48,6 +64,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           seniority: job.experience_level || 'Não especificado',
           salary_range: job.salary_range || 'A combinar',
           contract_type: job.contract_type || 'Não especificado',
+          application_url: job.external_link,
           benefits: job.benefits ? JSON.parse(job.benefits) : undefined,
           requirements: job.requirements || [],
           responsibilities: job.responsibilities || [],
