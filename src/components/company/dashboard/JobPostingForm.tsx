@@ -35,7 +35,6 @@ export function JobPostingForm({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validação básica
     if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
       toast({
         title: "Erro de validação",
@@ -45,7 +44,6 @@ export function JobPostingForm({
       return;
     }
 
-    // Validação do link externo
     if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
       toast({
         title: "Link inválido",

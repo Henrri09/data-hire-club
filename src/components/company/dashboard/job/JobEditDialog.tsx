@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { JobPostingForm } from "../JobPostingForm";
 
 interface JobEditDialogProps {
@@ -6,29 +6,40 @@ interface JobEditDialogProps {
   onOpenChange: (open: boolean) => void;
   job: any;
   onSubmit: (formData: any) => void;
+  isSubmitting?: boolean;
 }
 
-export function JobEditDialog({ open, onOpenChange, job, onSubmit }: JobEditDialogProps) {
+export function JobEditDialog({ 
+  open, 
+  onOpenChange, 
+  job, 
+  onSubmit,
+  isSubmitting = false 
+}: JobEditDialogProps) {
+  const formData = {
+    titulo: job.title || "",
+    descricao: job.description || "",
+    local: job.location || "",
+    senioridade: job.experience_level || "",
+    tipoContratacao: job.contract_type || "",
+    faixaSalarialMin: job.salary_range?.split("-")[0]?.trim() || "",
+    faixaSalarialMax: job.salary_range?.split("-")[1]?.trim() || "",
+    linkExterno: job.external_link || "",
+  };
+
+  const handleInputChange = () => {
+    // Implementar se necessário
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Editar Vaga</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-4xl">
         <JobPostingForm
-          formData={{
-            titulo: job.title,
-            descricao: "",
-            local: "",
-            senioridade: "",
-            tipoContratacao: "",
-            faixaSalarialMin: "",
-            faixaSalarialMax: "",
-            linkExterno: "",
-          }}
-          handleInputChange={() => {}}
+          formData={formData}
+          handleInputChange={handleInputChange}
           handleSubmit={onSubmit}
           onCancel={() => onOpenChange(false)}
+          isSubmitting={isSubmitting}
         />
       </DialogContent>
     </Dialog>

@@ -11,7 +11,8 @@ export function JobsTab() {
     fetchJobs,
     handleStatusChange,
     handleDelete,
-    handleEdit
+    handleEdit,
+    isLoading
   } = useJobsManagement(user?.id);
 
   useEffect(() => {
@@ -30,15 +31,21 @@ export function JobsTab() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {jobs.map((job) => (
-            <JobListItem
-              key={job.id}
-              job={job}
-              onStatusChange={handleStatusChange}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-            />
-          ))}
+          {isLoading ? (
+            <p>Carregando vagas...</p>
+          ) : jobs.length === 0 ? (
+            <p>Nenhuma vaga publicada ainda.</p>
+          ) : (
+            jobs.map((job) => (
+              <JobListItem
+                key={job.id}
+                job={job}
+                onStatusChange={handleStatusChange}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+              />
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
