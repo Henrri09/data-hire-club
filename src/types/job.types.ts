@@ -8,6 +8,7 @@ export interface Job {
   seniority: string;
   salary_range: string;
   contract_type: string;
+  application_url?: string;
   benefits?: string[];
   requirements?: string[];
   responsibilities?: string[];
@@ -28,6 +29,7 @@ export interface JobResponse {
   responsibilities: string[] | null;
   views_count: number | null;
   applications_count: number | null;
+  external_link: string | null;
   companies?: {
     company_name: string;
     location: string | null;
