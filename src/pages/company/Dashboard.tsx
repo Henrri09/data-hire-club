@@ -32,6 +32,7 @@ export default function CompanyDashboard() {
   const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
+    console.log('Field changed:', field, value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -40,6 +41,7 @@ export default function CompanyDashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
     if (!user) {
       toast({
@@ -50,11 +52,32 @@ export default function CompanyDashboard() {
       return;
     }
 
+    // Validate required fields
+    if (!formData.titulo || !formData.descricao) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      console.log('Enviando dados da vaga:', formData);
-      
+      console.log('Attempting to insert job with data:', {
+        company_id: user.id,
+        title: formData.titulo,
+        description: formData.descricao,
+        location: formData.local,
+        experience_level: formData.senioridade,
+        contract_type: formData.tipoContratacao,
+        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+          ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
+          : null,
+        external_link: formData.linkExterno,
+      });
+
       const { data, error } = await supabase
         .from('jobs')
         .insert({
@@ -75,22 +98,22 @@ export default function CompanyDashboard() {
         .single();
 
       if (error) {
-        console.error('Erro ao inserir vaga:', error);
+        console.error('Supabase error:', error);
         throw error;
       }
 
-      console.log('Vaga publicada com sucesso:', data);
+      console.log('Job posted successfully:', data);
 
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",
       });
 
-      // Limpa o formulário e fecha o dialog
+      // Reset form and close dialog
       setFormData(initialFormData);
       setIsDialogOpen(false);
     } catch (error) {
-      console.error('Erro ao publicar vaga:', error);
+      console.error('Error posting job:', error);
       toast({
         title: "Erro ao publicar vaga",
         description: "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
