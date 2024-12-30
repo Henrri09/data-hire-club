@@ -3,15 +3,21 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { OverviewTab } from "@/components/company/dashboard/OverviewTab";
 import { JobsTab } from "@/components/company/dashboard/JobsTab";
 import { ProfileTab } from "@/components/company/dashboard/ProfileTab";
 import { JobPostingForm } from "@/components/company/dashboard/JobPostingForm";
 import { CompanyHeader } from "@/components/company/Header";
+import { useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const user = useUser();
+
   const [formData, setFormData] = useState({
     titulo: "",
     descricao: "",
@@ -30,34 +36,66 @@ export default function CompanyDashboard() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const isEmpty = Object.values(formData).some((value) => value === "");
+    if (!user) {
+      toast({
+        title: "Erro ao publicar vaga",
+        description: "Você precisa estar logado para publicar vagas.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     
-    if (isEmpty) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
-      return;
-    }
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert({
+          company_id: user.id,
+          title: formData.titulo,
+          description: formData.descricao,
+          location: formData.local,
+          experience_level: formData.senioridade,
+          contract_type: formData.tipoContratacao,
+          salary_range: `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`,
+          external_link: formData.linkExterno,
+          status: 'active',
+          job_type: 'full-time'
+        })
+        .select()
+        .single();
 
-    if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
-      toast.error("Por favor, insira um link válido começando com http:// ou https://");
-      return;
-    }
+      if (error) throw error;
 
-    console.log("Dados da vaga:", formData);
-    toast.success("Vaga publicada com sucesso!");
-    setIsDialogOpen(false);
-    setFormData({
-      titulo: "",
-      descricao: "",
-      local: "",
-      senioridade: "",
-      tipoContratacao: "",
-      faixaSalarialMin: "",
-      faixaSalarialMax: "",
-      linkExterno: "",
-    });
+      toast({
+        title: "Vaga publicada",
+        description: "Sua vaga foi publicada com sucesso!",
+      });
+
+      setIsDialogOpen(false);
+      setFormData({
+        titulo: "",
+        descricao: "",
+        local: "",
+        senioridade: "",
+        tipoContratacao: "",
+        faixaSalarialMin: "",
+        faixaSalarialMax: "",
+        linkExterno: "",
+      });
+    } catch (error) {
+      console.error('Erro ao publicar vaga:', error);
+      toast({
+        title: "Erro ao publicar vaga",
+        description: "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -79,6 +117,7 @@ export default function CompanyDashboard() {
                 handleInputChange={handleInputChange}
                 handleSubmit={handleSubmit}
                 onCancel={() => setIsDialogOpen(false)}
+                isSubmitting={isSubmitting}
               />
             </DialogContent>
           </Dialog>

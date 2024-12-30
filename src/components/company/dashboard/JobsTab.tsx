@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser } from "@supabase/auth-helpers-react";
-import type { User } from "@supabase/supabase-js";
 import { JobListItem } from "./job/JobListItem";
 import { useJobsManagement } from "@/hooks/useJobsManagement";
 
