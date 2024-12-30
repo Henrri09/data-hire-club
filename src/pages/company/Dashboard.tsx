@@ -75,7 +75,7 @@ export default function CompanyDashboard() {
         description: "Sua vaga foi publicada com sucesso!",
       });
 
-      setIsDialogOpen(false);
+      // Limpa o formulário e fecha o dialog
       setFormData({
         titulo: "",
         descricao: "",
@@ -86,6 +86,7 @@ export default function CompanyDashboard() {
         faixaSalarialMax: "",
         linkExterno: "",
       });
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('Erro ao publicar vaga:', error);
       toast({
