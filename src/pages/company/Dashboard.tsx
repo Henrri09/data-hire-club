@@ -53,6 +53,8 @@ export default function CompanyDashboard() {
     setIsSubmitting(true);
     
     try {
+      console.log('Enviando dados da vaga:', formData);
+      
       const { data, error } = await supabase
         .from('jobs')
         .insert({
@@ -62,7 +64,9 @@ export default function CompanyDashboard() {
           location: formData.local,
           experience_level: formData.senioridade,
           contract_type: formData.tipoContratacao,
-          salary_range: `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`,
+          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+            ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
+            : null,
           external_link: formData.linkExterno,
           status: 'active',
           job_type: 'full-time'
@@ -70,7 +74,12 @@ export default function CompanyDashboard() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao inserir vaga:', error);
+        throw error;
+      }
+
+      console.log('Vaga publicada com sucesso:', data);
 
       toast({
         title: "Vaga publicada",
