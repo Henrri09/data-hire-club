@@ -18,7 +18,7 @@ export default function CompanyDashboard() {
   const { toast } = useToast();
   const user = useUser();
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     titulo: "",
     descricao: "",
     local: "",
@@ -27,7 +27,9 @@ export default function CompanyDashboard() {
     faixaSalarialMin: "",
     faixaSalarialMax: "",
     linkExterno: "",
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -76,16 +78,7 @@ export default function CompanyDashboard() {
       });
 
       // Limpa o formulário e fecha o dialog
-      setFormData({
-        titulo: "",
-        descricao: "",
-        local: "",
-        senioridade: "",
-        tipoContratacao: "",
-        faixaSalarialMin: "",
-        faixaSalarialMax: "",
-        linkExterno: "",
-      });
+      setFormData(initialFormData);
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Erro ao publicar vaga:', error);
