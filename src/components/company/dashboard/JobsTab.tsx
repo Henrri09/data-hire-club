@@ -6,7 +6,7 @@ import { JobListItem } from "./job/JobListItem";
 import { useJobsManagement } from "@/hooks/useJobsManagement";
 
 export function JobsTab() {
-  const { user } = useUser() as { user: User | null };
+  const user = useUser();
   const {
     jobs,
     fetchJobs,
