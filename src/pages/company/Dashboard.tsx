@@ -40,53 +40,29 @@ export default function CompanyDashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted with data:', formData);
-    
-    if (!user) {
-      toast({
-        title: "Erro ao publicar vaga",
-        description: "Você precisa estar logado para publicar vagas.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Validate required fields
-    if (!formData.titulo || !formData.descricao) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     
     try {
-      // Primeiro, buscar o ID da empresa associada ao usuário
-      const { data: companyData, error: companyError } = await supabase
+      if (!user) {
+        throw new Error('Você precisa estar logado para publicar vagas.');
+      }
+
+      // Primeiro, verificar se a empresa existe
+      const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
         .eq('id', user.id)
         .single();
 
-      if (companyError) {
-        console.error('Error fetching company:', companyError);
-        throw new Error('Erro ao buscar dados da empresa');
-      }
-
-      if (!companyData) {
+      if (companyError || !company) {
         throw new Error('Empresa não encontrada. Por favor, complete seu perfil primeiro.');
       }
 
-      console.log('Company data found:', companyData);
-
-      // Criar a vaga usando o ID da empresa
-      const { data, error } = await supabase
+      // Criar a vaga
+      const { data: job, error: jobError } = await supabase
         .from('jobs')
         .insert({
-          company_id: companyData.id,
+          company_id: company.id,
           title: formData.titulo,
           description: formData.descricao,
           location: formData.local,
@@ -103,19 +79,13 @@ export default function CompanyDashboard() {
         .select()
         .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-
-      console.log('Job posted successfully:', data);
+      if (jobError) throw jobError;
 
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",
       });
 
-      // Reset form and close dialog
       setFormData(initialFormData);
       setIsDialogOpen(false);
     } catch (error: any) {
