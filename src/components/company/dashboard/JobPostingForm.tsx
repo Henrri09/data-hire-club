@@ -31,6 +31,7 @@ export function JobPostingForm({
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
     if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
       toast({
@@ -50,12 +51,15 @@ export function JobPostingForm({
       return;
     }
 
-    console.log('Submitting form with data:', formData);
     await handleSubmit(e);
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 w-full max-h-[80vh] overflow-y-auto px-1">
+    <form 
+      id="job-posting-form"
+      onSubmit={onSubmit} 
+      className="space-y-4 w-full max-h-[80vh] overflow-y-auto px-1"
+    >
       <DialogHeader>
         <DialogTitle>Publicar Nova Vaga</DialogTitle>
       </DialogHeader>
