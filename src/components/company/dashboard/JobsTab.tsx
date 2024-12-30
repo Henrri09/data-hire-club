@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { JobListItem } from "./job/JobListItem";
-import { useAuth } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 
 interface Job {
   id: string;
@@ -13,10 +13,10 @@ interface Job {
 }
 
 export function JobsTab() {
+  const { user } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const auth = useAuth();
 
   useEffect(() => {
     fetchJobs();
@@ -101,7 +101,7 @@ export function JobsTab() {
       const { data, error } = await supabase
         .from('jobs')
         .insert({
-          company_id: auth?.user?.id,
+          company_id: user?.id,
           title: formData.titulo,
           description: formData.descricao,
           location: formData.local,

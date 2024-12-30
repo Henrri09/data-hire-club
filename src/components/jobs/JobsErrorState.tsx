@@ -1,7 +1,15 @@
-export function JobsErrorState() {
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import type { JobsErrorStateProps } from "@/types/job.types";
+
+export function JobsErrorState({ error }: JobsErrorStateProps) {
   return (
-    <div className="text-center py-8">
-      <p className="text-red-500">Erro ao carregar as vagas. Por favor, tente novamente mais tarde.</p>
-    </div>
+    <Alert variant="destructive">
+      <AlertCircle className="h-4 w-4" />
+      <AlertTitle>Erro ao carregar vagas</AlertTitle>
+      <AlertDescription>
+        {error.message || 'Ocorreu um erro ao carregar as vagas. Tente novamente mais tarde.'}
+      </AlertDescription>
+    </Alert>
   );
 }

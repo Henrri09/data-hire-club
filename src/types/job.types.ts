@@ -28,8 +28,12 @@ export interface JobResponse {
   responsibilities: string[] | null;
   views_count: number | null;
   applications_count: number | null;
-  companies: {
+  companies?: {
     company_name: string;
     location: string | null;
   } | null;
+}
+
+export interface JobsErrorStateProps {
+  error: Error;
 }
