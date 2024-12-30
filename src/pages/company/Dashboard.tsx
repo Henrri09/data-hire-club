@@ -64,6 +64,7 @@ export default function CompanyDashboard() {
     setIsSubmitting(true);
     
     try {
+      // Primeiro, buscar o ID da empresa associada ao usuário
       const { data: companyData, error: companyError } = await supabase
         .from('companies')
         .select('id')
@@ -71,13 +72,17 @@ export default function CompanyDashboard() {
         .single();
 
       if (companyError) {
-        throw companyError;
+        console.error('Error fetching company:', companyError);
+        throw new Error('Erro ao buscar dados da empresa');
       }
 
       if (!companyData) {
-        throw new Error('Empresa não encontrada');
+        throw new Error('Empresa não encontrada. Por favor, complete seu perfil primeiro.');
       }
 
+      console.log('Company data found:', companyData);
+
+      // Criar a vaga usando o ID da empresa
       const { data, error } = await supabase
         .from('jobs')
         .insert({
@@ -92,7 +97,8 @@ export default function CompanyDashboard() {
             : null,
           external_link: formData.linkExterno,
           status: 'active',
-          job_type: 'full-time'
+          job_type: 'full-time',
+          work_model: formData.local === 'Remoto' ? 'remote' : 'on-site'
         })
         .select()
         .single();
