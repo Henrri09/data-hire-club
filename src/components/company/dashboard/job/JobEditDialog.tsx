@@ -27,8 +27,9 @@ export function JobEditDialog({
     linkExterno: job.external_link || "",
   };
 
-  const handleInputChange = () => {
+  const handleInputChange = (field: string, value: string) => {
     // Implementar se necessário
+    console.log('Campo alterado:', field, value);
   };
 
   return (

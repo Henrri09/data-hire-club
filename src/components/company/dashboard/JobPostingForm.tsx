@@ -168,12 +168,18 @@ export function JobPostingForm({
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel} 
+          disabled={isSubmitting}
+          className="w-full md:w-auto"
+        >
           Cancelar
         </Button>
         <Button 
           type="submit" 
-          className="bg-[#7779f5] hover:bg-[#7779f5]/90"
+          className="bg-[#7779f5] hover:bg-[#7779f5]/90 w-full md:w-auto"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Publicando..." : "Publicar Vaga"}
