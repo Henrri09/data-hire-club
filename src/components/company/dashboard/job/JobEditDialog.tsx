@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { JobPostingForm } from "../JobPostingForm";
+import { useState } from "react";
 
 interface JobEditDialogProps {
   open: boolean;
@@ -16,7 +17,7 @@ export function JobEditDialog({
   onSubmit,
   isSubmitting = false 
 }: JobEditDialogProps) {
-  const formData = {
+  const [formData, setFormData] = useState({
     titulo: job.title || "",
     descricao: job.description || "",
     local: job.location || "",
@@ -25,11 +26,21 @@ export function JobEditDialog({
     faixaSalarialMin: job.salary_range?.split("-")[0]?.trim() || "",
     faixaSalarialMax: job.salary_range?.split("-")[1]?.trim() || "",
     linkExterno: job.external_link || "",
-  };
+  });
 
   const handleInputChange = (field: string, value: string) => {
-    // Implementar se necessário
-    console.log('Campo alterado:', field, value);
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...formData,
+      id: job.id
+    });
   };
 
   return (
@@ -38,7 +49,7 @@ export function JobEditDialog({
         <JobPostingForm
           formData={formData}
           handleInputChange={handleInputChange}
-          handleSubmit={onSubmit}
+          handleSubmit={handleSubmit}
           onCancel={() => onOpenChange(false)}
           isSubmitting={isSubmitting}
         />

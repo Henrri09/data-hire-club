@@ -53,7 +53,20 @@ export function JobPostingForm({
       return;
     }
 
-    handleSubmit(e);
+    try {
+      await handleSubmit(e);
+      toast({
+        title: "Sucesso!",
+        description: "Vaga publicada com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao publicar vaga:', error);
+      toast({
+        title: "Erro ao publicar",
+        description: "Ocorreu um erro ao publicar a vaga. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
