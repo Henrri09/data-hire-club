@@ -53,6 +53,17 @@ export default function CompanyDashboard() {
 
     try {
       setIsSubmitting(true);
+
+      // Verificar se todos os campos obrigatórios estão preenchidos
+      if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
+        toast({
+          title: "Campos obrigatórios",
+          description: "Por favor, preencha todos os campos obrigatórios.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       console.log('Verificando empresa do usuário:', user.id);
       
       const { data: company, error: companyError } = await supabase
@@ -63,13 +74,18 @@ export default function CompanyDashboard() {
 
       if (companyError) {
         console.error('Erro ao buscar empresa:', companyError);
-        throw new Error('Erro ao verificar dados da empresa');
+        toast({
+          title: "Erro ao verificar empresa",
+          description: "Por favor, complete seu perfil de empresa primeiro.",
+          variant: "destructive"
+        });
+        return;
       }
 
       console.log('Empresa encontrada, criando vaga...');
-      const { data: job, error: jobError } = await supabase
+      const { error: jobError } = await supabase
         .from('jobs')
-        .insert([{
+        .insert({
           company_id: user.id,
           title: formData.titulo,
           description: formData.descricao,
@@ -83,16 +99,14 @@ export default function CompanyDashboard() {
           status: 'active',
           job_type: 'full-time',
           work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
-        }])
-        .select()
-        .single();
+        });
 
       if (jobError) {
         console.error('Erro ao criar vaga:', jobError);
         throw jobError;
       }
 
-      console.log('Vaga criada com sucesso:', job);
+      console.log('Vaga criada com sucesso!');
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",

@@ -1,5 +1,4 @@
 import { DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { FormFields } from "./job-form/FormFields";
 import { FormActions } from "./job-form/FormActions";
 
@@ -27,39 +26,9 @@ export function JobPostingForm({
   onCancel,
   isSubmitting = false 
 }: JobPostingFormProps) {
-  const { toast } = useToast();
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted with data:', formData);
-    
-    // Validação dos campos obrigatórios
-    if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
-      toast({
-        title: "Erro de validação",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validação do link externo
-    if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
-      toast({
-        title: "Link inválido",
-        description: "O link externo deve começar com http:// ou https://",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await handleSubmit(e);
-  };
-
   return (
     <form 
-      id="job-posting-form"
-      onSubmit={onSubmit} 
+      onSubmit={handleSubmit} 
       className="space-y-4 w-full max-h-[80vh] overflow-y-auto px-1"
     >
       <DialogHeader>
