@@ -19,7 +19,6 @@ export function FormActions({ onCancel, isSubmitting }: FormActionsProps) {
       </Button>
       <Button 
         type="submit"
-        form="job-posting-form"
         disabled={isSubmitting}
         className="bg-[#7779f5] hover:bg-[#7779f5]/90 w-full md:w-auto"
       >

@@ -51,30 +51,26 @@ export default function CompanyDashboard() {
       return;
     }
 
-    setIsSubmitting(true);
-    
     try {
+      setIsSubmitting(true);
       console.log('Verificando empresa do usuário:', user.id);
+      
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
 
       if (companyError) {
         console.error('Erro ao buscar empresa:', companyError);
         throw new Error('Erro ao verificar dados da empresa');
       }
 
-      if (!company) {
-        throw new Error('Empresa não encontrada. Por favor, complete seu perfil primeiro.');
-      }
-
       console.log('Empresa encontrada, criando vaga...');
       const { data: job, error: jobError } = await supabase
         .from('jobs')
-        .insert({
-          company_id: company.id,
+        .insert([{
+          company_id: user.id,
           title: formData.titulo,
           description: formData.descricao,
           location: formData.local,
@@ -86,8 +82,8 @@ export default function CompanyDashboard() {
           external_link: formData.linkExterno,
           status: 'active',
           job_type: 'full-time',
-          work_model: formData.local.toLowerCase() === 'remoto' ? 'remote' : 'on-site'
-        })
+          work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
+        }])
         .select()
         .single();
 
