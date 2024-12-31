@@ -38,9 +38,14 @@ export default function CompanyDashboard() {
     }));
   };
 
+  const resetForm = () => {
+    setFormData(initialFormData);
+    setIsDialogOpen(false);
+    setIsSubmitting(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Iniciando submissão do formulário:', formData);
     
     if (!user) {
       toast({
@@ -54,13 +59,25 @@ export default function CompanyDashboard() {
     try {
       setIsSubmitting(true);
 
-      // Verificar se todos os campos obrigatórios estão preenchidos
+      // Validação dos campos obrigatórios
       if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
         toast({
           title: "Campos obrigatórios",
           description: "Por favor, preencha todos os campos obrigatórios.",
           variant: "destructive"
         });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validação do link externo
+      if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
+        toast({
+          title: "Link inválido",
+          description: "O link externo deve começar com http:// ou https://",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
         return;
       }
 
@@ -70,9 +87,9 @@ export default function CompanyDashboard() {
         .from('companies')
         .select('id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (companyError) {
+      if (companyError || !company) {
         console.error('Erro ao buscar empresa:', companyError);
         toast({
           title: "Erro ao verificar empresa",
@@ -112,8 +129,7 @@ export default function CompanyDashboard() {
         description: "Sua vaga foi publicada com sucesso!",
       });
 
-      setFormData(initialFormData);
-      setIsDialogOpen(false);
+      resetForm();
     } catch (error: any) {
       console.error('Erro ao publicar vaga:', error);
       toast({
