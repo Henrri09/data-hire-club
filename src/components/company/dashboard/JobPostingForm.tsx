@@ -33,6 +33,7 @@ export function JobPostingForm({
     e.preventDefault();
     console.log('Form submitted with data:', formData);
     
+    // Validação dos campos obrigatórios
     if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
       toast({
         title: "Erro de validação",
@@ -42,6 +43,7 @@ export function JobPostingForm({
       return;
     }
 
+    // Validação do link externo
     if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
       toast({
         title: "Link inválido",

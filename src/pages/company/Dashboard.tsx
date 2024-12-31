@@ -40,25 +40,37 @@ export default function CompanyDashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Iniciando submissão do formulário:', formData);
+    
+    if (!user) {
+      toast({
+        title: "Erro ao publicar vaga",
+        description: "Você precisa estar logado para publicar vagas.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      if (!user) {
-        throw new Error('Você precisa estar logado para publicar vagas.');
-      }
-
-      // Primeiro, verificar se a empresa existe
+      console.log('Verificando empresa do usuário:', user.id);
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (companyError || !company) {
+      if (companyError) {
+        console.error('Erro ao buscar empresa:', companyError);
+        throw new Error('Erro ao verificar dados da empresa');
+      }
+
+      if (!company) {
         throw new Error('Empresa não encontrada. Por favor, complete seu perfil primeiro.');
       }
 
-      // Criar a vaga
+      console.log('Empresa encontrada, criando vaga...');
       const { data: job, error: jobError } = await supabase
         .from('jobs')
         .insert({
@@ -74,13 +86,17 @@ export default function CompanyDashboard() {
           external_link: formData.linkExterno,
           status: 'active',
           job_type: 'full-time',
-          work_model: formData.local === 'Remoto' ? 'remote' : 'on-site'
+          work_model: formData.local.toLowerCase() === 'remoto' ? 'remote' : 'on-site'
         })
         .select()
         .single();
 
-      if (jobError) throw jobError;
+      if (jobError) {
+        console.error('Erro ao criar vaga:', jobError);
+        throw jobError;
+      }
 
+      console.log('Vaga criada com sucesso:', job);
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",
@@ -89,7 +105,7 @@ export default function CompanyDashboard() {
       setFormData(initialFormData);
       setIsDialogOpen(false);
     } catch (error: any) {
-      console.error('Error posting job:', error);
+      console.error('Erro ao publicar vaga:', error);
       toast({
         title: "Erro ao publicar vaga",
         description: error.message || "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
