@@ -8,138 +8,20 @@ import { JobsTab } from "@/components/company/dashboard/JobsTab";
 import { ProfileTab } from "@/components/company/dashboard/ProfileTab";
 import { JobPostingForm } from "@/components/company/dashboard/JobPostingForm";
 import { CompanyHeader } from "@/components/company/Header";
-import { useUser } from "@supabase/auth-helpers-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useJobForm } from "@/components/company/dashboard/job-form/useJobForm";
 
 export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const user = useUser();
+  const { 
+    formData, 
+    isSubmitting, 
+    handleInputChange, 
+    handleSubmit, 
+    resetForm 
+  } = useJobForm();
 
-  const initialFormData = {
-    titulo: "",
-    descricao: "",
-    local: "",
-    senioridade: "",
-    tipoContratacao: "",
-    faixaSalarialMin: "",
-    faixaSalarialMax: "",
-    linkExterno: "",
-  };
-
-  const [formData, setFormData] = useState(initialFormData);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const resetForm = () => {
-    setFormData(initialFormData);
-    setIsDialogOpen(false);
-    setIsSubmitting(false);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!user) {
-      toast({
-        title: "Erro ao publicar vaga",
-        description: "Você precisa estar logado para publicar vagas.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-
-      // Validação dos campos obrigatórios
-      if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
-        toast({
-          title: "Campos obrigatórios",
-          description: "Por favor, preencha todos os campos obrigatórios.",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Validação do link externo
-      if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
-        toast({
-          title: "Link inválido",
-          description: "O link externo deve começar com http:// ou https://",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      console.log('Verificando empresa do usuário:', user.id);
-      
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (companyError || !company) {
-        console.error('Erro ao buscar empresa:', companyError);
-        toast({
-          title: "Erro ao verificar empresa",
-          description: "Por favor, complete seu perfil de empresa primeiro.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('Empresa encontrada, criando vaga...');
-      const { error: jobError } = await supabase
-        .from('jobs')
-        .insert({
-          company_id: user.id,
-          title: formData.titulo,
-          description: formData.descricao,
-          location: formData.local,
-          experience_level: formData.senioridade,
-          contract_type: formData.tipoContratacao,
-          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
-            ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
-            : null,
-          external_link: formData.linkExterno,
-          status: 'active',
-          job_type: 'full-time',
-          work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
-        });
-
-      if (jobError) {
-        console.error('Erro ao criar vaga:', jobError);
-        throw jobError;
-      }
-
-      console.log('Vaga criada com sucesso!');
-      toast({
-        title: "Vaga publicada",
-        description: "Sua vaga foi publicada com sucesso!",
-      });
-
-      resetForm();
-    } catch (error: any) {
-      console.error('Erro ao publicar vaga:', error);
-      toast({
-        title: "Erro ao publicar vaga",
-        description: error.message || "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleFormSubmit = (e: React.FormEvent) => {
+    handleSubmit(e, () => setIsDialogOpen(false));
   };
 
   return (
@@ -159,8 +41,11 @@ export default function CompanyDashboard() {
               <JobPostingForm
                 formData={formData}
                 handleInputChange={handleInputChange}
-                handleSubmit={handleSubmit}
-                onCancel={() => setIsDialogOpen(false)}
+                handleSubmit={handleFormSubmit}
+                onCancel={() => {
+                  setIsDialogOpen(false);
+                  resetForm();
+                }}
                 isSubmitting={isSubmitting}
               />
             </DialogContent>

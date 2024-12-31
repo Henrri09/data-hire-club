@@ -1,4 +1,4 @@
-import { DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { FormFields } from "./job-form/FormFields";
 import { FormActions } from "./job-form/FormActions";
 
@@ -33,6 +33,9 @@ export function JobPostingForm({
     >
       <DialogHeader>
         <DialogTitle>Publicar Nova Vaga</DialogTitle>
+        <DialogDescription>
+          Preencha os campos abaixo para publicar uma nova vaga. Os campos marcados com * são obrigatórios.
+        </DialogDescription>
       </DialogHeader>
       
       <FormFields 
