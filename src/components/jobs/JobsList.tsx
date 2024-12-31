@@ -21,7 +21,8 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
         setIsLoading(true);
         setError(null);
 
-        console.log('Fetching jobs with search query:', searchQuery);
+        console.log('Iniciando busca de vagas...');
+        console.log('Query de busca:', searchQuery);
 
         let query = supabase
           .from('jobs')
@@ -42,17 +43,17 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
         const { data, error: fetchError } = await query;
 
         if (fetchError) {
-          console.error('Error fetching jobs:', fetchError);
-          throw fetchError;
+          console.error('Erro ao buscar vagas:', fetchError);
+          throw new Error(fetchError.message);
         }
 
+        console.log('Dados recebidos:', data);
+
         if (!data) {
-          console.log('No jobs found');
+          console.log('Nenhuma vaga encontrada');
           setJobs([]);
           return;
         }
-
-        console.log('Jobs fetched successfully:', data);
 
         const formattedJobs: Job[] = (data as JobResponse[]).map(job => ({
           id: job.id,
@@ -72,10 +73,11 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           applications: job.applications_count || 0
         }));
 
+        console.log('Vagas formatadas:', formattedJobs);
         setJobs(formattedJobs);
       } catch (err) {
-        console.error("Error fetching jobs:", err);
-        setError(err instanceof Error ? err : new Error('Failed to fetch jobs'));
+        console.error("Erro ao buscar vagas:", err);
+        setError(err instanceof Error ? err : new Error('Falha ao buscar vagas'));
       } finally {
         setIsLoading(false);
       }
