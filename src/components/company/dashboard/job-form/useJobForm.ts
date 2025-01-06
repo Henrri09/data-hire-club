@@ -33,6 +33,7 @@ export function useJobForm() {
   const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
+    console.log('Field changed:', field, 'New value:', value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -40,8 +41,10 @@ export function useJobForm() {
   };
 
   const validateForm = () => {
-    // Validação dos campos obrigatórios
+    console.log('Validating form data:', formData);
+    
     if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
+      console.log('Validation failed: Missing required fields');
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -50,8 +53,8 @@ export function useJobForm() {
       return false;
     }
 
-    // Validação do link externo
     if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
+      console.log('Validation failed: Invalid external link format');
       toast({
         title: "Link inválido",
         description: "O link externo deve começar com http:// ou https://",
@@ -60,18 +63,22 @@ export function useJobForm() {
       return false;
     }
 
+    console.log('Form validation passed');
     return true;
   };
 
   const resetForm = () => {
+    console.log('Resetting form');
     setFormData(initialFormData);
     setIsSubmitting(false);
   };
 
   const handleSubmit = async (e: React.FormEvent, onSuccess: () => void) => {
+    console.log('Form submission started');
     e.preventDefault();
     
     if (!user) {
+      console.log('Submission failed: No user logged in');
       toast({
         title: "Erro ao publicar vaga",
         description: "Você precisa estar logado para publicar vagas.",
@@ -81,12 +88,15 @@ export function useJobForm() {
     }
 
     if (!validateForm()) {
+      console.log('Submission failed: Form validation failed');
       return;
     }
 
     try {
+      console.log('Setting submitting state');
       setIsSubmitting(true);
 
+      console.log('Fetching company data');
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
@@ -94,7 +104,7 @@ export function useJobForm() {
         .maybeSingle();
 
       if (companyError || !company) {
-        console.error('Erro ao buscar empresa:', companyError);
+        console.error('Error fetching company:', companyError);
         toast({
           title: "Erro ao verificar empresa",
           description: "Por favor, complete seu perfil de empresa primeiro.",
@@ -103,6 +113,7 @@ export function useJobForm() {
         return;
       }
 
+      console.log('Inserting job data');
       const { error: jobError } = await supabase
         .from('jobs')
         .insert({
@@ -122,9 +133,11 @@ export function useJobForm() {
         });
 
       if (jobError) {
+        console.error('Error inserting job:', jobError);
         throw jobError;
       }
 
+      console.log('Job posted successfully');
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",
@@ -133,13 +146,14 @@ export function useJobForm() {
       resetForm();
       onSuccess();
     } catch (error: any) {
-      console.error('Erro ao publicar vaga:', error);
+      console.error('Error posting job:', error);
       toast({
         title: "Erro ao publicar vaga",
         description: error.message || "Ocorreu um erro ao tentar publicar a vaga. Tente novamente.",
         variant: "destructive"
       });
     } finally {
+      console.log('Resetting submitting state');
       setIsSubmitting(false);
     }
   };

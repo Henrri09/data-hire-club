@@ -21,7 +21,9 @@ export default function CompanyDashboard() {
   } = useJobForm();
 
   const handleFormSubmit = async (e: React.FormEvent) => {
+    console.log('Form submit triggered in Dashboard');
     await handleSubmit(e, () => {
+      console.log('Success callback triggered');
       setIsDialogOpen(false);
       resetForm();
     });
@@ -46,6 +48,7 @@ export default function CompanyDashboard() {
                 handleInputChange={handleInputChange}
                 handleSubmit={handleFormSubmit}
                 onCancel={() => {
+                  console.log('Cancel triggered');
                   setIsDialogOpen(false);
                   resetForm();
                 }}
