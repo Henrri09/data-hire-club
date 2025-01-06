@@ -20,8 +20,11 @@ export default function CompanyDashboard() {
     resetForm 
   } = useJobForm();
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    handleSubmit(e, () => setIsDialogOpen(false));
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    await handleSubmit(e, () => {
+      setIsDialogOpen(false);
+      resetForm();
+    });
   };
 
   return (

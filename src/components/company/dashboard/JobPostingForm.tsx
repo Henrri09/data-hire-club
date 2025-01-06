@@ -26,9 +26,14 @@ export function JobPostingForm({
   onCancel,
   isSubmitting = false 
 }: JobPostingFormProps) {
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit(e);
+  };
+
   return (
     <form 
-      onSubmit={handleSubmit} 
+      onSubmit={onSubmit} 
       className="space-y-4 w-full max-h-[80vh] overflow-y-auto px-1"
     >
       <DialogHeader>
