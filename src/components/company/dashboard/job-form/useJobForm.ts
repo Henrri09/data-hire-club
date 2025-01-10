@@ -112,29 +112,34 @@ export function useJobForm() {
         company_id: user.id,
         title: formData.titulo,
         description: formData.descricao,
-        location: formData.local,
-        experience_level: formData.senioridade,
-        contract_type: formData.tipoContratacao,
+        location: formData.local || null,
+        experience_level: formData.senioridade || null,
+        contract_type: formData.tipoContratacao || null,
         salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
           ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
           : null,
         external_link: formData.linkExterno,
         status: 'active',
         job_type: 'full-time' as JobType,
-        work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
+        work_model: formData.local?.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
         requirements: [],
         responsibilities: [],
         applications_count: 0,
         views_count: 0,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+        benefits: null,
+        career: null,
+        max_applications: null,
+        skills_required: []
       };
 
       console.log('Job data to be inserted:', jobData);
 
       const { data, error: jobError } = await supabase
         .from('jobs')
-        .insert(jobData)
+        .insert([jobData])
         .select()
         .single();
 
