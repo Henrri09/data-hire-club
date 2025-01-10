@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useUser } from '@supabase/auth-helpers-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Database } from '@/integrations/supabase/types';
+
+type JobType = Database['public']['Enums']['job_type'];
 
 interface JobFormData {
   titulo: string;
@@ -109,7 +112,7 @@ export function useJobForm() {
           : null,
         external_link: formData.linkExterno,
         status: 'active',
-        job_type: 'full-time',
+        job_type: 'full-time' as JobType,
         work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
       };
 
