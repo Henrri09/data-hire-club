@@ -9,21 +9,35 @@ export const useJobsManagement = (userId: string | undefined) => {
   const { toast } = useToast();
 
   const fetchJobs = async () => {
+    if (!userId) return;
+    
     try {
+      setIsLoading(true);
+      console.log('Fetching jobs for user:', userId);
+      
       const { data: jobs, error } = await supabase
         .from('jobs')
         .select('id, title, status, applications_count')
         .eq('company_id', userId)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching jobs:', error);
+        toast({
+          title: "Erro ao carregar vagas",
+          description: "Não foi possível carregar suas vagas.",
+          variant: "destructive",
+        });
         return;
       }
 
+      console.log('Jobs fetched:', jobs);
       setJobs(jobs || []);
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,53 +96,6 @@ export const useJobsManagement = (userId: string | undefined) => {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('jobs')
-        .insert({
-          company_id: userId,
-          title: formData.titulo,
-          description: formData.descricao,
-          location: formData.local,
-          experience_level: formData.senioridade,
-          contract_type: formData.tipoContratacao,
-          salary_range: `${formData.faixaSalarialMin} - ${formData.faixaSalarialMax}`,
-          external_link: formData.linkExterno,
-          status: 'active',
-          job_type: 'full-time'
-        })
-        .select()
-        .single();
-
-      if (error) {
-        toast({
-          title: "Erro ao publicar vaga",
-          description: "Não foi possível publicar a vaga. Tente novamente.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Vaga publicada",
-        description: "A vaga foi publicada com sucesso!",
-      });
-
-      await fetchJobs();
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Erro ao publicar vaga",
-        description: "Ocorreu um erro ao publicar a vaga. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleEdit = async (formData: any) => {
     try {
       const { error } = await supabase
@@ -139,7 +106,9 @@ export const useJobsManagement = (userId: string | undefined) => {
           location: formData.local,
           experience_level: formData.senioridade,
           contract_type: formData.tipoContratacao,
-          salary_range: `${formData.faixaSalarialMin} - ${formData.faixaSalarialMax}`,
+          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+            ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
+            : null,
           external_link: formData.linkExterno,
         })
         .eq('id', formData.id);
@@ -169,7 +138,6 @@ export const useJobsManagement = (userId: string | undefined) => {
     fetchJobs,
     handleStatusChange,
     handleDelete,
-    handleSubmit,
     handleEdit
   };
 };

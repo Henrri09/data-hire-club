@@ -36,7 +36,6 @@ export function useJobForm() {
   const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
-    console.log('Field changed:', field, 'New value:', value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -44,10 +43,7 @@ export function useJobForm() {
   };
 
   const validateForm = () => {
-    console.log('Validating form data:', formData);
-    
     if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
-      console.log('Validation failed: Missing required fields');
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -57,7 +53,6 @@ export function useJobForm() {
     }
 
     if (!formData.linkExterno.startsWith('http://') && !formData.linkExterno.startsWith('https://')) {
-      console.log('Validation failed: Invalid external link format');
       toast({
         title: "Link inválido",
         description: "O link externo deve começar com http:// ou https://",
@@ -66,22 +61,18 @@ export function useJobForm() {
       return false;
     }
 
-    console.log('Form validation passed');
     return true;
   };
 
   const resetForm = () => {
-    console.log('Resetting form');
     setFormData(initialFormData);
     setIsSubmitting(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Form submission started');
     e.preventDefault();
     
     if (!user) {
-      console.log('Submission failed: No user logged in');
       toast({
         title: "Erro ao publicar vaga",
         description: "Você precisa estar logado para publicar vagas.",
@@ -91,12 +82,10 @@ export function useJobForm() {
     }
 
     if (!validateForm()) {
-      console.log('Submission failed: Form validation failed');
       return;
     }
 
     try {
-      console.log('Setting submitting state');
       setIsSubmitting(true);
 
       const jobData = {
@@ -119,17 +108,14 @@ export function useJobForm() {
         views_count: 0
       };
 
-      console.log('Inserting job data:', jobData);
       const { error: jobError } = await supabase
         .from('jobs')
         .insert(jobData);
 
       if (jobError) {
-        console.error('Error inserting job:', jobError);
         throw jobError;
       }
 
-      console.log('Job posted successfully');
       toast({
         title: "Vaga publicada",
         description: "Sua vaga foi publicada com sucesso!",
@@ -144,7 +130,6 @@ export function useJobForm() {
         variant: "destructive"
       });
     } finally {
-      console.log('Resetting submitting state');
       setIsSubmitting(false);
     }
   };
