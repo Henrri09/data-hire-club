@@ -25,15 +25,17 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
 
         if (!session) {
           setIsAuthenticated(false);
+          setIsLoading(false);
           return;
         }
 
-        // Verificar se o token está expirado
+        // Verificar se o token está próximo de expirar (menos de 5 minutos)
         const tokenExpirationTime = new Date(session.expires_at! * 1000);
         const currentTime = new Date();
+        const fiveMinutes = 5 * 60 * 1000; // 5 minutos em milissegundos
         
-        if (tokenExpirationTime <= currentTime) {
-          // Token expirado, fazer refresh
+        if (tokenExpirationTime.getTime() - currentTime.getTime() < fiveMinutes) {
+          // Token próximo de expirar, fazer refresh
           const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
           
           if (refreshError) {
@@ -47,6 +49,7 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
               description: "Por favor, faça login novamente",
               variant: "destructive",
             });
+            setIsLoading(false);
             return;
           }
         }
