@@ -27,6 +27,12 @@ export function JobsTab() {
     }
   }, [user?.id, fetchJobs]);
 
+  // Calculate pagination values
+  const totalPages = Math.ceil(jobs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentJobs = jobs.slice(startIndex, endIndex);
+
   return (
     <Card>
       <CardHeader>
