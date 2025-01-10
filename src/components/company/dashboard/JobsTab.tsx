@@ -17,9 +17,10 @@ export function JobsTab() {
 
   useEffect(() => {
     if (user?.id) {
+      console.log('Fetching jobs for user:', user.id);
       fetchJobs();
     }
-  }, [user?.id]);
+  }, [user?.id, fetchJobs]);
 
   return (
     <Card>
