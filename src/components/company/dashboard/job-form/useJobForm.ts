@@ -73,7 +73,7 @@ export function useJobForm() {
     setIsSubmitting(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent, onSuccess: () => void) => {
+  const handleSubmit = async (e: React.FormEvent, onSuccess?: () => void) => {
     console.log('Form submission started');
     e.preventDefault();
     
@@ -96,41 +96,27 @@ export function useJobForm() {
       console.log('Setting submitting state');
       setIsSubmitting(true);
 
-      console.log('Fetching company data');
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
+      console.log('Preparing job data for submission');
+      const jobData = {
+        company_id: user.id,
+        title: formData.titulo,
+        description: formData.descricao,
+        location: formData.local,
+        experience_level: formData.senioridade,
+        contract_type: formData.tipoContratacao,
+        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+          ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
+          : null,
+        external_link: formData.linkExterno,
+        status: 'active',
+        job_type: 'full-time',
+        work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
+      };
 
-      if (companyError || !company) {
-        console.error('Error fetching company:', companyError);
-        toast({
-          title: "Erro ao verificar empresa",
-          description: "Por favor, complete seu perfil de empresa primeiro.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('Inserting job data');
+      console.log('Inserting job data:', jobData);
       const { error: jobError } = await supabase
         .from('jobs')
-        .insert({
-          company_id: user.id,
-          title: formData.titulo,
-          description: formData.descricao,
-          location: formData.local,
-          experience_level: formData.senioridade,
-          contract_type: formData.tipoContratacao,
-          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
-            ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
-            : null,
-          external_link: formData.linkExterno,
-          status: 'active',
-          job_type: 'full-time',
-          work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
-        });
+        .insert(jobData);
 
       if (jobError) {
         console.error('Error inserting job:', jobError);
@@ -144,7 +130,10 @@ export function useJobForm() {
       });
 
       resetForm();
-      onSuccess();
+      if (onSuccess) {
+        console.log('Calling success callback');
+        onSuccess();
+      }
     } catch (error: any) {
       console.error('Error posting job:', error);
       toast({

@@ -27,6 +27,7 @@ export function JobPostingForm({
   isSubmitting = false 
 }: JobPostingFormProps) {
   const onSubmit = (e: React.FormEvent) => {
+    console.log('Form submit triggered in JobPostingForm');
     e.preventDefault();
     handleSubmit(e);
   };
