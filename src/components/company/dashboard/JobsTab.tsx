@@ -6,7 +6,6 @@ import { useJobsManagement } from "@/hooks/useJobsManagement";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function JobsTab() {
   const user = useUser();
@@ -25,25 +24,8 @@ export function JobsTab() {
     if (user?.id) {
       console.log('Fetching jobs for user:', user.id);
       fetchJobs();
-    } else {
-      console.log('No user ID available for fetching jobs');
     }
   }, [user?.id, fetchJobs]);
-
-  if (!user) {
-    return (
-      <Alert>
-        <AlertDescription>
-          Você precisa estar logado para visualizar suas vagas. Por favor, faça login novamente.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  const totalPages = Math.ceil(jobs.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentJobs = jobs.slice(startIndex, endIndex);
 
   return (
     <Card>

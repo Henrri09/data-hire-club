@@ -93,7 +93,7 @@ export function useJobForm() {
       console.error('No user found - user ID:', user?.id);
       toast({
         title: "Erro ao publicar vaga",
-        description: "Você precisa estar logado para publicar vagas. Por favor, faça login novamente.",
+        description: "Erro ao identificar sua empresa. Por favor, tente novamente.",
         variant: "destructive"
       });
       return;
