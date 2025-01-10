@@ -189,7 +189,7 @@ export const useJobsManagement = (userId: string | undefined) => {
         return;
       }
 
-      fetchJobs();
+      await fetchJobs();
       toast({
         title: "Vaga atualizada",
         description: "A vaga foi atualizada com sucesso.",

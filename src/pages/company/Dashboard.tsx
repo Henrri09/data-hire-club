@@ -9,16 +9,20 @@ import { ProfileTab } from "@/components/company/dashboard/ProfileTab";
 import { JobPostingForm } from "@/components/company/dashboard/JobPostingForm";
 import { CompanyHeader } from "@/components/company/Header";
 import { useJobForm } from "@/components/company/dashboard/job-form/useJobForm";
+import { useJobsManagement } from "@/hooks/useJobsManagement";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const user = useUser();
+  const { handleCreateJob } = useJobsManagement(user?.id);
   const { 
     formData, 
     isSubmitting, 
     handleInputChange, 
     handleSubmit, 
     resetForm 
-  } = useJobForm();
+  } = useJobForm(handleCreateJob);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     await handleSubmit(e);

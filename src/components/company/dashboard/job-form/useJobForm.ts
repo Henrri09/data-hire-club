@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useUser } from '@supabase/auth-helpers-react';
 import { useToast } from '@/hooks/use-toast';
-import { useJobsManagement } from '@/hooks/useJobsManagement';
 
 interface JobFormData {
   titulo: string;
@@ -14,11 +13,10 @@ interface JobFormData {
   linkExterno: string;
 }
 
-export function useJobForm() {
+export function useJobForm(handleCreateJob: (formData: JobFormData) => Promise<any>) {
   const { toast } = useToast();
   const user = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { handleCreateJob } = useJobsManagement(user?.id);
 
   const initialFormData: JobFormData = {
     titulo: "",
