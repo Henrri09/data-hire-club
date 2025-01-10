@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useUser } from '@supabase/auth-helpers-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface JobFormData {
@@ -15,7 +14,6 @@ interface JobFormData {
 
 export function useJobForm(handleCreateJob: (formData: JobFormData) => Promise<any>) {
   const { toast } = useToast();
-  const user = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initialFormData: JobFormData = {
@@ -85,16 +83,6 @@ export function useJobForm(handleCreateJob: (formData: JobFormData) => Promise<a
     e.preventDefault();
     console.log('Form submission started');
     
-    if (!user?.id) {
-      console.error('No user found - user ID:', user?.id);
-      toast({
-        title: "Erro ao publicar vaga",
-        description: "Erro ao identificar sua empresa. Por favor, tente novamente.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (!validateForm()) {
       console.log('Form validation failed');
       return;
