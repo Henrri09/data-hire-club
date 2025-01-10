@@ -5,12 +5,19 @@ import { JobListItem } from "./job/JobListItem";
 import { useJobsManagement } from "@/hooks/useJobsManagement";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { JobPostingForm } from "./JobPostingForm";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function JobsTab() {
   const user = useUser();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const itemsPerPage = 5;
+  const { toast } = useToast();
+  
   const {
     jobs,
     fetchJobs,
@@ -33,13 +40,92 @@ export function JobsTab() {
   const endIndex = startIndex + itemsPerPage;
   const currentJobs = jobs.slice(startIndex, endIndex);
 
+  const handleCreateJob = async (formData: any) => {
+    try {
+      if (!user?.id) {
+        toast({
+          title: "Erro",
+          description: "Você precisa estar logado para criar uma vaga",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.from('jobs').insert({
+        company_id: user.id,
+        title: formData.titulo,
+        description: formData.descricao,
+        location: formData.local,
+        experience_level: formData.senioridade,
+        contract_type: formData.tipoContratacao,
+        salary_range: `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`,
+        external_link: formData.linkExterno,
+        status: 'active'
+      });
+
+      if (error) {
+        console.error('Error creating job:', error);
+        toast({
+          title: "Erro ao criar vaga",
+          description: "Não foi possível criar a vaga. Tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Vaga criada com sucesso",
+      });
+
+      setIsDialogOpen(false);
+      fetchJobs(); // Refresh the jobs list
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao criar a vaga. Por favor, tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Minhas Vagas</CardTitle>
-        <CardDescription>
-          Gerencie suas vagas publicadas
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
+        <div>
+          <CardTitle>Minhas Vagas</CardTitle>
+          <CardDescription>
+            Gerencie suas vagas publicadas
+          </CardDescription>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Publicar Nova Vaga
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <JobPostingForm
+              formData={{
+                titulo: '',
+                descricao: '',
+                local: '',
+                senioridade: '',
+                tipoContratacao: '',
+                faixaSalarialMin: '',
+                faixaSalarialMax: '',
+                linkExterno: '',
+              }}
+              handleInputChange={(field, value) => {
+                // This will be handled by the form component
+              }}
+              handleSubmit={handleCreateJob}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
