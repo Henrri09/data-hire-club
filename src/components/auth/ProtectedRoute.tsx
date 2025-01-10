@@ -19,30 +19,58 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (session?.user) {
-          const { data: profile } = await supabase
+        if (sessionError) throw sessionError;
+
+        if (!session) {
+          setIsAuthenticated(false);
+          return;
+        }
+
+        // Verificar se o token está expirado
+        const tokenExpirationTime = new Date(session.expires_at! * 1000);
+        const currentTime = new Date();
+        
+        if (tokenExpirationTime <= currentTime) {
+          // Token expirado, fazer refresh
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError) {
+            throw refreshError;
+          }
+
+          if (!refreshData.session) {
+            setIsAuthenticated(false);
+            toast({
+              title: "Sessão expirada",
+              description: "Por favor, faça login novamente",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+
+        // Se chegou aqui, o usuário está autenticado
+        if (session.user) {
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('user_type')
             .eq('id', session.user.id)
             .single();
 
+          if (profileError) throw profileError;
+
           setUserType(profile?.user_type || null);
           setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          toast({
-            title: "Sessão expirada",
-            description: "Por favor, faça login novamente",
-            variant: "destructive",
-          });
         }
-      } catch (error) {
+
+      } catch (error: any) {
         console.error('Auth check error:', error);
+        setIsAuthenticated(false);
         toast({
           title: "Erro de autenticação",
-          description: "Ocorreu um erro ao verificar sua autenticação",
+          description: error.message || "Ocorreu um erro ao verificar sua autenticação",
           variant: "destructive",
         });
       } finally {
@@ -54,7 +82,7 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
 
     // Configurar listener para mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         setIsAuthenticated(false);
         setUserType(null);
       } else if (event === 'SIGNED_IN' && session) {
