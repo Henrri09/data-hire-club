@@ -2,6 +2,9 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Job } from "@/types/jobs.types";
+import { Database } from "@/integrations/supabase/types";
+
+type JobType = Database['public']['Enums']['job_type'];
 
 export const useJobsManagement = (userId: string | undefined) => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -45,6 +48,55 @@ export const useJobsManagement = (userId: string | undefined) => {
       setIsLoading(false);
     }
   }, [userId, toast]);
+
+  const handleCreateJob = async (formData: any) => {
+    try {
+      if (!userId) {
+        throw new Error('Usuário não identificado');
+      }
+
+      const jobData = {
+        company_id: userId,
+        title: formData.titulo,
+        description: formData.descricao,
+        location: formData.local || null,
+        experience_level: formData.senioridade || null,
+        contract_type: formData.tipoContratacao || null,
+        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+          ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
+          : null,
+        external_link: formData.linkExterno,
+        status: 'active',
+        job_type: 'full-time' as JobType,
+        work_model: formData.local?.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
+        requirements: [],
+        responsibilities: [],
+        applications_count: 0,
+        views_count: 0
+      };
+
+      console.log('Creating job with data:', jobData);
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert([jobData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating job:', error);
+        throw error;
+      }
+
+      console.log('Job created successfully:', data);
+      await fetchJobs();
+
+      return { success: true, data };
+    } catch (error: any) {
+      console.error('Error in handleCreateJob:', error);
+      throw error;
+    }
+  };
 
   const handleStatusChange = async (jobId: string, newStatus: string) => {
     try {
@@ -158,6 +210,7 @@ export const useJobsManagement = (userId: string | undefined) => {
     fetchJobs,
     handleStatusChange,
     handleDelete,
-    handleEdit
+    handleEdit,
+    handleCreateJob
   };
 };

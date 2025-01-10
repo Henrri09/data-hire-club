@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useUser } from '@supabase/auth-helpers-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Database } from '@/integrations/supabase/types';
-
-type JobType = Database['public']['Enums']['job_type'];
+import { useJobsManagement } from '@/hooks/useJobsManagement';
 
 interface JobFormData {
   titulo: string;
@@ -21,6 +18,7 @@ export function useJobForm() {
   const { toast } = useToast();
   const user = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { handleCreateJob } = useJobsManagement(user?.id);
 
   const initialFormData: JobFormData = {
     titulo: "",
@@ -106,56 +104,17 @@ export function useJobForm() {
 
     try {
       setIsSubmitting(true);
-      console.log('Creating job with user ID:', user.id);
+      console.log('Creating job with form data:', formData);
 
-      const jobData = {
-        company_id: user.id,
-        title: formData.titulo,
-        description: formData.descricao,
-        location: formData.local || null,
-        experience_level: formData.senioridade || null,
-        contract_type: formData.tipoContratacao || null,
-        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
-          ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
-          : null,
-        external_link: formData.linkExterno,
-        status: 'active',
-        job_type: 'full-time' as JobType,
-        work_model: formData.local?.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
-        requirements: [],
-        responsibilities: [],
-        applications_count: 0,
-        views_count: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        deleted_at: null,
-        benefits: null,
-        career: null,
-        max_applications: null,
-        skills_required: []
-      };
+      const result = await handleCreateJob(formData);
 
-      console.log('Job data to be inserted:', jobData);
-
-      const { data, error: jobError } = await supabase
-        .from('jobs')
-        .insert([jobData])
-        .select()
-        .single();
-
-      if (jobError) {
-        console.error('Error creating job:', jobError);
-        throw jobError;
+      if (result.success) {
+        toast({
+          title: "Vaga publicada",
+          description: "Sua vaga foi publicada com sucesso!",
+        });
+        resetForm();
       }
-
-      console.log('Job created successfully:', data);
-
-      toast({
-        title: "Vaga publicada",
-        description: "Sua vaga foi publicada com sucesso!",
-      });
-
-      resetForm();
     } catch (error: any) {
       console.error('Error posting job:', error);
       toast({
