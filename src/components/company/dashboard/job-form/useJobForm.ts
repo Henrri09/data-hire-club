@@ -43,7 +43,7 @@ export function useJobForm() {
   };
 
   const validateForm = () => {
-    const requiredFields = ['titulo', 'descricao', 'local', 'senioridade', 'tipoContratacao', 'linkExterno'];
+    const requiredFields = ['titulo', 'descricao', 'linkExterno'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof JobFormData]);
 
     if (missingFields.length > 0) {
@@ -87,9 +87,10 @@ export function useJobForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting form with data:', formData);
+    console.log('Form submission started');
     
     if (!user) {
+      console.error('No user found');
       toast({
         title: "Erro ao publicar vaga",
         description: "Você precisa estar logado para publicar vagas.",
@@ -99,6 +100,7 @@ export function useJobForm() {
     }
 
     if (!validateForm()) {
+      console.log('Form validation failed');
       return;
     }
 
