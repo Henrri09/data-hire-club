@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Job } from "@/types/jobs.types";
@@ -8,29 +8,16 @@ export const useJobsManagement = (userId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     if (!userId) return;
-    
+
     try {
       setIsLoading(true);
-      console.log('Fetching jobs for user:', userId);
-      
-      const { data: jobs, error } = await supabase
+      console.log('Fetching jobs for company:', userId);
+
+      const { data, error } = await supabase
         .from('jobs')
-        .select(`
-          id,
-          title,
-          status,
-          applications_count,
-          views_count,
-          created_at,
-          description,
-          location,
-          experience_level,
-          contract_type,
-          salary_range,
-          external_link
-        `)
+        .select('*')
         .eq('company_id', userId)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
@@ -39,14 +26,14 @@ export const useJobsManagement = (userId: string | undefined) => {
         console.error('Error fetching jobs:', error);
         toast({
           title: "Erro ao carregar vagas",
-          description: "Não foi possível carregar suas vagas. Tente novamente mais tarde.",
+          description: "Não foi possível carregar suas vagas. Tente novamente.",
           variant: "destructive",
         });
         return;
       }
 
-      console.log('Jobs fetched:', jobs);
-      setJobs(jobs || []);
+      console.log('Jobs fetched:', data);
+      setJobs(data || []);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -57,7 +44,7 @@ export const useJobsManagement = (userId: string | undefined) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId, toast]);
 
   const handleStatusChange = async (jobId: string, newStatus: string) => {
     try {

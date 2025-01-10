@@ -108,7 +108,6 @@ export function useJobForm() {
       setIsSubmitting(true);
       console.log('Creating job with user ID:', user.id);
 
-      // Prepare job data
       const jobData = {
         company_id: user.id,
         title: formData.titulo,
@@ -138,11 +137,10 @@ export function useJobForm() {
 
       console.log('Job data to be inserted:', jobData);
 
-      // Inserir a vaga
       const { data, error: jobError } = await supabase
         .from('jobs')
         .insert([jobData])
-        .select('*')
+        .select()
         .single();
 
       if (jobError) {
