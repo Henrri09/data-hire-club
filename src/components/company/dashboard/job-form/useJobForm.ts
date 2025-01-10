@@ -89,11 +89,11 @@ export function useJobForm() {
     e.preventDefault();
     console.log('Form submission started');
     
-    if (!user) {
-      console.error('No user found');
+    if (!user?.id) {
+      console.error('No user found - user ID:', user?.id);
       toast({
         title: "Erro ao publicar vaga",
-        description: "Você precisa estar logado para publicar vagas.",
+        description: "Você precisa estar logado para publicar vagas. Por favor, faça login novamente.",
         variant: "destructive"
       });
       return;
