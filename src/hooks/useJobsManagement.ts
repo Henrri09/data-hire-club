@@ -17,7 +17,20 @@ export const useJobsManagement = (userId: string | undefined) => {
       
       const { data: jobs, error } = await supabase
         .from('jobs')
-        .select('id, title, status, applications_count')
+        .select(`
+          id,
+          title,
+          status,
+          applications_count,
+          views_count,
+          created_at,
+          description,
+          location,
+          experience_level,
+          contract_type,
+          salary_range,
+          external_link
+        `)
         .eq('company_id', userId)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
@@ -26,7 +39,7 @@ export const useJobsManagement = (userId: string | undefined) => {
         console.error('Error fetching jobs:', error);
         toast({
           title: "Erro ao carregar vagas",
-          description: "Não foi possível carregar suas vagas.",
+          description: "Não foi possível carregar suas vagas. Tente novamente mais tarde.",
           variant: "destructive",
         });
         return;
@@ -36,6 +49,11 @@ export const useJobsManagement = (userId: string | undefined) => {
       setJobs(jobs || []);
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao carregar as vagas. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -63,10 +81,15 @@ export const useJobsManagement = (userId: string | undefined) => {
 
       toast({
         title: "Status atualizado",
-        description: "O status da vaga foi atualizado com sucesso.",
+        description: `A vaga foi ${newStatus === 'active' ? 'ativada' : 'desativada'} com sucesso.`,
       });
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao atualizar o status. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -93,6 +116,11 @@ export const useJobsManagement = (userId: string | undefined) => {
       });
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao excluir a vaga. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -129,6 +157,11 @@ export const useJobsManagement = (userId: string | undefined) => {
       });
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao atualizar a vaga. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
