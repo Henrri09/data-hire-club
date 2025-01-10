@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useUser } from "@supabase/auth-helpers-react";
 import { JobListItem } from "./job/JobListItem";
 import { useJobsManagement } from "@/hooks/useJobsManagement";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function JobsTab() {
   const user = useUser();
@@ -33,9 +34,16 @@ export function JobsTab() {
       <CardContent>
         <div className="space-y-4">
           {isLoading ? (
-            <p>Carregando vagas...</p>
+            <div className="space-y-3">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
           ) : jobs.length === 0 ? (
-            <p>Nenhuma vaga publicada ainda.</p>
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Nenhuma vaga publicada ainda.</p>
+              <p className="text-sm mt-2">Clique em "Publicar Nova Vaga" para começar.</p>
+            </div>
           ) : (
             jobs.map((job) => (
               <JobListItem

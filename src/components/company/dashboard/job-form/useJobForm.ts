@@ -43,7 +43,10 @@ export function useJobForm() {
   };
 
   const validateForm = () => {
-    if (!formData.titulo || !formData.descricao || !formData.linkExterno) {
+    const requiredFields = ['titulo', 'descricao', 'local', 'senioridade', 'tipoContratacao', 'linkExterno'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof JobFormData]);
+
+    if (missingFields.length > 0) {
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -59,6 +62,19 @@ export function useJobForm() {
         variant: "destructive"
       });
       return false;
+    }
+
+    if (formData.faixaSalarialMin && formData.faixaSalarialMax) {
+      const min = parseFloat(formData.faixaSalarialMin);
+      const max = parseFloat(formData.faixaSalarialMax);
+      if (min > max) {
+        toast({
+          title: "Faixa salarial inválida",
+          description: "O valor mínimo não pode ser maior que o valor máximo",
+          variant: "destructive"
+        });
+        return false;
+      }
     }
 
     return true;
@@ -105,7 +121,9 @@ export function useJobForm() {
         requirements: [],
         responsibilities: [],
         applications_count: 0,
-        views_count: 0
+        views_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
 
       const { error: jobError } = await supabase
