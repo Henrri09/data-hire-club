@@ -51,7 +51,7 @@ export function JobsTab() {
         return;
       }
 
-      const { error } = await supabase.from('jobs').insert({
+      const jobData = {
         company_id: user.id,
         title: formData.titulo,
         description: formData.descricao,
@@ -60,8 +60,18 @@ export function JobsTab() {
         contract_type: formData.tipoContratacao,
         salary_range: `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`,
         external_link: formData.linkExterno,
-        status: 'active'
-      });
+        status: 'active',
+        job_type: 'full-time', // Required field
+        work_model: formData.local?.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
+        requirements: [],
+        responsibilities: [],
+        applications_count: 0,
+        views_count: 0
+      };
+
+      console.log('Attempting to create job with data:', jobData);
+
+      const { error } = await supabase.from('jobs').insert(jobData);
 
       if (error) {
         console.error('Error creating job:', error);
