@@ -76,7 +76,7 @@ export function useJobForm() {
     setIsSubmitting(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent, onSuccess?: () => void) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     console.log('Form submission started');
     e.preventDefault();
     
@@ -99,7 +99,6 @@ export function useJobForm() {
       console.log('Setting submitting state');
       setIsSubmitting(true);
 
-      console.log('Preparing job data for submission');
       const jobData = {
         company_id: user.id,
         title: formData.titulo,
@@ -113,7 +112,11 @@ export function useJobForm() {
         external_link: formData.linkExterno,
         status: 'active',
         job_type: 'full-time' as JobType,
-        work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site'
+        work_model: formData.local.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
+        requirements: [],
+        responsibilities: [],
+        applications_count: 0,
+        views_count: 0
       };
 
       console.log('Inserting job data:', jobData);
@@ -133,10 +136,6 @@ export function useJobForm() {
       });
 
       resetForm();
-      if (onSuccess) {
-        console.log('Calling success callback');
-        onSuccess();
-      }
     } catch (error: any) {
       console.error('Error posting job:', error);
       toast({
