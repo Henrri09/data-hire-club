@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { JobPostingForm } from "./JobPostingForm";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 
 export function JobsTab() {
   const user = useUser();
@@ -51,7 +52,7 @@ export function JobsTab() {
         return;
       }
 
-      const jobData = {
+      const jobData: Database['public']['Tables']['jobs']['Insert'] = {
         company_id: user.id,
         title: formData.titulo,
         description: formData.descricao,
@@ -61,7 +62,7 @@ export function JobsTab() {
         salary_range: `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`,
         external_link: formData.linkExterno,
         status: 'active',
-        job_type: 'full-time', // Required field
+        job_type: 'full-time' as const, // Explicitly type as "full-time"
         work_model: formData.local?.toLowerCase().includes('remoto') ? 'remote' : 'on-site',
         requirements: [],
         responsibilities: [],
