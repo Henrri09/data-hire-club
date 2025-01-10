@@ -1,7 +1,6 @@
 import { DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { FormFields } from "./job-form/FormFields";
 import { FormActions } from "./job-form/FormActions";
-import { useState } from "react";
 
 interface JobPostingFormProps {
   formData: {
@@ -15,30 +14,22 @@ interface JobPostingFormProps {
     linkExterno: string;
   };
   handleInputChange: (field: string, value: string) => void;
-  handleSubmit: (formData: any) => void;
+  handleSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
 
 export function JobPostingForm({ 
-  formData: initialFormData, 
+  formData, 
+  handleInputChange, 
   handleSubmit, 
   onCancel,
   isSubmitting = false 
 }: JobPostingFormProps) {
-  const [formData, setFormData] = useState(initialFormData);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submit triggered in JobPostingForm');
-    await handleSubmit(formData);
+    await handleSubmit(e);
   };
 
   return (
