@@ -27,10 +27,9 @@ export function JobPostingForm({
   isSubmitting = false 
 }: JobPostingFormProps) {
   const onSubmit = async (e: React.FormEvent) => {
-    console.log('Form submit triggered in JobPostingForm');
     e.preventDefault();
+    console.log('Form submit triggered in JobPostingForm');
     await handleSubmit(e);
-    onCancel(); // Fecha o diálogo após o submit
   };
 
   return (

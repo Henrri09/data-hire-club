@@ -87,6 +87,7 @@ export function useJobForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form with data:', formData);
     
     if (!user) {
       toast({
@@ -103,6 +104,7 @@ export function useJobForm() {
 
     try {
       setIsSubmitting(true);
+      console.log('Creating job with user ID:', user.id);
 
       const jobData = {
         company_id: user.id,
@@ -126,13 +128,20 @@ export function useJobForm() {
         updated_at: new Date().toISOString()
       };
 
-      const { error: jobError } = await supabase
+      console.log('Job data to be inserted:', jobData);
+
+      const { data, error: jobError } = await supabase
         .from('jobs')
-        .insert(jobData);
+        .insert(jobData)
+        .select()
+        .single();
 
       if (jobError) {
+        console.error('Error creating job:', jobError);
         throw jobError;
       }
+
+      console.log('Job created successfully:', data);
 
       toast({
         title: "Vaga publicada",
