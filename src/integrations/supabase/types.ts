@@ -331,6 +331,50 @@ export type Database = {
         }
         Relationships: []
       }
+      external_scripts: {
+        Row: {
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          script_content: string
+          script_type: Database["public"]["Enums"]["script_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          script_content: string
+          script_type: Database["public"]["Enums"]["script_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          script_content?: string
+          script_type?: Database["public"]["Enums"]["script_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_scripts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gamification_levels: {
         Row: {
           badge_url: string | null
@@ -662,6 +706,7 @@ export type Database = {
     Enums: {
       application_status: "pending" | "reviewed" | "accepted" | "rejected"
       job_type: "full-time" | "part-time" | "contract"
+      script_type: "GA" | "GTM" | "META_PIXEL" | "OTHER"
       user_type: "candidate" | "company"
       user_type_enum: "candidate" | "company"
     }

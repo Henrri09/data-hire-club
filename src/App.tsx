@@ -12,6 +12,7 @@ import CompanyRegister from "./pages/company/Register";
 import Introductions from "./pages/candidate/community/Introductions";
 import Learning from "./pages/candidate/community/Learning";
 import Questions from "./pages/candidate/community/Questions";
+import SEOScripts from "./pages/candidate/admin/SEOScripts";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { CompleteProfile } from "./components/auth/CompleteProfile";
 
@@ -52,6 +53,11 @@ function App() {
         <Route path="/candidate/jobs/community/questions" element={
           <ProtectedRoute requiredUserType="candidate">
             <Questions />
+          </ProtectedRoute>
+        } />
+        <Route path="/candidate/admin/seo-scripts" element={
+          <ProtectedRoute requiredUserType="candidate">
+            <SEOScripts />
           </ProtectedRoute>
         } />
         

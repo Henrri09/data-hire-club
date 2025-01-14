@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2 } from "lucide-react";
+import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2, Code } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
@@ -121,6 +121,14 @@ export function CandidateSidebar() {
     }
   ];
 
+  const adminItems = [
+    {
+      icon: Code,
+      label: "Scripts SEO",
+      path: "/candidate/admin/seo-scripts"
+    }
+  ];
+
   return (
     <aside className="w-64 bg-gray-50 border-r fixed top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
       <nav className="space-y-6 p-4">
@@ -157,6 +165,21 @@ export function CandidateSidebar() {
             onDeleteItem={handleDeleteLink}
           />
         </div>
+
+        {isAdmin && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+              Administração
+            </h2>
+            {adminItems.map((item) => (
+              <SidebarMenuItem
+                key={item.path}
+                {...item}
+                isActive={location.pathname === item.path}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="space-y-2">
           <button
