@@ -339,8 +339,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
-          script_content: string
           script_type: Database["public"]["Enums"]["script_type"]
+          tracking_id: string
           updated_at: string
         }
         Insert: {
@@ -350,8 +350,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
-          script_content: string
           script_type: Database["public"]["Enums"]["script_type"]
+          tracking_id: string
           updated_at?: string
         }
         Update: {
@@ -361,8 +361,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
-          script_content?: string
           script_type?: Database["public"]["Enums"]["script_type"]
+          tracking_id?: string
           updated_at?: string
         }
         Relationships: [

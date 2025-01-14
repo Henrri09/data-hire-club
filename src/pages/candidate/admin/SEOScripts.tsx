@@ -9,20 +9,28 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { AddScriptDialog } from "@/components/community/admin/seo/AddScriptDialog";
 
 interface ExternalScript {
   id: string;
   name: string;
-  script_content: string;
-  script_type: 'GA' | 'GTM' | 'META_PIXEL' | 'OTHER';
+  script_type: 'GA' | 'GTM' | 'META_PIXEL';
+  tracking_id: string;
   is_active: boolean;
   created_at: string;
 }
+
+const scriptTypeLabels = {
+  GA: 'Google Analytics 4',
+  GTM: 'Google Tag Manager',
+  META_PIXEL: 'Meta Pixel'
+};
 
 export default function SEOScripts() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [scripts, setScripts] = useState<ExternalScript[]>([]);
+  const [isAddScriptOpen, setIsAddScriptOpen] = useState(false);
 
   useEffect(() => {
     fetchScripts();
@@ -78,7 +86,10 @@ export default function SEOScripts() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Scripts SEO</CardTitle>
-                <Button className="bg-[#7779f5] hover:bg-[#7779f5]/90">
+                <Button 
+                  className="bg-[#7779f5] hover:bg-[#7779f5]/90"
+                  onClick={() => setIsAddScriptOpen(true)}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Script
                 </Button>
@@ -89,16 +100,17 @@ export default function SEOScripts() {
                     <TableRow>
                       <TableHead>Nome</TableHead>
                       <TableHead>Tipo</TableHead>
+                      <TableHead>ID de Rastreamento</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Criado em</TableHead>
-                      <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {scripts.map((script) => (
                       <TableRow key={script.id}>
                         <TableCell>{script.name}</TableCell>
-                        <TableCell>{script.script_type}</TableCell>
+                        <TableCell>{scriptTypeLabels[script.script_type]}</TableCell>
+                        <TableCell>{script.tracking_id}</TableCell>
                         <TableCell>
                           <Switch
                             checked={script.is_active}
@@ -107,11 +119,6 @@ export default function SEOScripts() {
                         </TableCell>
                         <TableCell>
                           {new Date(script.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">
-                            Editar
-                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -122,6 +129,12 @@ export default function SEOScripts() {
           </div>
         </main>
       </div>
+
+      <AddScriptDialog 
+        open={isAddScriptOpen}
+        onOpenChange={setIsAddScriptOpen}
+        onSuccess={fetchScripts}
+      />
     </div>
   );
 }
