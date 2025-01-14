@@ -18,6 +18,9 @@ interface ExternalScript {
   tracking_id: string;
   is_active: boolean;
   created_at: string;
+  created_by: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 const scriptTypeLabels = {
@@ -51,7 +54,12 @@ export default function SEOScripts() {
       return;
     }
 
-    setScripts(data || []);
+    // Filter out any scripts with type 'OTHER' to match our interface
+    const validScripts = data?.filter(script => 
+      ['GA', 'GTM', 'META_PIXEL'].includes(script.script_type)
+    ) as ExternalScript[];
+
+    setScripts(validScripts || []);
   };
 
   const toggleScriptStatus = async (id: string, currentStatus: boolean) => {
