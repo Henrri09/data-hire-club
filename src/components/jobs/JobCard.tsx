@@ -36,7 +36,7 @@ export function JobCard({ job }: JobCardProps) {
       <Dialog>
         <DialogTrigger asChild>
           <Button 
-            className="w-full mt-4 bg-[#7779f5] hover:bg-[#9b87f5] text-white transition-colors text-sm md:text-base"
+            className="w-full mt-4 bg-[#7779f5] hover:bg-[#7779f5]/90 text-white transition-colors text-sm md:text-base"
           >
             Ver vaga
           </Button>
@@ -59,7 +59,7 @@ export function JobCard({ job }: JobCardProps) {
             ) : (
               <Button 
                 onClick={() => setIsApplying(true)}
-                className="w-full mt-6 bg-[#7779f5] hover:bg-[#9b87f5] text-white transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-6 bg-[#7779f5] hover:bg-[#7779f5]/90 text-white transition-colors flex items-center justify-center gap-2"
               >
                 Apply for this position
               </Button>
