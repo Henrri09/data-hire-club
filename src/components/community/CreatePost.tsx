@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -93,6 +93,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           <Button 
             type="submit" 
             disabled={!content.trim() || isSubmitting}
+            className="bg-[#7779f5] hover:bg-[#7779f5]/90"
           >
             {isSubmitting ? "Publicando..." : "Publicar"}
           </Button>
