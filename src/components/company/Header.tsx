@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export function CompanyHeader() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<{
     company_name: string;
     logo_url: string | null;
@@ -42,8 +45,21 @@ export function CompanyHeader() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/company/login';
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Logout realizado com sucesso",
+        description: "Você foi desconectado da sua conta",
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao fazer logout",
+        description: "Ocorreu um erro ao tentar desconectar. Tente novamente.",
+      });
+    }
   };
 
   return (
