@@ -124,7 +124,7 @@ export function CandidateSidebar() {
   const adminItems = [
     {
       icon: Code,
-      label: "Scripts SEO",
+      label: "Traqueamento",
       path: "/candidate/admin/seo-scripts"
     }
   ];
