@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { LogOut, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -21,6 +21,7 @@ export function CandidateHeader() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -52,7 +53,11 @@ export function CandidateHeader() {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      window.location.href = '/login';
+      navigate('/');
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
     } catch (error) {
       console.error('Error logging out:', error);
       toast({
