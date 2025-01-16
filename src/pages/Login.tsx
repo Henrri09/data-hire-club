@@ -41,6 +41,8 @@ export default function Login() {
           return;
         }
 
+        console.log('Profile:', profile);
+
         // Redirecionar baseado no tipo de usuário
         if (profile.user_type === 'candidate') {
           navigate('/candidate/dashboard');
@@ -73,8 +75,8 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <div className="w-full max-w-md space-y-8">
           <div className="mb-6">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -115,16 +117,16 @@ export default function Login() {
             </div>
 
             <div className="text-right">
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 className="text-sm text-[#8B5CF6] hover:underline"
               >
                 Esqueceu sua senha?
               </Link>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
               disabled={loading}
             >

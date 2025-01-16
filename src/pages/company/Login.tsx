@@ -42,6 +42,8 @@ export default function CompanyLogin() {
         .eq('id', authData.user.id)
         .maybeSingle();
 
+      console.log('Profile data:', profileData);
+
       if (profileError) throw profileError;
 
       if (!profileData) {
@@ -80,8 +82,8 @@ export default function CompanyLogin() {
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
           <div className="mb-6">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -98,10 +100,10 @@ export default function CompanyLogin() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail corporativo</Label>
-                <Input 
-                  id="email" 
+                <Input
+                  id="email"
                   name="email"
-                  type="email" 
+                  type="email"
                   placeholder="empresa@email.com"
                   className="bg-white"
                   required
@@ -109,17 +111,17 @@ export default function CompanyLogin() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input 
-                  id="password" 
+                <Input
+                  id="password"
                   name="password"
-                  type="password" 
+                  type="password"
                   placeholder="••••••••"
                   className="bg-white"
                   required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
                 disabled={isLoading}
               >

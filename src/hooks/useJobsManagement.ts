@@ -55,14 +55,14 @@ export const useJobsManagement = (userId: string | undefined) => {
         throw new Error('Usuário não identificado');
       }
 
-      const jobData = {
+      const jobData: Database['public']['Tables']['jobs']['Insert'] = {
         company_id: userId,
         title: formData.titulo,
         description: formData.descricao,
         location: formData.local || null,
         experience_level: formData.senioridade || null,
         contract_type: formData.tipoContratacao || null,
-        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+        salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax
           ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
           : null,
         external_link: formData.linkExterno,
@@ -72,7 +72,10 @@ export const useJobsManagement = (userId: string | undefined) => {
         requirements: [],
         responsibilities: [],
         applications_count: 0,
-        views_count: 0
+        views_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
       };
 
       console.log('Creating job with data:', jobData);
@@ -114,7 +117,7 @@ export const useJobsManagement = (userId: string | undefined) => {
         return;
       }
 
-      setJobs(jobs.map(job => 
+      setJobs(jobs.map(job =>
         job.id === jobId ? { ...job, status: newStatus } : job
       ));
 
@@ -173,7 +176,7 @@ export const useJobsManagement = (userId: string | undefined) => {
           location: formData.local,
           experience_level: formData.senioridade,
           contract_type: formData.tipoContratacao,
-          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax 
+          salary_range: formData.faixaSalarialMin && formData.faixaSalarialMax
             ? `${formData.faixaSalarialMin}-${formData.faixaSalarialMax}`
             : null,
           external_link: formData.linkExterno,

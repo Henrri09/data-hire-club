@@ -6,15 +6,19 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@supabase/auth-helpers-react";
+
 
 export default function CandidateDashboard() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
+  const user = useUser()
+  console.log('User:', user);
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
-      
+
       if (error) {
         console.error('Session check error:', error);
         toast({

@@ -35,7 +35,7 @@ export default function CompanyRegister() {
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -48,13 +48,27 @@ export default function CompanyRegister() {
         },
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
+
+      // Criar registro na tabela companies
+      const { error: companyError } = await supabase
+        .from('companies')
+        .insert([
+          {
+            id: authData.user?.id,
+            company_name: companyName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        ]);
+
+      if (companyError) throw companyError;
 
       toast({
         title: "Cadastro realizado com sucesso!",
         description: "Enviamos um email de confirmação para o seu endereço. Por favor, verifique sua caixa de entrada para ativar sua conta.",
       });
-      
+
       navigate('/company/login');
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -84,8 +98,8 @@ export default function CompanyRegister() {
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
           <div className="mb-6">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -102,59 +116,59 @@ export default function CompanyRegister() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="companyName">Nome da Empresa</Label>
-                <Input 
-                  id="companyName" 
+                <Input
+                  id="companyName"
                   name="companyName"
-                  placeholder="Nome da empresa" 
+                  placeholder="Nome da empresa"
                   className="bg-white"
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="responsibleName">Nome do Responsável</Label>
-                <Input 
-                  id="responsibleName" 
+                <Input
+                  id="responsibleName"
                   name="responsibleName"
-                  placeholder="Nome completo" 
+                  placeholder="Nome completo"
                   className="bg-white"
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
-                <Input 
-                  id="email" 
+                <Input
+                  id="email"
                   name="email"
-                  type="email" 
-                  placeholder="empresa@email.com" 
+                  type="email"
+                  placeholder="empresa@email.com"
                   className="bg-white"
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input 
-                  id="password" 
+                <Input
+                  id="password"
                   name="password"
-                  type="password" 
-                  placeholder="••••••••" 
+                  type="password"
+                  placeholder="••••••••"
                   className="bg-white"
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirme a Senha</Label>
-                <Input 
-                  id="confirmPassword" 
+                <Input
+                  id="confirmPassword"
                   name="confirmPassword"
-                  type="password" 
-                  placeholder="••••••••" 
+                  type="password"
+                  placeholder="••••••••"
                   className="bg-white"
-                  required 
+                  required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
                 disabled={isLoading}
               >

@@ -36,6 +36,27 @@ export default function Register() {
         }
       });
 
+      console.log('Data:', data);
+
+      if (formData.userType === 'company') {
+        const { data: companyData, error: companyError } = await supabase.from('companies').insert({
+          company_name: formData.fullName,
+          id: data.user?.id
+        }).select()
+        console.log('Company data:', companyData);
+        if (companyError) throw companyError;
+
+      }
+
+      if (formData.userType === 'candidate') {
+        const { data: candidateData, error: candidateError } = await supabase.from('candidates').insert({
+          full_name: formData.fullName,
+          email: formData.email,
+          id: data.user?.id
+        });
+        if (candidateError) throw candidateError;
+      }
+
       if (error) throw error;
 
       if (data) {
@@ -73,8 +94,8 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
           <div className="mb-6">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -106,7 +127,7 @@ export default function Register() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Nome completo</Label>
-                <Input 
+                <Input
                   id="fullName"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -117,7 +138,7 @@ export default function Register() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
-                <Input 
+                <Input
                   id="email"
                   type="email"
                   value={formData.email}
@@ -129,7 +150,7 @@ export default function Register() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input 
+                <Input
                   id="password"
                   type="password"
                   value={formData.password}
@@ -139,8 +160,8 @@ export default function Register() {
                   required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
                 disabled={loading}
               >

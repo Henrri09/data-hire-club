@@ -16,12 +16,12 @@ export default function CompanyDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const user = useUser();
   const { handleCreateJob } = useJobsManagement(user?.id);
-  const { 
-    formData, 
-    isSubmitting, 
-    handleInputChange, 
-    handleSubmit, 
-    resetForm 
+  const {
+    formData,
+    isSubmitting,
+    handleInputChange,
+    handleSubmit,
+    resetForm
   } = useJobForm(handleCreateJob);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -59,19 +59,19 @@ export default function CompanyDashboard() {
 
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList className="bg-[#7779f5]/10 inline-flex w-auto">
-            <TabsTrigger 
+            <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap text-xs md:text-sm"
             >
               Visão Geral
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="jobs"
               className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap text-xs md:text-sm"
             >
               Minhas Vagas
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="profile"
               className="data-[state=active]:bg-[#7779f5] data-[state=active]:text-white whitespace-nowrap text-xs md:text-sm"
             >

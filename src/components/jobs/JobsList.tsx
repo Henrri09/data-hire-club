@@ -42,6 +42,8 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
 
         const { data, error: fetchError } = await query;
 
+        console.log('Dados recebidos:', data);
+
         if (fetchError) {
           console.error('Erro ao buscar vagas:', fetchError);
           throw new Error(fetchError.message);
