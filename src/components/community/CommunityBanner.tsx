@@ -10,7 +10,9 @@ interface Banner {
   image_url?: string
 }
 
-export function CommunityBanner() {
+type CommunityBannerType = 'INTRODUCTION' | 'LEARNING' | 'QUESTIONS'
+
+export function CommunityBanner({ type }: { type: CommunityBannerType }) {
   const [banner, setBanner] = useState<Banner | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const { toast } = useToast()
@@ -21,9 +23,9 @@ export function CommunityBanner() {
         .from('community_banners')
         .select('id, image_url')
         .eq('is_active', true)
+        .eq('type', type)
         .order('created_at', { ascending: false })
         .limit(1)
-        
       if (data && data.length > 0) {
         setBanner(data[0])
       }
@@ -41,7 +43,7 @@ export function CommunityBanner() {
           .select('is_admin')
           .eq('id', user.id)
           .single()
-        
+
         setIsAdmin(profile?.is_admin || false)
       }
     }
@@ -81,10 +83,10 @@ export function CommunityBanner() {
   return (
     <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
       <CardContent className="p-6 relative">
-        <img 
-          src={banner.image_url} 
+        <img
+          src={banner.image_url}
           alt="Banner da comunidade"
-          className="rounded-lg w-full h-32 object-cover" 
+          className="rounded-lg w-full h-32 object-cover"
         />
         {isAdmin && (
           <Button

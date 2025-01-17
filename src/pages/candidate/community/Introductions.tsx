@@ -66,7 +66,7 @@ export default function Introductions() {
           .select('is_admin')
           .eq('id', user.id)
           .single()
-        
+
         setIsAdmin(profile?.is_admin || false)
       }
     }
@@ -140,7 +140,7 @@ export default function Introductions() {
       } else {
         setPosts(prev => [...prev, ...postsWithLikes])
       }
-      
+
       setHasMore(postsWithLikes.length === postsPerPage)
     } catch (error) {
       console.error('Error fetching posts:', error)
@@ -162,29 +162,29 @@ export default function Introductions() {
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
             <IntroductionsHeader isAdmin={isAdmin} />
-            
+
             {isAdmin && (
-              <AdminControls 
-                currentRule={currentRule?.content || ""} 
+              <AdminControls
+                currentRule={currentRule?.content || ""}
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
-            
+
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
               onSearch={() => fetchPosts(true)}
             />
 
-            <CommunityBanner />
-            <PinnedRule 
-              content={currentRule?.content || ""} 
+            <CommunityBanner type="INTRODUCTION" />
+            <PinnedRule
+              content={currentRule?.content || ""}
               ruleId={currentRule?.id}
               isAdmin={isAdmin}
               onUpdate={fetchCurrentRule}
             />
             <CreatePost onPostCreated={() => fetchPosts(true)} />
-            
+
             <div className="space-y-4">
               <PostsList
                 posts={posts}
