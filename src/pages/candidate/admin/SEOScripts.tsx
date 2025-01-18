@@ -93,7 +93,7 @@ export default function SEOScripts() {
           <div className="max-w-5xl mx-auto space-y-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Scripts SEO</CardTitle>
+                <CardTitle>Traqueamento</CardTitle>
                 <Button 
                   className="bg-[#7779f5] hover:bg-[#7779f5]/90"
                   onClick={() => setIsAddScriptOpen(true)}
