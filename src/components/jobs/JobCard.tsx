@@ -29,6 +29,12 @@ interface JobCardProps {
 export function JobCard({ job }: JobCardProps) {
   const [isApplying, setIsApplying] = useState(false);
 
+  const handleApply = () => {
+    if (job.application_url) {
+      window.open(job.application_url, '_blank');
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4 md:p-6 hover:shadow-lg transition-shadow w-full max-w-2xl mx-auto">
       <JobCardHeader job={job} />
@@ -48,22 +54,12 @@ export function JobCard({ job }: JobCardProps) {
           <div className="mt-4 space-y-4">
             <JobDetails job={job} />
             
-            {isApplying ? (
-              <JobApplicationForm
-                jobId={job.id}
-                onCancel={() => setIsApplying(false)}
-                onSuccess={() => {
-                  setIsApplying(false);
-                }}
-              />
-            ) : (
-              <Button 
-                onClick={() => setIsApplying(true)}
-                className="w-full mt-6 bg-[#7779f5] hover:bg-[#7779f5]/90 text-white transition-colors flex items-center justify-center gap-2"
-              >
-                Apply for this position
-              </Button>
-            )}
+            <Button 
+              onClick={handleApply}
+              className="w-full mt-6 bg-[#7779f5] hover:bg-[#7779f5]/90 text-white transition-colors flex items-center justify-center gap-2"
+            >
+              Quero me candidatar
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
