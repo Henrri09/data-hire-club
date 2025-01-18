@@ -33,6 +33,13 @@ export function JobDetails({ job }: JobDetailsProps) {
 
   return (
     <div className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
+          <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
+        </div>
+      </div>
+
       <div>
         <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Descrição</h4>
         <p className="text-[#1e293b]/80 text-sm md:text-base whitespace-pre-line">{job.description}</p>
