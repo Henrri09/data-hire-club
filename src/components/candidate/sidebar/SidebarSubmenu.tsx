@@ -34,7 +34,7 @@ export function SidebarSubmenu({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full justify-between text-gray-600 hover:bg-gray-100"
       >
-        <span className="text-xs">Links Internos</span>
+        <span className="text-xs">Links Externos</span>
         <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "transform rotate-180")} />
       </Button>
 
