@@ -30,11 +30,13 @@ export function JobCardHeader({ job }: JobCardHeaderProps) {
 
   // Função para formatar a localização
   const formatLocation = (location: string) => {
+    if (!location) return 'Localização não especificada';
+    
     const lowercaseLocation = location.toLowerCase();
     if (lowercaseLocation.includes('remoto') || lowercaseLocation.includes('remote')) {
       return '🌐 Remoto';
     }
-    return `📍 ${location}`;
+    return location;
   };
 
   return (
