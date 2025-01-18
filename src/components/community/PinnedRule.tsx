@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Pin, Pencil, Trash2 } from "lucide-react"
+import { Pin, Pencil } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -21,34 +21,6 @@ export function PinnedRule({ content, ruleId, isAdmin = false, onUpdate }: Pinne
   const { toast } = useToast()
 
   if (!content) return null
-
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true)
-      const { error } = await supabase
-        .from('community_pinned_rules')
-        .update({ is_active: false })
-        .eq('id', ruleId)
-
-      if (error) throw error
-
-      toast({
-        title: "Regra removida",
-        description: "A regra foi removida com sucesso.",
-      })
-
-      if (onUpdate) onUpdate()
-    } catch (error) {
-      console.error('Error deleting rule:', error)
-      toast({
-        title: "Erro ao remover regra",
-        description: "Ocorreu um erro ao tentar remover a regra.",
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleEdit = async () => {
     try {
@@ -89,24 +61,14 @@ export function PinnedRule({ content, ruleId, isAdmin = false, onUpdate }: Pinne
               <span className="text-sm font-medium">Regra Fixada</span>
             </div>
             {isAdmin && (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsEditDialogOpen(true)}
-                  disabled={isLoading}
-                >
-                  <Pencil className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDelete}
-                  disabled={isLoading}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditDialogOpen(true)}
+                disabled={isLoading}
+              >
+                <Pencil className="h-4 w-4 text-muted-foreground" />
+              </Button>
             )}
           </div>
           <p className="text-sm text-muted-foreground">{content}</p>
