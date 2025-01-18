@@ -17,6 +17,7 @@ export default function Register() {
     email: "",
     password: "",
     fullName: "",
+    companyName: "",
     userType: "candidate"
   });
 
@@ -31,30 +32,19 @@ export default function Register() {
         options: {
           data: {
             full_name: formData.fullName,
-            user_type: formData.userType
+            user_type: formData.userType,
+            company_name: formData.userType === 'company' ? formData.companyName : undefined
           }
         }
       });
 
-      console.log('Data:', data);
-
       if (formData.userType === 'company') {
-        const { data: companyData, error: companyError } = await supabase.from('companies').insert({
-          company_name: formData.fullName,
-          id: data.user?.id
-        }).select()
-        console.log('Company data:', companyData);
-        if (companyError) throw companyError;
-
-      }
-
-      if (formData.userType === 'candidate') {
-        const { data: candidateData, error: candidateError } = await supabase.from('candidates').insert({
-          full_name: formData.fullName,
-          email: formData.email,
-          id: data.user?.id
+        const { error: companyError } = await supabase.from('companies').insert({
+          id: data.user?.id,
+          company_name: formData.companyName,
         });
-        if (candidateError) throw candidateError;
+        
+        if (companyError) throw companyError;
       }
 
       if (error) throw error;
@@ -126,16 +116,33 @@ export default function Register() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nome completo</Label>
+                <Label htmlFor="fullName">
+                  {formData.userType === 'company' ? 'Nome do Responsável' : 'Nome completo'}
+                </Label>
                 <Input
                   id="fullName"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="Seu nome completo"
+                  placeholder={formData.userType === 'company' ? 'Nome do responsável' : 'Seu nome completo'}
                   className="bg-white"
                   required
                 />
               </div>
+
+              {formData.userType === 'company' && (
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Nome da Empresa</Label>
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    placeholder="Nome da empresa"
+                    className="bg-white"
+                    required
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input

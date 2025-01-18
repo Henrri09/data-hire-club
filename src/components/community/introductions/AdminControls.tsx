@@ -111,6 +111,7 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
       })
 
       onRuleUpdate?.()
+      setRule("") // Limpa o campo após atualização bem-sucedida
 
     } catch (error) {
       console.error('Error updating rule:', error)

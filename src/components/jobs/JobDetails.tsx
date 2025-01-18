@@ -17,42 +17,22 @@ interface JobDetailsProps {
 }
 
 export function JobDetails({ job }: JobDetailsProps) {
+  // Função para formatar a faixa salarial
+  const formatSalaryRange = (salary: string) => {
+    if (!salary || salary.toLowerCase() === 'a combinar') return 'A combinar';
+    
+    // Remove caracteres não numéricos e divide por hífen
+    const parts = salary.split('-').map(part => {
+      const number = part.replace(/[^\d]/g, '');
+      if (!number) return 'A combinar';
+      return `R$ ${Number(number).toLocaleString('pt-BR')}`;
+    });
+
+    return parts.join(' - ');
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
-            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
-            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
-          </div>
-        </div>
-
-        {(job.views !== undefined || job.applications !== undefined) && (
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-            {job.views !== undefined && (
-              <div className="text-sm">
-                <span className="font-medium">Visualizações:</span> {job.views}
-              </div>
-            )}
-            {job.applications !== undefined && (
-              <div className="text-sm">
-                <span className="font-medium">Candidaturas:</span> {job.applications}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Tipo de Trabalho</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.type}</p>
-      </div>
-
       <div>
         <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Descrição</h4>
         <p className="text-[#1e293b]/80 text-sm md:text-base whitespace-pre-line">{job.description}</p>
@@ -87,7 +67,7 @@ export function JobDetails({ job }: JobDetailsProps) {
 
       <div>
         <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Faixa Salarial</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.salary_range}</p>
+        <p className="text-[#1e293b]/80 text-sm md:text-base">{formatSalaryRange(job.salary_range)}</p>
       </div>
 
       <div>

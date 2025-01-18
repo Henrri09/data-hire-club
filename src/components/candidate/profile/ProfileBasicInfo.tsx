@@ -7,10 +7,13 @@ interface ProfileBasicInfoProps {
   headline: string;
   location: string;
   experienceLevel: string;
+  companyName?: string;
+  userType?: string;
   onFullNameChange: (value: string) => void;
   onHeadlineChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onExperienceLevelChange: (value: string) => void;
+  onCompanyNameChange?: (value: string) => void;
 }
 
 export function ProfileBasicInfo({
@@ -18,10 +21,13 @@ export function ProfileBasicInfo({
   headline,
   location,
   experienceLevel,
+  companyName,
+  userType,
   onFullNameChange,
   onHeadlineChange,
   onLocationChange,
   onExperienceLevelChange,
+  onCompanyNameChange,
 }: ProfileBasicInfoProps) {
   return (
     <div className="space-y-4">
@@ -34,6 +40,18 @@ export function ProfileBasicInfo({
           placeholder="Seu nome completo"
         />
       </div>
+
+      {userType === 'company' && onCompanyNameChange && (
+        <div className="grid gap-2">
+          <Label htmlFor="companyName">Nome da Empresa</Label>
+          <Input
+            id="companyName"
+            value={companyName}
+            onChange={(e) => onCompanyNameChange(e.target.value)}
+            placeholder="Nome da sua empresa"
+          />
+        </div>
+      )}
 
       <div className="grid gap-2">
         <Label htmlFor="headline">Título Profissional</Label>

@@ -304,6 +304,7 @@ export type Database = {
           industry: string | null
           location: string | null
           logo_url: string | null
+          responsavel: string | null
           size: string | null
           updated_at: string
           website: string | null
@@ -316,6 +317,7 @@ export type Database = {
           industry?: string | null
           location?: string | null
           logo_url?: string | null
+          responsavel?: string | null
           size?: string | null
           updated_at?: string
           website?: string | null
@@ -328,6 +330,7 @@ export type Database = {
           industry?: string | null
           location?: string | null
           logo_url?: string | null
+          responsavel?: string | null
           size?: string | null
           updated_at?: string
           website?: string | null

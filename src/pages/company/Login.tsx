@@ -130,7 +130,7 @@ export default function CompanyLogin() {
               <div className="text-center space-y-2">
                 <p className="text-sm text-gray-600">
                   Não tem uma conta?{" "}
-                  <Link to="/company/register" className="text-[#8B5CF6] hover:underline">
+                  <Link to="/register" className="text-[#8B5CF6] hover:underline">
                     Cadastre sua empresa
                   </Link>
                 </p>

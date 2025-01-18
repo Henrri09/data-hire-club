@@ -159,6 +159,8 @@ export default function Questions() {
             </div>
 
             <CommunityBanner type="QUESTIONS" />
+            <PinnedRule content={currentRule} />
+
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
