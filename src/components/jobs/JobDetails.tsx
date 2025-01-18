@@ -41,7 +41,7 @@ export function JobDetails({ job }: JobDetailsProps) {
 
         <div>
           <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
-          <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
+          <p className="text-[#1e293b]/80 text-sm md:text-base uppercase">{job.location}</p>
         </div>
       </div>
 
