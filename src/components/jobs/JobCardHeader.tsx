@@ -28,6 +28,15 @@ export function JobCardHeader({ job }: JobCardHeaderProps) {
     return parts.join(' - ');
   };
 
+  // Função para formatar a localização
+  const formatLocation = (location: string) => {
+    const lowercaseLocation = location.toLowerCase();
+    if (lowercaseLocation.includes('remoto') || lowercaseLocation.includes('remote')) {
+      return '🌐 Remoto';
+    }
+    return `📍 ${location}`;
+  };
+
   return (
     <>
       <h3 className="text-lg md:text-xl font-semibold mb-2 text-[#1e293b]">{job.title}</h3>
@@ -35,7 +44,7 @@ export function JobCardHeader({ job }: JobCardHeaderProps) {
       <div className="flex flex-wrap gap-3 md:gap-4 text-[#1e293b]/70 mb-3 md:mb-4">
         <span className="flex items-center gap-1 text-sm">
           <MapPin className="w-4 h-4" />
-          {job.location.toUpperCase()}
+          {formatLocation(job.location)}
         </span>
         <span className="flex items-center gap-1 text-sm">
           <Briefcase className="w-4 h-4" />
