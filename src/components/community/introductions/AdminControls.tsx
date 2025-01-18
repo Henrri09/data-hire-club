@@ -110,8 +110,8 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
         description: "A regra foi atualizada com sucesso!"
       })
 
-      onRuleUpdate?.()
       setRule("") // Limpa o campo após atualização bem-sucedida
+      onRuleUpdate?.()
 
     } catch (error) {
       console.error('Error updating rule:', error)
