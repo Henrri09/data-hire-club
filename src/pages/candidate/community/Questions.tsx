@@ -5,8 +5,6 @@ import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AdminControls } from "@/components/community/introductions/AdminControls"
-import { Button } from "@/components/ui/button"
-import { Settings2 } from "lucide-react"
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostsList } from "@/components/community/introductions/PostsList"
 import { PinnedRule } from "@/components/community/PinnedRule"
@@ -30,7 +28,7 @@ export default function Questions() {
           .select('is_admin')
           .eq('id', user.id)
           .single()
-        
+
         setIsAdmin(profile?.is_admin || false)
       }
     }
@@ -50,7 +48,7 @@ export default function Questions() {
         .maybeSingle()
 
       if (error) throw error
-      
+
       setCurrentRule(data?.content || "")
     } catch (error) {
       console.error('Error fetching current rule:', error)
@@ -61,7 +59,7 @@ export default function Questions() {
     try {
       setIsLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       const baseQuery = supabase
         .from('community_posts')
         .select(user ? `
@@ -84,14 +82,14 @@ export default function Questions() {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      const query = searchQuery 
+      const query = searchQuery
         ? baseQuery.ilike('content', `%${searchQuery}%`)
         : baseQuery
 
       const { data, error } = await query
 
       if (error) throw error
-      
+
       setPosts(data || [])
       setHasMore(data?.length === 10)
     } catch (error) {
@@ -108,7 +106,7 @@ export default function Questions() {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       const baseQuery = supabase
         .from('community_posts')
         .select(user ? `
@@ -132,14 +130,14 @@ export default function Questions() {
         .lt('created_at', lastPost.created_at)
         .limit(10)
 
-      const query = searchQuery 
+      const query = searchQuery
         ? baseQuery.ilike('content', `%${searchQuery}%`)
         : baseQuery
 
       const { data, error } = await query
 
       if (error) throw error
-      
+
       setPosts(prev => [...prev, ...(data || [])])
       setHasMore(data?.length === 10)
     } catch (error) {
@@ -160,16 +158,17 @@ export default function Questions() {
               <h1 className="text-2xl font-bold">Tire suas Dúvidas</h1>
             </div>
 
-            <CommunityBanner />
+            <CommunityBanner type="QUESTIONS" />
             <PinnedRule content={currentRule} />
-            
+
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
-            
+            <PinnedRule content={currentRule} />
+
             <div className="mt-6">
               <CreatePost onPostCreated={loadPosts} />
               <PostsList

@@ -19,61 +19,36 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) throw sessionError;
+        // Verifica a sessão atual
+        const { data: { session } } = await supabase.auth.getSession();
 
-        if (!session) {
+        if (!session?.user) {
           setIsAuthenticated(false);
           setIsLoading(false);
           return;
         }
 
-        // Verificar se o token está próximo de expirar (menos de 5 minutos)
-        const tokenExpirationTime = new Date(session.expires_at! * 1000);
-        const currentTime = new Date();
-        const fiveMinutes = 5 * 60 * 1000; // 5 minutos em milissegundos
-        
-        if (tokenExpirationTime.getTime() - currentTime.getTime() < fiveMinutes) {
-          // Token próximo de expirar, fazer refresh
-          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-          
-          if (refreshError) {
-            throw refreshError;
-          }
+        // Busca o perfil do usuário
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', session.user.id)
+          .single();
 
-          if (!refreshData.session) {
-            setIsAuthenticated(false);
-            toast({
-              title: "Sessão expirada",
-              description: "Por favor, faça login novamente",
-              variant: "destructive",
-            });
-            setIsLoading(false);
-            return;
-          }
+        if (profileError) {
+          console.error("Erro ao buscar perfil:", profileError);
+          throw profileError;
         }
 
-        // Se chegou aqui, o usuário está autenticado
-        if (session.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('user_type')
-            .eq('id', session.user.id)
-            .single();
+        setUserType(profile?.user_type || null);
+        setIsAuthenticated(true);
 
-          if (profileError) throw profileError;
-
-          setUserType(profile?.user_type || null);
-          setIsAuthenticated(true);
-        }
-
-      } catch (error: any) {
-        console.error('Auth check error:', error);
+      } catch (error) {
+        console.error("Erro na verificação de autenticação:", error);
         setIsAuthenticated(false);
         toast({
           title: "Erro de autenticação",
-          description: error.message || "Ocorreu um erro ao verificar sua autenticação",
+          description: "Por favor, faça login novamente",
           variant: "destructive",
         });
       } finally {
@@ -81,22 +56,19 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
       }
     };
 
+    // Executa a verificação inicial
     checkAuth();
 
-    // Configurar listener para mudanças na autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Configura o listener de mudança de estado
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         setUserType(null);
-      } else if (event === 'SIGNED_IN' && session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('user_type')
-          .eq('id', session.user.id)
-          .single();
+        setIsLoading(false);
+      }
 
-        setUserType(profile?.user_type || null);
-        setIsAuthenticated(true);
+      if (event === 'SIGNED_IN' && session) {
+        checkAuth();
       }
     });
 
@@ -105,6 +77,7 @@ export function ProtectedRoute({ children, requiredUserType }: ProtectedRoutePro
     };
   }, [toast]);
 
+  // Renderização com base no estado
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

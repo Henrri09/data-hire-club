@@ -43,7 +43,7 @@ export default function Learning() {
         .select('is_admin')
         .eq('id', user.id)
         .single()
-      
+
       setIsAdmin(profile?.is_admin || false)
     }
   }
@@ -58,7 +58,7 @@ export default function Learning() {
         .maybeSingle()
 
       if (error) throw error
-      
+
       setCurrentRule(data?.content || "")
     } catch (error) {
       console.error('Error fetching current rule:', error)
@@ -110,12 +110,12 @@ export default function Learning() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <CommunityHeader 
+            <CommunityHeader
               title="O que você está aprendendo?"
               isAdmin={isAdmin}
             />
 
-            <CommunityBanner />
+            <CommunityBanner type="LEARNING" />
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
@@ -124,7 +124,7 @@ export default function Learning() {
             )}
             <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={fetchPosts} />
-            
+
             <div className="space-y-4">
               {isLoading ? (
                 <p className="text-center text-gray-500">Carregando posts...</p>

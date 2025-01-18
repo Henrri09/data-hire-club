@@ -13,8 +13,6 @@ export default function CandidateDashboard() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  const user = useUser()
-  console.log('User:', user);
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
