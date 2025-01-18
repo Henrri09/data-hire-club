@@ -17,6 +17,20 @@ interface JobDetailsProps {
 }
 
 export function JobDetails({ job }: JobDetailsProps) {
+  // Função para formatar a faixa salarial
+  const formatSalaryRange = (salary: string) => {
+    if (!salary || salary.toLowerCase() === 'a combinar') return 'A combinar';
+    
+    // Remove caracteres não numéricos e divide por hífen
+    const parts = salary.split('-').map(part => {
+      const number = part.replace(/[^\d]/g, '');
+      if (!number) return 'A combinar';
+      return `R$ ${Number(number).toLocaleString('pt-BR')}`;
+    });
+
+    return parts.join(' - ');
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -70,7 +84,7 @@ export function JobDetails({ job }: JobDetailsProps) {
 
       <div>
         <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Faixa Salarial</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.salary_range}</p>
+        <p className="text-[#1e293b]/80 text-sm md:text-base">{formatSalaryRange(job.salary_range)}</p>
       </div>
 
       <div>
