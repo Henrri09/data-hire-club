@@ -19,33 +19,16 @@ interface JobDetailsProps {
 export function JobDetails({ job }: JobDetailsProps) {
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
-            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
-            <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
+          <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
         </div>
 
-        {(job.views !== undefined || job.applications !== undefined) && (
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-            {job.views !== undefined && (
-              <div className="text-sm">
-                <span className="font-medium">Visualizações:</span> {job.views}
-              </div>
-            )}
-            {job.applications !== undefined && (
-              <div className="text-sm">
-                <span className="font-medium">Candidaturas:</span> {job.applications}
-              </div>
-            )}
-          </div>
-        )}
+        <div>
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
+          <p className="text-[#1e293b]/80 text-sm md:text-base">{job.location}</p>
+        </div>
       </div>
 
       <div>
