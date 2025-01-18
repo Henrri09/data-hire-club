@@ -1,37 +1,49 @@
 interface JobDetailsProps {
   job: {
+    title: string;
+    company: string;
+    location: string;
+    type: string;
     description: string;
-    requirements?: string[];
-    responsibilities?: string[];
     seniority: string;
     salary_range: string;
     contract_type: string;
     benefits?: string[];
-    location?: string;
+    requirements?: string[];
+    responsibilities?: string[];
+    views?: number;
+    applications?: number;
   };
 }
 
 export function JobDetails({ job }: JobDetailsProps) {
+  // Função para formatar a faixa salarial
+  const formatSalaryRange = (salary: string) => {
+    if (!salary || salary.toLowerCase() === 'a combinar') return 'A combinar';
+    
+    // Remove caracteres não numéricos e divide por hífen
+    const parts = salary.split('-').map(part => {
+      const number = part.replace(/[^\d]/g, '');
+      if (!number) return 'A combinar';
+      return `R$ ${Number(number).toLocaleString('pt-BR')}`;
+    });
+
+    return parts.join(' - ');
+  };
+
   return (
     <div className="space-y-6">
-      {job.location && (
-        <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Localização</h3>
-          <p className="text-sm text-[#64748b]">{job.location}</p>
-        </div>
-      )}
-
       <div>
-        <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Descrição</h3>
-        <p className="text-sm text-[#64748b] whitespace-pre-wrap">{job.description}</p>
+        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Descrição</h4>
+        <p className="text-[#1e293b]/80 text-sm md:text-base whitespace-pre-line">{job.description}</p>
       </div>
 
       {job.requirements && job.requirements.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Requisitos</h3>
-          <ul className="list-disc list-inside text-sm text-[#64748b] space-y-1">
-            {job.requirements.map((requirement, index) => (
-              <li key={index}>{requirement}</li>
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Requisitos</h4>
+          <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
+            {job.requirements.map((req, index) => (
+              <li key={index} className="pl-2">{req}</li>
             ))}
           </ul>
         </div>
@@ -39,38 +51,36 @@ export function JobDetails({ job }: JobDetailsProps) {
 
       {job.responsibilities && job.responsibilities.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Responsabilidades</h3>
-          <ul className="list-disc list-inside text-sm text-[#64748b] space-y-1">
-            {job.responsibilities.map((responsibility, index) => (
-              <li key={index}>{responsibility}</li>
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Responsabilidades</h4>
+          <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
+            {job.responsibilities.map((resp, index) => (
+              <li key={index} className="pl-2">{resp}</li>
             ))}
           </ul>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Senioridade</h3>
-          <p className="text-sm text-[#64748b]">{job.seniority}</p>
-        </div>
+      <div>
+        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Senioridade</h4>
+        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.seniority}</p>
+      </div>
 
-        <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Faixa Salarial</h3>
-          <p className="text-sm text-[#64748b]">{job.salary_range}</p>
-        </div>
+      <div>
+        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Faixa Salarial</h4>
+        <p className="text-[#1e293b]/80 text-sm md:text-base">{formatSalaryRange(job.salary_range)}</p>
+      </div>
 
-        <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Tipo de Contratação</h3>
-          <p className="text-sm text-[#64748b]">{job.contract_type}</p>
-        </div>
+      <div>
+        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Tipo de Contratação</h4>
+        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.contract_type}</p>
       </div>
 
       {job.benefits && job.benefits.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">Benefícios</h3>
-          <ul className="list-disc list-inside text-sm text-[#64748b] space-y-1">
+          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Benefícios</h4>
+          <ul className="list-disc list-inside text-[#1e293b]/80 text-sm md:text-base space-y-1">
             {job.benefits.map((benefit, index) => (
-              <li key={index}>{benefit}</li>
+              <li key={index} className="pl-2">{benefit}</li>
             ))}
           </ul>
         </div>
