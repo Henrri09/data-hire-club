@@ -167,7 +167,6 @@ export default function Questions() {
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
-            <PinnedRule content={currentRule} />
 
             <div className="mt-6">
               <CreatePost onPostCreated={loadPosts} />
