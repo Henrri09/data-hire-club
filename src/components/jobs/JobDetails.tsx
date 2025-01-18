@@ -38,16 +38,6 @@ export function JobDetails({ job }: JobDetailsProps) {
           <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Empresa</h4>
           <p className="text-[#1e293b]/80 text-sm md:text-base">{job.company}</p>
         </div>
-
-        <div>
-          <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Localização</h4>
-          <p className="text-[#1e293b]/80 text-sm md:text-base uppercase">{job.location.toUpperCase()}</p>
-        </div>
-      </div>
-
-      <div>
-        <h4 className="font-semibold text-[#1e293b] text-sm md:text-base">Tipo de Trabalho</h4>
-        <p className="text-[#1e293b]/80 text-sm md:text-base">{job.type}</p>
       </div>
 
       <div>
