@@ -1,0 +1,4 @@
+project_id = "jdwcgbwcwkrrvaqtokju"
+
+[global.env]
+BREVO_API_KEY = "env(BREVO_API_KEY)"
