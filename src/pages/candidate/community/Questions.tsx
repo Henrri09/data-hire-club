@@ -161,13 +161,14 @@ export default function Questions() {
             </div>
 
             <CommunityBanner />
+            <PinnedRule content={currentRule} />
+            
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
-            <PinnedRule content={currentRule} />
             
             <div className="mt-6">
               <CreatePost onPostCreated={loadPosts} />
