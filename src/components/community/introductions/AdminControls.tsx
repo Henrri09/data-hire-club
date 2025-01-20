@@ -1,10 +1,11 @@
 import { useState } from "react"
-import { Pin, Upload } from "lucide-react"
+import { Pin, Upload, AlertCircleIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface AdminControlsProps {
   currentRule?: string
@@ -15,9 +16,16 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
   const [rule, setRule] = useState(currentRule || "")
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
   const [isUpdatingRule, setIsUpdatingRule] = useState(false)
+  const [selectedBannerType, setSelectedBannerType] = useState<"INTRODUCTION" | "LEARNING" | "QUESTIONS" | null>(null)
+  const [errorBannerType, setErrorBannerType] = useState<string | null>(null)
   const { toast } = useToast()
 
   const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedBannerType) {
+      return setErrorBannerType("Selecione o tipo de banner para poder fazer upload")
+    } else {
+      setErrorBannerType(null)
+    }
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -30,7 +38,7 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
       // Upload to Storage
       const fileExt = file.name.split('.').pop()
       const fileName = `${crypto.randomUUID()}.${fileExt}`
-      
+
       const { error: uploadError } = await supabase.storage
         .from('banners')
         .upload(fileName, file, {
@@ -50,6 +58,7 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
         .from('community_banners')
         .update({ is_active: false })
         .eq('is_active', true)
+        .eq('type', selectedBannerType)
 
       // Criar novo banner
       const { error: insertError } = await supabase
@@ -57,7 +66,8 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
         .insert([{
           image_url: publicUrl,
           is_active: true,
-          created_by: user.id
+          created_by: user.id,
+          type: selectedBannerType
         }])
 
       if (insertError) throw insertError
@@ -140,13 +150,13 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
             Regra Fixada
           </label>
           <div className="flex gap-2">
-            <Textarea 
-              placeholder="Digite a regra que será fixada..." 
+            <Textarea
+              placeholder="Digite a regra que será fixada..."
               value={rule}
               onChange={(e) => setRule(e.target.value)}
               className="min-h-[100px] bg-background"
             />
-            <Button 
+            <Button
               onClick={handleRuleUpdate}
               disabled={!rule.trim() || isUpdatingRule}
             >
@@ -159,9 +169,31 @@ export function AdminControls({ currentRule, onRuleUpdate }: AdminControlsProps)
           <label className="text-sm font-medium mb-2 block">
             Banner da Comunidade
           </label>
+
+          <div className="flex flex-col gap-2 mb-2">
+            <Select
+              onValueChange={(value) => setSelectedBannerType(value as "INTRODUCTION" | "LEARNING" | "QUESTIONS" | null)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo de banner" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="INTRODUCTION">Introdução</SelectItem>
+                <SelectItem value="LEARNING">Aprendizado</SelectItem>
+                <SelectItem value="QUESTIONS">Perguntas</SelectItem>
+              </SelectContent>
+            </Select>
+            {errorBannerType && <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <AlertCircleIcon size={16} color="rgb(239 68 68)" />
+              <p className="text-red-500">
+                Selecione o tipo de banner para poder fazer upload
+              </p>
+            </div>}
+          </div>
+
           <div className="relative">
             <Button
-              variant="outline" 
+              variant="outline"
               className="w-full h-24 relative bg-background"
               disabled={isUploadingBanner}
             >
