@@ -8,9 +8,10 @@ interface SimpleBannerUploadProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS";
 }
 
-export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBannerUploadProps) {
+export function SimpleBannerUpload({ open, onOpenChange, onSuccess, type }: SimpleBannerUploadProps) {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
@@ -72,7 +73,8 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
         .insert([{
           image_url: publicUrl,
           created_by: user.id,
-          is_active: true
+          is_active: true,
+          type: type
         }]);
 
       if (insertError) throw insertError;

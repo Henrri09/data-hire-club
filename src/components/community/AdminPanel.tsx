@@ -21,7 +21,7 @@ export function AdminPanel() {
       .from("community_banners")
       .select("*")
       .order("created_at", { ascending: false })
-    
+
     if (bannersData) setBanners(bannersData)
   }
 
@@ -84,11 +84,11 @@ export function AdminPanel() {
         </Table>
       </div>
 
-      <SimpleBannerUpload 
+      {/* <SimpleBannerUpload
         open={isAddingBanner}
         onOpenChange={setIsAddingBanner}
         onSuccess={fetchBanners}
-      />
+      /> */}
     </div>
   )
 }
