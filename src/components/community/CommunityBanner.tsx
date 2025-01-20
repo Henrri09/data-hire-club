@@ -86,7 +86,7 @@ export function CommunityBanner({ type }: { type: CommunityBannerType }) {
         <img
           src={banner.image_url}
           alt="Banner da comunidade"
-          className="rounded-lg w-full h-32 object-cover"
+          className="rounded-lg w-full h-[315px] object-cover"
         />
         {isAdmin && (
           <Button
