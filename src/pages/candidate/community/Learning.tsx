@@ -9,6 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { CommunityHeader } from "@/components/community/CommunityHeader"
 import { PinnedRule } from "@/components/community/PinnedRule"
 import { AdminControls } from "@/components/community/introductions/AdminControls"
+import { SearchBar } from "@/components/community/introductions/SearchBar"
 
 interface Post {
   id: string
@@ -28,6 +29,7 @@ export default function Learning() {
   const [isLoading, setIsLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [currentRule, setCurrentRule] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
     fetchPosts()
@@ -68,7 +70,7 @@ export default function Learning() {
   const fetchPosts = async () => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('community_posts')
         .select(`
           id,
@@ -80,6 +82,12 @@ export default function Learning() {
         `)
         .eq('post_type', 'learning')
         .order('created_at', { ascending: false })
+
+      if (searchQuery) {
+        query = query.ilike('content', `%${searchQuery}%`)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
 
@@ -121,6 +129,13 @@ export default function Learning() {
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
+
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={fetchPosts}
+            />
+
             <CommunityBanner type="LEARNING" />
             <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={fetchPosts} />
@@ -129,7 +144,11 @@ export default function Learning() {
               {isLoading ? (
                 <p className="text-center text-gray-500">Carregando posts...</p>
               ) : posts.length === 0 ? (
-                <p className="text-center text-gray-500">Nenhum post encontrado. Compartilhe o que você está aprendendo!</p>
+                <p className="text-center text-gray-500">
+                  {searchQuery 
+                    ? "Nenhum post encontrado para sua busca."
+                    : "Nenhum post encontrado. Compartilhe o que você está aprendendo!"}
+                </p>
               ) : (
                 posts.map((post) => (
                   <PostCard
