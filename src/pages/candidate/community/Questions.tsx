@@ -8,6 +8,7 @@ import { AdminControls } from "@/components/community/introductions/AdminControl
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostsList } from "@/components/community/introductions/PostsList"
 import { PinnedRule } from "@/components/community/PinnedRule"
+import { SearchBar } from "@/components/community/introductions/SearchBar"
 
 export default function Questions() {
   const isMobile = useIsMobile()
@@ -158,15 +159,21 @@ export default function Questions() {
               <h1 className="text-2xl font-bold">Tire suas Dúvidas</h1>
             </div>
 
-            <CommunityBanner type="QUESTIONS" />
-            <PinnedRule content={currentRule} />
-
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
+
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={loadPosts}
+            />
+
+            <CommunityBanner type="QUESTIONS" />
+            <PinnedRule content={currentRule} />
 
             <div className="mt-6">
               <CreatePost onPostCreated={loadPosts} />
