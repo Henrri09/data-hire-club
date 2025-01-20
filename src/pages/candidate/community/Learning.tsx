@@ -115,13 +115,13 @@ export default function Learning() {
               isAdmin={isAdmin}
             />
 
-            <CommunityBanner type="LEARNING" />
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
               />
             )}
+            <CommunityBanner type="LEARNING" />
             <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={fetchPosts} />
 
