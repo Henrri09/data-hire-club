@@ -163,6 +163,7 @@ export default function Questions() {
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
+                type="QUESTIONS"
               />
             )}
 

@@ -6,7 +6,6 @@ import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { CommunityHeader } from "@/components/community/CommunityHeader"
 import { PinnedRule } from "@/components/community/PinnedRule"
 import { AdminControls } from "@/components/community/introductions/AdminControls"
 import { SearchBar } from "@/components/community/introductions/SearchBar"
@@ -118,15 +117,15 @@ export default function Learning() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <CommunityHeader
-              title="O que você está aprendendo?"
-              isAdmin={isAdmin}
-            />
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">O que você está aprendendo?</h1>
+            </div>
 
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
                 onRuleUpdate={fetchCurrentRule}
+                type="LEARNING"
               />
             )}
 
