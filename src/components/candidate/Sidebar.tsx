@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2, Code } from "lucide-react";
+import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2, Code, Image } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
@@ -49,7 +49,7 @@ export function CandidateSidebar() {
         .select('is_admin')
         .eq('id', user.id)
         .single();
-      
+
       setIsAdmin(profile?.is_admin || false);
     }
   };
@@ -126,6 +126,11 @@ export function CandidateSidebar() {
       icon: Code,
       label: "Traqueamento",
       path: "/candidate/admin/seo-scripts"
+    },
+    {
+      icon: Image,
+      label: "Banners",
+      path: "/candidate/admin/banners"
     }
   ];
 
@@ -156,7 +161,7 @@ export function CandidateSidebar() {
               isActive={location.pathname === item.path}
             />
           ))}
-          
+
           <SidebarSubmenu
             isAdmin={isAdmin}
             items={internalLinks}
@@ -192,8 +197,8 @@ export function CandidateSidebar() {
         </div>
       </nav>
 
-      <EditProfileDialog 
-        open={isEditProfileOpen} 
+      <EditProfileDialog
+        open={isEditProfileOpen}
         onOpenChange={setIsEditProfileOpen}
         onProfileUpdate={handleProfileUpdate}
       />

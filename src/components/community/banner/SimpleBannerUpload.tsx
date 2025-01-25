@@ -3,17 +3,20 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface SimpleBannerUploadProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS";
 }
 
-export function SimpleBannerUpload({ open, onOpenChange, onSuccess, type }: SimpleBannerUploadProps) {
+export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBannerUploadProps) {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [type, setType] = useState<"INTRODUCTION" | "LEARNING" | "QUESTIONS">("INTRODUCTION");
+  const [display, setDisplay] = useState<"MOBILE" | "DESKTOP">("DESKTOP");
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -50,6 +53,14 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess, type }: Simp
         throw new Error("Usuário não autenticado");
       }
 
+      // Desativa o banner anterior do mesmo tipo
+      await supabase
+        .from('community_banners')
+        .update({ is_active: false })
+        .eq('type', type)
+        .eq('is_active', true)
+        .eq('display', display);
+
       // Upload to Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -72,9 +83,9 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess, type }: Simp
         .from('community_banners')
         .insert([{
           image_url: publicUrl,
-          created_by: user.id,
           is_active: true,
-          type: type
+          type: type,
+          display: display
         }]);
 
       if (insertError) throw insertError;
@@ -109,6 +120,35 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess, type }: Simp
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="type">Tipo do Banner</Label>
+              <Select value={type} onValueChange={(value: "INTRODUCTION" | "LEARNING" | "QUESTIONS") => setType(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="INTRODUCTION">Introdução</SelectItem>
+                  <SelectItem value="LEARNING">Aprendizado</SelectItem>
+                  <SelectItem value="QUESTIONS">Perguntas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="display">Dispositivo</Label>
+              <Select value={display} onValueChange={(value: "MOBILE" | "DESKTOP") => setDisplay(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o dispositivo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DESKTOP">Desktop</SelectItem>
+                  <SelectItem value="MOBILE">Mobile</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-[#9b87f5]/40 rounded-lg p-12 text-center">
             <Upload className="h-10 w-10 text-[#9b87f5] mb-4" />
             <div className="space-y-2">

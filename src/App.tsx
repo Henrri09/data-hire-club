@@ -12,6 +12,7 @@ import Introductions from "./pages/candidate/community/Introductions";
 import Learning from "./pages/candidate/community/Learning";
 import Questions from "./pages/candidate/community/Questions";
 import SEOScripts from "./pages/candidate/admin/SEOScripts";
+import { BannersPage } from "./pages/candidate/admin/Banners";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { CompleteProfile } from "./components/auth/CompleteProfile";
 
@@ -59,7 +60,12 @@ function App() {
             <SEOScripts />
           </ProtectedRoute>
         } />
-        
+        <Route path="/candidate/admin/banners" element={
+          <ProtectedRoute requiredUserType="candidate">
+            <BannersPage />
+          </ProtectedRoute>
+        } />
+
         {/* Rotas protegidas para empresas */}
         <Route path="/company/dashboard" element={
           <ProtectedRoute requiredUserType="company">
