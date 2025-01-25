@@ -5,7 +5,6 @@ import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { IntroductionsHeader } from "@/components/community/introductions/IntroductionsHeader"
 import { SearchBar } from "@/components/community/introductions/SearchBar"
 import { PostsList } from "@/components/community/introductions/PostsList"
 import { AdminControls } from "@/components/community/introductions/AdminControls"
@@ -161,12 +160,15 @@ export default function Introductions() {
         {!isMobile && <CandidateSidebar />}
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <IntroductionsHeader isAdmin={isAdmin} />
-
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">Apresente-se à Comunidade</h1>
+            </div>
+            <CommunityBanner type="INTRODUCTION" />
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule?.content || ""}
                 onRuleUpdate={fetchCurrentRule}
+                type="INTRODUCTION"
               />
             )}
 
@@ -176,7 +178,7 @@ export default function Introductions() {
               onSearch={() => fetchPosts(true)}
             />
 
-            <CommunityBanner type="INTRODUCTION" />
+
             <PinnedRule
               content={currentRule?.content || ""}
               ruleId={currentRule?.id}

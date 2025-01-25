@@ -50,8 +50,8 @@ export type Database = {
       community_banners: {
         Row: {
           created_at: string
-          created_by: string | null
           description: string | null
+          display: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
@@ -62,8 +62,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
           description?: string | null
+          display?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -74,8 +74,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
           description?: string | null
+          display?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -84,15 +84,7 @@ export type Database = {
           type?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "community_banners_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       community_external_links: {
         Row: {
