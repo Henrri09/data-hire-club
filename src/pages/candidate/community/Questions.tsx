@@ -158,7 +158,7 @@ export default function Questions() {
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold">Tire suas Dúvidas</h1>
             </div>
-
+            <CommunityBanner type="QUESTIONS" />
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
@@ -173,7 +173,7 @@ export default function Questions() {
               onSearch={loadPosts}
             />
 
-            <CommunityBanner type="QUESTIONS" />
+
             <PinnedRule content={currentRule} />
 
             <div className="mt-6">

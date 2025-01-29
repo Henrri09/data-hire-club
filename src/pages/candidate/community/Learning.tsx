@@ -120,7 +120,7 @@ export default function Learning() {
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold">O que você está aprendendo?</h1>
             </div>
-
+            <CommunityBanner type="LEARNING" />
             {isAdmin && (
               <AdminControls
                 currentRule={currentRule}
@@ -135,7 +135,7 @@ export default function Learning() {
               onSearch={fetchPosts}
             />
 
-            <CommunityBanner type="LEARNING" />
+
             <PinnedRule content={currentRule} />
             <CreatePost onPostCreated={fetchPosts} />
 
@@ -144,7 +144,7 @@ export default function Learning() {
                 <p className="text-center text-gray-500">Carregando posts...</p>
               ) : posts.length === 0 ? (
                 <p className="text-center text-gray-500">
-                  {searchQuery 
+                  {searchQuery
                     ? "Nenhum post encontrado para sua busca."
                     : "Nenhum post encontrado. Compartilhe o que você está aprendendo!"}
                 </p>
