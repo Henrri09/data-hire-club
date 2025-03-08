@@ -19,6 +19,7 @@ interface Post {
   author: {
     full_name: string
     id: string
+    logo_url: string
   }
   is_liked?: boolean
 }
@@ -94,7 +95,7 @@ export default function Introductions() {
           created_at,
           likes_count,
           comments_count,
-          author:profiles!community_posts_author_id_fkey(id, full_name)
+          author:profiles!community_posts_author_id_fkey(id, full_name, logo_url)
         `)
         .eq('post_type', 'introduction')
         .order('created_at', { ascending: false })
@@ -116,7 +117,8 @@ export default function Introductions() {
         comments_count: post.comments_count,
         author: {
           id: post.author.id,
-          full_name: post.author.full_name
+          full_name: post.author.full_name,
+          logo_url: post.author.logo_url
         }
       }))
 

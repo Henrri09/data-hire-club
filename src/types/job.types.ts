@@ -31,7 +31,7 @@ export interface JobResponse {
   applications_count: number | null;
   external_link: string | null;
   companies?: {
-    company_name: string;
+    name: string;
     location: string | null;
   } | null;
 }

@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LogoUpload } from "./LogoUpload";
 
 interface CompanyProfile {
-  company_name: string;
+  name: string;
   logo_url: string | null;
   industry: string | null;
   location: string | null;
@@ -28,14 +28,32 @@ export function ProfileTab() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('company_name, logo_url, industry, location')
+        .select('full_name, logo_url, location')
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
-      setProfile(data);
+      if (profileError) throw profileError;
+
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('name, industry, location')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (companyError) {
+        console.error('Erro ao carregar dados da empresa:', companyError);
+      }
+
+      const combinedData = {
+        ...profileData,
+        industry: companyData?.industry ? companyData?.industry : '',
+        location: companyData?.location ? companyData?.location : profileData?.location,
+        name: companyData?.name ? companyData?.name : profileData?.full_name
+      };
+
+      setProfile(combinedData);
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
       toast({
@@ -80,21 +98,39 @@ export function ProfileTab() {
       if (!user) throw new Error('Usuário não autenticado');
 
       const formData = new FormData(e.target as HTMLFormElement);
-      const updates = {
-        company_name: formData.get('companyName')?.toString() || '',
-        industry: formData.get('industry')?.toString() || null,
+
+      const profileUpdates = {
+        full_name: formData.get('companyName')?.toString() || '',
         location: formData.get('location')?.toString() || null,
       };
 
-      const { error } = await supabase
+      const companyUpdates = {
+        name: profileUpdates.full_name,
+        industry: formData.get('industry')?.toString() || null,
+        location: profileUpdates.location,
+      };
+
+      // Atualiza tabela profiles
+      const { error: profileError } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(profileUpdates)
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      setProfile(prev => prev ? { ...prev, ...updates } : null);
-      
+      // Atualiza tabela companies
+      const { error: companyError } = await supabase
+        .from('companies')
+        .update(companyUpdates)
+        .eq('id', user.id);
+
+      if (companyError) {
+        console.error('Erro ao atualizar companies:', companyError);
+        // Não interrompe o fluxo se falhar apenas a atualização da tabela companies
+      }
+
+      setProfile(prev => prev ? { ...prev, ...profileUpdates, ...companyUpdates } : null);
+
       toast({
         title: "Perfil atualizado",
         description: "As informações da empresa foram atualizadas com sucesso",
@@ -145,31 +181,31 @@ export function ProfileTab() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="companyName">Nome da Empresa</Label>
-              <Input 
-                id="companyName" 
+              <Input
+                id="companyName"
                 name="companyName"
-                defaultValue={profile?.company_name || ''}
+                defaultValue={profile?.name || ''}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="industry">Setor</Label>
-              <Input 
-                id="industry" 
+              <Input
+                id="industry"
                 name="industry"
                 defaultValue={profile?.industry || ''}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="location">Localização</Label>
-              <Input 
-                id="location" 
+              <Input
+                id="location"
                 name="location"
                 defaultValue={profile?.location || ''}
               />
             </div>
           </div>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="bg-[#7779f5] hover:bg-[#7779f5]/90"
             disabled={isLoading}
           >

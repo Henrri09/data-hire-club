@@ -11,6 +11,7 @@ interface Post {
   author: {
     full_name: string
     id: string
+    logo_url: string
   }
   is_liked?: boolean
 }
@@ -49,7 +50,7 @@ export function PostsList({
   if (posts.length === 0) {
     return (
       <p className="text-center text-gray-500">
-        {searchQuery 
+        {searchQuery
           ? "Nenhum post encontrado para sua busca."
           : "Nenhum post encontrado. Seja o primeiro a se apresentar!"}
       </p>
@@ -67,7 +68,8 @@ export function PostsList({
           id={post.id}
           author={{
             name: post.author?.full_name || 'Usuário Anônimo',
-            id: post.author?.id
+            id: post.author?.id,
+            avatar: post.author?.logo_url
           }}
           content={post.content}
           likes={post.likes_count}
@@ -78,7 +80,7 @@ export function PostsList({
           onPostDelete={onPostDelete}
         />
       ))}
-      
+
       {hasMore && (
         <div className="text-center pt-4">
           <Button

@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY')
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
+const SUPABASE_URL = 'https://jdwcgbwcwkrrvaqtokju.supabase.co'
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
 const corsHeaders = {
@@ -31,7 +31,7 @@ serve(async (req) => {
     )
 
     const { record } = await req.json()
-    const { id, email, user_type, full_name, company_name } = record
+    const { id, email, user_type, full_name } = record
 
     // Configurar contato para o Brevo
     const contact: BrevoContact = {
@@ -46,7 +46,6 @@ serve(async (req) => {
       contact.listIds = [4] // Lista de candidatos
     } else if (user_type === 'company') {
       contact.attributes.NOME = full_name
-      contact.attributes.EMPRESA = company_name
       contact.listIds = [3] // Lista de empresas
     }
 
@@ -72,9 +71,9 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, data }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     )
 
@@ -82,7 +81,7 @@ serve(async (req) => {
     console.error('Erro na função brevo-integration:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

@@ -9,6 +9,7 @@ interface Comment {
   author: {
     full_name: string
     id: string
+    logo_url: string
   }
 }
 
@@ -29,7 +30,7 @@ export function usePostComments(postId: string) {
             id,
             content,
             created_at,
-            author:profiles!community_post_comments_author_id_fkey(id, full_name)
+            author:profiles!community_post_comments_author_id_fkey(id, full_name, logo_url)
           `)
           .eq('post_id', postId)
           .order('created_at', { ascending: false })
@@ -43,7 +44,8 @@ export function usePostComments(postId: string) {
           created_at: comment.created_at,
           author: {
             id: comment.author.id,
-            full_name: comment.author.full_name
+            full_name: comment.author.full_name,
+            logo_url: comment.author.logo_url
           }
         }))
 
@@ -69,7 +71,7 @@ export function usePostComments(postId: string) {
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         toast({
           title: "Erro ao comentar",
@@ -90,7 +92,7 @@ export function usePostComments(postId: string) {
           id,
           content,
           created_at,
-          author:profiles!community_post_comments_author_id_fkey(id, full_name)
+          author:profiles!community_post_comments_author_id_fkey(id, full_name, logo_url)
         `)
         .single()
 
@@ -103,13 +105,14 @@ export function usePostComments(postId: string) {
           created_at: data.created_at,
           author: {
             id: data.author.id,
-            full_name: data.author.full_name
+            full_name: data.author.full_name,
+            logo_url: data.author.logo_url
           }
         }
 
         setPostComments(prev => [newCommentData, ...prev])
         setNewComment("")
-        
+
         toast({
           title: "Comentário adicionado",
           description: "Seu comentário foi publicado com sucesso.",

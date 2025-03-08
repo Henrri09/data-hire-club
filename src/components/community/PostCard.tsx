@@ -30,14 +30,14 @@ interface PostCardProps {
   onPostDelete?: () => void
 }
 
-export function PostCard({ 
-  id, 
-  author, 
-  content, 
-  likes, 
-  comments, 
-  created_at, 
-  isLiked = false, 
+export function PostCard({
+  id,
+  author,
+  content,
+  likes,
+  comments,
+  created_at,
+  isLiked = false,
   onLikeChange,
   onPostDelete
 }: PostCardProps) {
@@ -47,16 +47,16 @@ export function PostCard({
   const [editedContent, setEditedContent] = useState(content)
   const { toast } = useToast()
 
-  const { 
-    isLiking, 
-    localLiked, 
-    localLikes, 
-    handleLike 
-  } = usePostActions({ 
-    id, 
-    initialLikes: likes, 
-    initialIsLiked: isLiked, 
-    onLikeChange 
+  const {
+    isLiking,
+    localLiked,
+    localLikes,
+    handleLike
+  } = usePostActions({
+    id,
+    initialLikes: likes,
+    initialIsLiked: isLiked,
+    onLikeChange
   })
 
   const {
@@ -69,20 +69,21 @@ export function PostCard({
     handleComment
   } = usePostComments(id)
 
+  console.log("Post Comments:", postComments)
+
   useEffect(() => {
     const checkUserPermissions = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          console.log("Verificando permissões para usuário:", user.id)
           setIsCurrentUser(user.id === author.id)
-          
+
           const { data: profile } = await supabase
             .from('profiles')
             .select('is_admin')
             .eq('id', user.id)
             .single()
-          
+
           console.log("Perfil do usuário:", profile)
           setIsAdmin(profile?.is_admin || false)
         }
