@@ -51,35 +51,37 @@ export function ProfileOverview() {
           .from('profiles')
           .select(`
             full_name,
-            bio,
-            skills,
             logo_url,
-            headline,
-            location,
-            experience_level,
             linkedin_url,
-            github_url,
-            portfolio_url
+            location
           `)
           .eq('id', user.id)
           .single();
 
         if (error) throw error;
 
+        const { data: candidateData, error: candidateError } = await supabase
+          .from('candidates')
+          .select('bio, skills, headline, experience_level, github_url, portfolio_url')
+          .eq('profile_id', user.id)
+          .single();
+
+        if (candidateError) throw candidateError;
+
         if (profileData) {
           setProfile({
-            description: profileData.bio || "",
-            skills: Array.isArray(profileData.skills) 
-              ? profileData.skills.map(skill => String(skill))
+            description: candidateData.bio || "",
+            skills: Array.isArray(candidateData.skills)
+              ? candidateData.skills.map(skill => String(skill))
               : [],
             photoUrl: profileData.logo_url,
             full_name: profileData.full_name,
-            headline: profileData.headline,
+            headline: candidateData.headline,
             location: profileData.location,
-            experience_level: profileData.experience_level,
+            experience_level: candidateData.experience_level,
             linkedin_url: profileData.linkedin_url,
-            github_url: profileData.github_url,
-            portfolio_url: profileData.portfolio_url
+            github_url: candidateData.github_url,
+            portfolio_url: candidateData.portfolio_url
           });
         }
       } catch (error) {
@@ -106,15 +108,15 @@ export function ProfileOverview() {
           <CardTitle className="text-2xl font-bold text-gray-900">Seu Perfil</CardTitle>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
-          <ProfileHeader 
-            profile={profile} 
-            onEditClick={() => setIsDialogOpen(true)} 
+          <ProfileHeader
+            profile={profile}
+            onEditClick={() => setIsDialogOpen(true)}
           />
         </CardContent>
       </Card>
 
-      <EditProfileDialog 
-        open={isDialogOpen} 
+      <EditProfileDialog
+        open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         onProfileUpdate={handleProfileUpdate}
       />

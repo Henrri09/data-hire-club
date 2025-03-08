@@ -10,7 +10,7 @@ export function CompanyHeader() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<{
-    company_name: string;
+    full_name: string;
     logo_url: string | null;
   } | null>(null);
 
@@ -25,7 +25,7 @@ export function CompanyHeader() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('company_name, logo_url')
+        .select('full_name, logo_url')
         .eq('id', user.id)
         .single();
 
@@ -74,13 +74,13 @@ export function CompanyHeader() {
               <AvatarImage src={profile.logo_url} alt="Logo da empresa" />
             ) : (
               <AvatarFallback className="bg-white/20 text-white">
-                {profile?.company_name ? getInitials(profile.company_name) : ''}
+                {profile?.full_name ? getInitials(profile.full_name) : ''}
               </AvatarFallback>
             )}
           </Avatar>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="text-white hover:text-white/80"
             onClick={handleLogout}
           >

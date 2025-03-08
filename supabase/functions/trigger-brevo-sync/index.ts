@@ -12,11 +12,11 @@ serve(async (req) => {
   }
 
   try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+    const SUPABASE_URL = 'https://jdwcgbwcwkrrvaqtokju.supabase.co'
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-    
+
     // Chamar a função brevo-integration
     const { data, error } = await supabase.functions.invoke('brevo-integration', {
       body: JSON.stringify({
@@ -28,9 +28,9 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, data }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     )
 
@@ -38,9 +38,9 @@ serve(async (req) => {
     console.error('Erro ao sincronizar com Brevo:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500
       }
     )
   }

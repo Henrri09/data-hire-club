@@ -58,7 +58,7 @@ export function PhotoUploadField({ currentPhotoUrl, onPhotoChange }: PhotoUpload
 
       console.log('URL pública obtida:', publicUrl);
       onPhotoChange(publicUrl);
-      
+
       toast({
         title: "Foto atualizada",
         description: "Sua foto de perfil foi atualizada com sucesso.",

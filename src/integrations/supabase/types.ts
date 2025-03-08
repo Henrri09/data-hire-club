@@ -11,30 +11,42 @@ export type Database = {
     Tables: {
       candidates: {
         Row: {
+          bio: string | null
           created_at: string
           experience_level: string | null
+          github_url: string | null
+          headline: string | null
           id: string
+          portfolio_url: string | null
           profile_id: string | null
           resume_url: string | null
-          skills: string[] | null
+          skills: Json[] | null
           updated_at: string
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           experience_level?: string | null
+          github_url?: string | null
+          headline?: string | null
           id?: string
+          portfolio_url?: string | null
           profile_id?: string | null
           resume_url?: string | null
-          skills?: string[] | null
+          skills?: Json[] | null
           updated_at?: string
         }
         Update: {
+          bio?: string | null
           created_at?: string
           experience_level?: string | null
+          github_url?: string | null
+          headline?: string | null
           id?: string
+          portfolio_url?: string | null
           profile_id?: string | null
           resume_url?: string | null
-          skills?: string[] | null
+          skills?: Json[] | null
           updated_at?: string
         }
         Relationships: [
@@ -289,45 +301,53 @@ export type Database = {
       }
       companies: {
         Row: {
-          company_name: string
           created_at: string
           description: string | null
           id: string
           industry: string | null
           location: string | null
           logo_url: string | null
-          responsavel: string | null
+          name: string
+          profile_id: string | null
           size: string | null
           updated_at: string
           website: string | null
         }
         Insert: {
-          company_name: string
           created_at?: string
           description?: string | null
           id: string
           industry?: string | null
           location?: string | null
           logo_url?: string | null
-          responsavel?: string | null
+          name: string
+          profile_id?: string | null
           size?: string | null
           updated_at?: string
           website?: string | null
         }
         Update: {
-          company_name?: string
           created_at?: string
           description?: string | null
           id?: string
           industry?: string | null
           location?: string | null
           logo_url?: string | null
-          responsavel?: string | null
+          name?: string
+          profile_id?: string | null
           size?: string | null
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_profile"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       external_scripts: {
         Row: {
@@ -583,70 +603,43 @@ export type Database = {
       }
       profiles: {
         Row: {
-          bio: string | null
-          company_name: string | null
-          company_size: string | null
           created_at: string
           email: string
-          experience_level: string | null
           full_name: string | null
-          github_url: string | null
-          headline: string | null
           id: string
-          industry: string | null
           is_admin: boolean | null
           linkedin_url: string | null
           location: string | null
           logo_url: string | null
-          portfolio_url: string | null
           resume_url: string | null
-          skills: Json | null
           updated_at: string
           user_type: string
           website: string | null
         }
         Insert: {
-          bio?: string | null
-          company_name?: string | null
-          company_size?: string | null
           created_at?: string
           email: string
-          experience_level?: string | null
           full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
           id: string
-          industry?: string | null
           is_admin?: boolean | null
           linkedin_url?: string | null
           location?: string | null
           logo_url?: string | null
-          portfolio_url?: string | null
           resume_url?: string | null
-          skills?: Json | null
           updated_at?: string
           user_type: string
           website?: string | null
         }
         Update: {
-          bio?: string | null
-          company_name?: string | null
-          company_size?: string | null
           created_at?: string
           email?: string
-          experience_level?: string | null
           full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
           id?: string
-          industry?: string | null
           is_admin?: boolean | null
           linkedin_url?: string | null
           location?: string | null
           logo_url?: string | null
-          portfolio_url?: string | null
           resume_url?: string | null
-          skills?: Json | null
           updated_at?: string
           user_type?: string
           website?: string | null

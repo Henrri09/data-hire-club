@@ -26,28 +26,50 @@ export default function Register() {
     setLoading(true);
 
     try {
+      // Preparar os metadados do usuário - sem company_name
+      const userData: {
+        full_name: string;
+        user_type: string;
+      } = {
+        full_name: formData.fullName,
+        user_type: formData.userType,
+      };
+
+      // Registrar o usuário com metadados consistentes
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          data: {
-            full_name: formData.fullName,
-            user_type: formData.userType,
-            company_name: formData.userType === 'company' ? formData.companyName : undefined
-          }
+          data: userData
         }
       });
+
+      if (error) throw error;
+
+      const { data: profileData } = await supabase.from('profiles').insert({
+        id: data.user?.id,
+        full_name: formData.fullName,
+        user_type: formData.userType,
+        email: formData.email,
+      }).select('id').single();
+
+      if (formData.userType === 'candidate') {
+        const { error: candidateError } = await supabase.from('candidates').insert({
+          id: profileData?.id,
+          profile_id: profileData?.id,
+        });
+
+        if (candidateError) throw candidateError;
+      }
 
       if (formData.userType === 'company') {
         const { error: companyError } = await supabase.from('companies').insert({
           id: data.user?.id,
-          company_name: formData.companyName,
+          name: formData.companyName,
         });
-        
+
         if (companyError) throw companyError;
       }
-
-      if (error) throw error;
 
       if (data) {
         toast({
@@ -56,10 +78,10 @@ export default function Register() {
         });
         navigate("/login");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro no cadastro",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     } finally {

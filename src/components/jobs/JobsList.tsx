@@ -4,7 +4,8 @@ import { JobCard } from "./JobCard";
 import { JobsLoadingState } from "./JobsLoadingState";
 import { JobsErrorState } from "./JobsErrorState";
 import { EmptyJobsList } from "./EmptyJobsList";
-import type { Job, JobResponse } from "@/types/job.types";
+import type { Job } from "@/types/job.types";
+import type { Database } from "@/integrations/supabase/types";
 
 interface JobsListProps {
   searchQuery?: string;
@@ -29,7 +30,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           .select(`
             *,
             companies (
-              company_name,
+              name,
               location
             )
           `)
@@ -57,10 +58,15 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           return;
         }
 
-        const formattedJobs: Job[] = (data as JobResponse[]).map(job => ({
+        // Usando o tipo correto do Database Supabase
+        type JobWithCompany = Database['public']['Tables']['jobs']['Row'] & {
+          companies: Database['public']['Tables']['companies']['Row'] | null;
+        };
+
+        const formattedJobs: Job[] = (data as JobWithCompany[]).map(job => ({
           id: job.id,
           title: job.title,
-          company: job.companies?.company_name || 'Empresa não especificada',
+          company: job.companies?.name || 'Empresa não especificada',
           location: job.companies?.location || 'Localização não especificada',
           type: job.work_model || 'Não especificado',
           description: job.description,
@@ -68,7 +74,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           salary_range: job.salary_range || 'A combinar',
           contract_type: job.contract_type || 'Não especificado',
           application_url: job.external_link,
-          benefits: job.benefits ? JSON.parse(job.benefits) : undefined,
+          benefits: job.benefits ? JSON.parse(job.benefits as string) : undefined,
           requirements: job.requirements || [],
           responsibilities: job.responsibilities || [],
           views: job.views_count || 0,

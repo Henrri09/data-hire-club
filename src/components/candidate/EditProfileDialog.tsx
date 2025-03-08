@@ -67,7 +67,7 @@ export function EditProfileDialog({
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('bio, skills, logo_url, full_name, headline, location, experience_level, linkedin_url, github_url, portfolio_url')
+        .select('logo_url, full_name, location, linkedin_url')
         .eq('id', user.id)
         .single();
 
@@ -76,18 +76,24 @@ export function EditProfileDialog({
         throw error;
       }
 
+      const { data: candidate, error: candidateError } = await supabase
+        .from('candidates')
+        .select('bio, skills, headline, experience_level, github_url, portfolio_url')
+        .eq('profile_id', user.id)
+        .single();
+
       console.log('Perfil carregado:', profile);
 
       if (profile) {
-        setDescription(profile.bio || "");
+        setDescription(candidate.bio || "");
         setFullName(profile.full_name || "");
-        setHeadline(profile.headline || "");
+        setHeadline(candidate.headline || "");
         setLocation(profile.location || "");
-        setExperienceLevel(profile.experience_level || "");
+        setExperienceLevel(candidate.experience_level || "");
         setLinkedinUrl(profile.linkedin_url || "");
-        setGithubUrl(profile.github_url || "");
-        setPortfolioUrl(profile.portfolio_url || "");
-        setSkills(Array.isArray(profile.skills) ? profile.skills.map(String) : []);
+        setGithubUrl(candidate.github_url || "");
+        setPortfolioUrl(candidate.portfolio_url || "");
+        setSkills(Array.isArray(candidate.skills) ? candidate.skills.map(String) : []);
         setPhotoUrl(profile.logo_url);
       }
     } catch (error) {
@@ -112,26 +118,27 @@ export function EditProfileDialog({
         return;
       }
 
-      console.log('Salvando perfil com foto:', photoUrl);
-
-      const updates = {
+      const updatesProfile = {
         id: user.id,
-        bio: description,
-        skills: skills,
         logo_url: photoUrl,
         full_name: fullName,
-        headline: headline,
         location: location,
-        experience_level: experienceLevel,
         linkedin_url: linkedinUrl,
+        updated_at: new Date().toISOString(),
+      };
+
+      const updatesCandidate = {
+        bio: description,
+        skills: skills,
+        headline: headline,
+        experience_level: experienceLevel,
         github_url: githubUrl,
         portfolio_url: portfolioUrl,
-        updated_at: new Date().toISOString(),
       };
 
       const { error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(updatesProfile)
         .eq('id', user.id);
 
       if (error) {
@@ -141,18 +148,15 @@ export function EditProfileDialog({
 
       console.log('Perfil atualizado com sucesso');
 
-      onProfileUpdate({
-        description,
-        skills,
-        photoUrl,
-        full_name: fullName,
-        headline,
-        location,
-        experience_level: experienceLevel,
-        linkedin_url: linkedinUrl,
-        github_url: githubUrl,
-        portfolio_url: portfolioUrl,
-      });
+      const { error: candidateError } = await supabase
+        .from('candidates')
+        .update(updatesCandidate)
+        .eq('profile_id', user.id);
+
+      if (candidateError) {
+        console.error('Erro ao salvar perfil:', candidateError);
+        throw candidateError;
+      }
 
       toast({
         title: "Perfil atualizado",
@@ -181,7 +185,7 @@ export function EditProfileDialog({
             currentPhotoUrl={photoUrl}
             onPhotoChange={setPhotoUrl}
           />
-          
+
           <ProfileBasicInfo
             fullName={fullName}
             headline={headline}

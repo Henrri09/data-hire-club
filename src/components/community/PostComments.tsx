@@ -8,7 +8,7 @@ import { Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 interface Comment {
   id: string
   content: string
@@ -17,6 +17,7 @@ interface Comment {
   author: {
     full_name: string
     id: string
+    logo_url: string
   }
 }
 
@@ -29,13 +30,13 @@ interface PostCommentsProps {
   onSubmitComment: () => void
 }
 
-export function PostComments({ 
-  comments, 
-  newComment, 
+export function PostComments({
+  comments,
+  newComment,
   isLoading,
   isSubmitting = false,
-  onCommentChange, 
-  onSubmitComment 
+  onCommentChange,
+  onSubmitComment
 }: PostCommentsProps) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isDeletingComment, setIsDeletingComment] = useState<string | null>(null)
@@ -52,7 +53,7 @@ export function PostComments({
             .select('is_admin')
             .eq('id', user.id)
             .single()
-          
+
           if (error) {
             console.error("Error checking admin status:", error)
             return
@@ -88,12 +89,12 @@ export function PostComments({
       })
 
       // Atualizar a lista de comentários localmente
-      const updatedComments = comments.map(comment => 
-        comment.id === commentId 
+      const updatedComments = comments.map(comment =>
+        comment.id === commentId
           ? { ...comment, deleted_at: new Date().toISOString() }
           : comment
       )
-      
+
       // Se você tiver uma função para atualizar os comentários no componente pai
       // onCommentsUpdate(updatedComments)
     } catch (error) {
@@ -134,7 +135,7 @@ export function PostComments({
           className="min-h-[60px] resize-none"
           disabled={isSubmitting}
         />
-        <Button 
+        <Button
           onClick={onSubmitComment}
           disabled={!newComment.trim() || isSubmitting}
           className="shrink-0"
@@ -158,8 +159,14 @@ export function PostComments({
               {activeComments.map((comment) => (
                 <div key={comment.id} className="group rounded-lg border p-4 transition-colors hover:bg-gray-50">
                   <div className="flex justify-between items-start mb-2">
+                    <Avatar className="w-10 h-10 mr-2 border border-gray-200">
+                      <AvatarImage src={comment.author.logo_url} />
+                      <AvatarFallback>
+                        {comment.author.full_name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex justify-between items-start flex-1">
-                      <span className="font-medium text-gray-900">{comment.author.full_name}</span>
+                      <span className="font-medium text-gray-900 mt-2">{comment.author.full_name}</span>
                       <span className="text-sm text-gray-500">{formatDate(comment.created_at)}</span>
                     </div>
                     {isAdmin && (
