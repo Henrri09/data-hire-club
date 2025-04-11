@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   title: string;
@@ -38,4 +39,17 @@ export interface JobResponse {
 
 export interface JobsErrorStateProps {
   error: Error;
+}
+
+// Interface comum para banners da comunidade
+export interface CommunityBanner {
+  id: string;
+  title: string;
+  description?: string | null;
+  image_url?: string | null;
+  link_url?: string | null;
+  is_active: boolean;
+  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS";
+  display: "MOBILE" | "DESKTOP";
+  created_at: string;
 }

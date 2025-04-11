@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import {
@@ -9,15 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { BannerForm } from "./banner/BannerForm"
 import { BannerList } from "./banner/BannerList"
-
-interface Banner {
-  id: string
-  title: string
-  description?: string
-  image_url?: string
-  link_url?: string
-  is_active: boolean
-}
+import { CommunityBanner } from "@/types/job.types"
 
 interface AdminBannerDialogProps {
   open: boolean
@@ -25,7 +18,7 @@ interface AdminBannerDialogProps {
 }
 
 export function AdminBannerDialog({ open, onOpenChange }: AdminBannerDialogProps) {
-  const [banners, setBanners] = useState<Banner[]>([])
+  const [banners, setBanners] = useState<CommunityBanner[]>([])
   const [isAddingBanner, setIsAddingBanner] = useState(false)
 
   const fetchBanners = async () => {
@@ -34,7 +27,7 @@ export function AdminBannerDialog({ open, onOpenChange }: AdminBannerDialogProps
       .select("*")
       .order("created_at", { ascending: false })
     
-    if (data) setBanners(data)
+    if (data) setBanners(data as CommunityBanner[])
   }
 
   useEffect(() => {
