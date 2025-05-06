@@ -1,5 +1,5 @@
 import { Upload } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 
@@ -68,7 +68,7 @@ export function PhotoUpload({ currentPhotoUrl, onPhotoChange, onPreviewChange }:
 
       // Atualizar o estado com a URL pública
       onPhotoChange(publicUrl);
-      
+
       toast({
         title: "Foto atualizada",
         description: "Sua foto de perfil foi atualizada com sucesso.",

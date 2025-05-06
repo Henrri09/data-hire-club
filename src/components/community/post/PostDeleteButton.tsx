@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
@@ -22,11 +22,11 @@ interface PostDeleteButtonProps {
   onPostDelete?: () => void;
 }
 
-export function PostDeleteButton({ 
-  postId, 
-  authorId, 
+export function PostDeleteButton({
+  postId,
+  authorId,
   isAdmin,
-  onPostDelete 
+  onPostDelete
 }: PostDeleteButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
@@ -64,7 +64,7 @@ export function PostDeleteButton({
         title: "Post removido",
         description: "O post foi removido com sucesso.",
       });
-      
+
       if (onPostDelete) {
         onPostDelete();
       }

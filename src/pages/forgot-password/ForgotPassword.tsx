@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function ForgotPassword() {
@@ -54,8 +54,8 @@ export default function ForgotPassword() {
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
           <div className="mb-6">
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -84,8 +84,8 @@ export default function ForgotPassword() {
                   required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED]"
                 disabled={loading}
               >

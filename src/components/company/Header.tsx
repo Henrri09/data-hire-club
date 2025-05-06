@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export function CompanyHeader() {

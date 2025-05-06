@@ -4,7 +4,7 @@ import { ProfileOverview } from "@/components/candidate/ProfileOverview";
 import { Leaderboard } from "@/components/gamification/Leaderboard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@supabase/auth-helpers-react";
 

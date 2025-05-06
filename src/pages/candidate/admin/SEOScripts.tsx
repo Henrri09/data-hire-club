@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -55,7 +55,7 @@ export default function SEOScripts() {
     }
 
     // Filter out any scripts with type 'OTHER' to match our interface
-    const validScripts = data?.filter(script => 
+    const validScripts = data?.filter(script =>
       ['GA', 'GTM', 'META_PIXEL'].includes(script.script_type)
     ) as ExternalScript[];
 
@@ -94,7 +94,7 @@ export default function SEOScripts() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Traqueamento</CardTitle>
-                <Button 
+                <Button
                   className="bg-[#7779f5] hover:bg-[#7779f5]/90"
                   onClick={() => setIsAddScriptOpen(true)}
                 >
@@ -138,7 +138,7 @@ export default function SEOScripts() {
         </main>
       </div>
 
-      <AddScriptDialog 
+      <AddScriptDialog
         open={isAddScriptOpen}
         onOpenChange={setIsAddScriptOpen}
         onSuccess={fetchScripts}

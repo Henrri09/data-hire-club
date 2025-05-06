@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { CandidateSidebar } from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { LevelBadge } from "../gamification/LevelBadge";
 
@@ -92,7 +92,7 @@ export function CandidateHeader() {
               </SheetContent>
             </Sheet>
           )}
-          
+
           <Link to="/" className="flex items-center">
             <span className="font-bold whitespace-nowrap">Data Hire Club</span>
           </Link>
@@ -105,17 +105,17 @@ export function CandidateHeader() {
             </div>
           )}
           <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={profile?.logo_url || undefined} 
+            <AvatarImage
+              src={profile?.logo_url || undefined}
               className="object-cover"
             />
             <AvatarFallback className="bg-white/20 text-white">
               {profile?.full_name ? getInitials(profile.full_name) : "?"}
             </AvatarFallback>
           </Avatar>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="text-white hover:text-white/80"
             onClick={handleLogout}
           >

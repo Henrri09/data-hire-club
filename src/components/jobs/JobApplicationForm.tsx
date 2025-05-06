@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { useToast } from "../ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 
 interface JobApplicationFormProps {
   jobId: string;
@@ -17,7 +17,7 @@ export function JobApplicationForm({ jobId, onCancel, onSuccess }: JobApplicatio
   const handleApply = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         toast({
           title: "Authentication required",
@@ -70,7 +70,7 @@ export function JobApplicationForm({ jobId, onCancel, onSuccess }: JobApplicatio
         title: "Application submitted",
         description: "Your application has been sent successfully",
       });
-      
+
       onSuccess();
     } catch (error) {
       console.error('Application error:', error);

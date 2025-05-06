@@ -1,11 +1,11 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { Job, JobResponse } from "@/types/job.types";
 
 const fetchJobs = async (): Promise<Job[]> => {
   console.log('Fetching jobs...');
-  
+
   try {
     const { data, error } = await supabase
       .from('jobs')

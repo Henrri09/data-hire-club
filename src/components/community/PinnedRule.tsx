@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
 
 interface PinnedRuleProps {
@@ -50,7 +50,7 @@ export function PinnedRule({ content, ruleId, isAdmin = false, onUpdate }: Pinne
       setIsLoading(false)
     }
   }
-  
+
   return (
     <>
       <Card className="mb-6 bg-muted/30">

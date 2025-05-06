@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, Eye } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 
 interface Stats {
   activeJobs: number;
@@ -43,7 +43,7 @@ export function OverviewTab() {
         .is('deleted_at', null);
 
       // Calculate total views
-      const totalViews = views?.reduce((sum, job) => 
+      const totalViews = views?.reduce((sum, job) =>
         sum + (job.views_count || 0), 0) || 0;
 
       setStats({

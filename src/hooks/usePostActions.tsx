@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 
 interface UsePostActionsProps {
   id: string
@@ -9,11 +9,11 @@ interface UsePostActionsProps {
   onLikeChange?: () => void
 }
 
-export function usePostActions({ 
-  id, 
-  initialLikes, 
-  initialIsLiked, 
-  onLikeChange 
+export function usePostActions({
+  id,
+  initialLikes,
+  initialIsLiked,
+  onLikeChange
 }: UsePostActionsProps) {
   const [isLiking, setIsLiking] = useState(false)
   const [localLiked, setLocalLiked] = useState(initialIsLiked)
@@ -24,7 +24,7 @@ export function usePostActions({
     try {
       setIsLiking(true)
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         toast({
           title: "Erro ao curtir post",

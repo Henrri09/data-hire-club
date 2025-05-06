@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 
 interface Comment {
   id: string

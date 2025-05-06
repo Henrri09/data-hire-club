@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 
 interface MobileHeaderProps {
   sidebarContent?: React.ReactNode;
@@ -54,22 +54,22 @@ export function MobileHeader({ sidebarContent, showAuthButtons = true }: MobileH
                   </div>
                 )}
                 {sidebarContent}
-                <Link 
-                  to="/company/login" 
+                <Link
+                  to="/company/login"
                   className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Publique uma vaga
                 </Link>
                 {showAuthButtons && (
                   <>
-                    <Link 
-                      to="/login" 
+                    <Link
+                      to="/login"
                       className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                     >
                       Entrar
                     </Link>
-                    <Link 
-                      to="/register" 
+                    <Link
+                      to="/register"
                       className="px-4 py-2 text-[#7779f5] hover:text-[#7779f5]/90 hover:bg-white/10 transition-colors"
                     >
                       Cadastrar
