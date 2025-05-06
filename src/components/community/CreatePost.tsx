@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 import { useLocation, useNavigate } from "react-router-dom"
 
 interface CreatePostProps {
@@ -26,11 +26,11 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!content.trim()) return
 
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       toast({
         title: "Erro ao criar post",
@@ -40,7 +40,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
       navigate("/login")
       return
     }
-    
+
     setIsSubmitting(true)
     try {
       const { error } = await supabase
@@ -57,7 +57,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         title: "Post criado com sucesso!",
         description: "Seu post foi publicado na comunidade.",
       })
-      
+
       setContent("")
       if (onPostCreated) {
         onPostCreated()
@@ -90,8 +90,8 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           <p className="text-sm text-gray-500">
             {content.length}/500 caracteres
           </p>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={!content.trim() || isSubmitting}
             className="bg-[#7779f5] hover:bg-[#7779f5]/90"
           >

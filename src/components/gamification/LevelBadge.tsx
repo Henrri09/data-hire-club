@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 
 interface LevelBadgeProps {
   userId: string;
@@ -60,7 +60,7 @@ export function LevelBadge({ userId, showPoints = false }: LevelBadgeProps) {
                 .select('total_points, current_level')
                 .eq('user_id', userId)
                 .single();
-              
+
               if (retryData) {
                 const { data: currentLevelData } = await supabase
                   .from('gamification_levels')
@@ -154,8 +154,8 @@ export function LevelBadge({ userId, showPoints = false }: LevelBadgeProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className="bg-[#9b87f5]/10 text-[#9b87f5] hover:bg-[#9b87f5]/20"
           >
             {userLevel.current_level_info?.name || `Nível ${userLevel.current_level}`}

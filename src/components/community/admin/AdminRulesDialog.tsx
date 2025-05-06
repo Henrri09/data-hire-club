@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 import {
   Dialog,
   DialogContent,
@@ -55,7 +55,7 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
         .from("community_pinned_rules")
         .select("*")
         .order("created_at", { ascending: false })
-      
+
       if (data) setRules(data)
     }
 
@@ -76,10 +76,10 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
 
     const { error } = await supabase
       .from("community_pinned_rules")
-      .insert([{ 
-        ...values, 
+      .insert([{
+        ...values,
         is_active: true,
-        created_by: userId 
+        created_by: userId
       }])
 
     if (error) {
@@ -98,7 +98,7 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
         .from("community_pinned_rules")
         .select("*")
         .order("created_at", { ascending: false })
-      
+
       if (data) setRules(data)
     }
   }
@@ -123,7 +123,7 @@ export function AdminRulesDialog({ open, onOpenChange }: AdminRulesDialogProps) 
         .from("community_pinned_rules")
         .select("*")
         .order("created_at", { ascending: false })
-      
+
       if (data) setRules(data)
     }
   }

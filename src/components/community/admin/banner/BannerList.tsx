@@ -1,27 +1,15 @@
+
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-
-type DisplayType = "MOBILE" | "DESKTOP"
-
-interface Banner {
-  id: string
-  title: string
-  description: string | null
-  image_url: string
-  link_url: string | null
-  is_active: boolean
-  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS"
-  display: DisplayType
-  created_at: string
-}
+import { CommunityBanner } from "@/types/job.types"
 
 interface BannerListProps {
-  banners: Banner[]
+  banners: CommunityBanner[]
   onUpdate: () => void
 }
 
@@ -65,7 +53,7 @@ export function BannerList({ banners, onUpdate }: BannerListProps) {
     }
   }
 
-  const handleDelete = async (banner: Banner) => {
+  const handleDelete = async (banner: CommunityBanner) => {
     try {
       if (banner.is_active) {
         const nextBanner = banners.find(b =>
@@ -127,7 +115,7 @@ export function BannerList({ banners, onUpdate }: BannerListProps) {
           <TableRow key={banner.id}>
             <TableCell>
               <img
-                src={banner.image_url}
+                src={banner.image_url || ''}
                 alt="Banner"
                 className="w-40 h-20 object-cover rounded-md"
               />

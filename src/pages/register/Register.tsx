@@ -6,8 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import BrevoService from "@/services/BrevoService";
+
+const brevoIdListByUserType = {
+  candidate: 4,
+  company: 3
+}
 
 export default function Register() {
   const navigate = useNavigate();
@@ -76,6 +82,32 @@ export default function Register() {
           title: "Cadastro realizado com sucesso!",
           description: "Verifique seu email para confirmar o cadastro.",
         });
+
+        const responseCreateContact = await fetch(`https://api.brevo.com/v3/contacts`, {
+          method: 'POST',
+          headers: {
+            'api-key': import.meta.env.VITE_BREVO_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            attributes: {
+              FNAME: formData.fullName,
+              LNAME: "",
+            },
+            ext_id: data.user?.id,
+          }),
+        });
+
+        const responseAddContactToList = await fetch(`https://api.brevo.com/v3/contacts/lists/${brevoIdListByUserType[formData.userType]}/contacts/add`, {
+          method: 'POST',
+          headers: {
+            'api-key': import.meta.env.VITE_BREVO_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ emails: [formData.email] }),
+        });
+
         navigate("/login");
       }
     } catch (error: unknown) {

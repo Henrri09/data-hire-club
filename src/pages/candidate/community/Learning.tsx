@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { supabase } from "@/integrations/supabase/client"
+import supabase from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
 import { PostCard } from "@/components/community/PostCard"
 import { CommunityBanner } from "@/components/community/CommunityBanner"

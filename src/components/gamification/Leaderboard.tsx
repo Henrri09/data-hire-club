@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { LevelBadge } from "./LevelBadge";
 import { Skeleton } from "../ui/skeleton";
@@ -66,7 +66,7 @@ export function Leaderboard() {
         </div>
         <div className="space-y-4">
           {users.map((user, index) => (
-            <div 
+            <div
               key={user.id}
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
             >

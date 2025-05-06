@@ -1,6 +1,6 @@
 import { Upload } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface LogoUploadProps {
@@ -45,7 +45,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadProps) {
         .getPublicUrl(fileName);
 
       onLogoChange(publicUrl);
-      
+
       toast({
         title: "Logo atualizado",
         description: "O logo da empresa foi atualizado com sucesso.",

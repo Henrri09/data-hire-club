@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { EditProfileDialog } from "./EditProfileDialog";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { ProfileHeader } from "./profile/ProfileHeader";
 

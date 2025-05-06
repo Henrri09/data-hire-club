@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import Login from "./pages/login/Login";
+import Register from "./pages/register/Register";
+import ForgotPassword from "./pages/forgot-password/ForgotPassword";
+import ResetPassword from "./pages/reset-password/ResetPassword";
 import CandidateDashboard from "./pages/candidate/Dashboard";
 import CandidateJobs from "./pages/candidate/Jobs";
 import CompanyDashboard from "./pages/company/Dashboard";

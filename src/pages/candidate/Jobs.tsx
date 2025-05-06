@@ -8,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
+import supabase from "@/integrations/supabase/client";
 
 interface Profile {
   full_name: string | null;
@@ -94,16 +94,16 @@ export default function CandidateJobs() {
           )}
           <div className="flex items-center gap-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage 
-                src={profile?.logo_url || undefined} 
+              <AvatarImage
+                src={profile?.logo_url || undefined}
                 className="object-cover"
               />
               <AvatarFallback className="bg-white/20 text-white">
                 {profile?.full_name ? getInitials(profile.full_name) : "?"}
               </AvatarFallback>
             </Avatar>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={handleLogout}
               className="text-white hover:text-white/80"
@@ -123,7 +123,7 @@ export default function CandidateJobs() {
                 <h1 className="text-xl md:text-2xl font-bold text-[#1A1F2C] mb-4 md:mb-6 text-center">
                   Vagas Publicadas Recentemente
                 </h1>
-                
+
                 <div className="max-w-2xl mx-auto mb-4 md:mb-8">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8E9196]" />
