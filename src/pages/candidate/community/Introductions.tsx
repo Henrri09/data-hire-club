@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react"
 import supabase from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
-import { PostCard } from "@/components/community/PostCard"
-import { CommunityHeader } from "@/components/community/CommunityHeader"
 import { PostSkeleton } from "@/components/community/PostSkeleton"
+import { CommunityHeader } from "@/components/community/CommunityHeader"
 import { CommunityBanner } from "@/components/community/CommunityBanner"
 import { PinnedRule } from "@/components/community/PinnedRule"
 import { CandidateHeader } from "@/components/candidate/Header"
@@ -27,6 +26,7 @@ interface Post {
   likes_count: number;
   comments_count: number;
   post_type: string;
+  is_liked?: boolean;
 }
 
 export default function Introductions() {
@@ -40,6 +40,8 @@ export default function Introductions() {
     description: string;
     image_url?: string;
   } | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
     checkAdminStatus()
@@ -122,9 +124,9 @@ export default function Introductions() {
         comments_count: post.comments_count,
         post_type: 'introductions',
         author: {
-          id: post.author ? post.author.id : '',
-          full_name: post.author && post.author.full_name ? post.author.full_name : 'Usuário Anônimo',
-          logo_url: post.author && post.author.logo_url ? post.author.logo_url : ''
+          id: post.author ? (post.author as any).id || '' : '',
+          full_name: post.author && (post.author as any).full_name ? (post.author as any).full_name : 'Usuário Anônimo',
+          logo_url: post.author && (post.author as any).logo_url ? (post.author as any).logo_url : ''
         }
       }))
 
@@ -152,6 +154,11 @@ export default function Introductions() {
     fetchPosts()
   }
 
+  const loadMorePosts = () => {
+    // Implementação de carregamento de mais posts poderia ser adicionada aqui
+    console.log("Carregando mais posts...")
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <CandidateHeader />
@@ -177,11 +184,11 @@ export default function Introductions() {
               </div>
             )}
 
-            {isAdmin && <AdminControls />}
+            {isAdmin && <AdminControls type="introductions" />}
 
             <div className="mb-6">
               <CreatePost 
-                postType="introductions" 
+                type="introductions" 
                 placeholder="Conte um pouco sobre você, sua experiência e objetivos..." 
                 onPostSuccess={handleNewPost}
               />
@@ -198,7 +205,18 @@ export default function Introductions() {
                 ))}
               </div>
             ) : (
-              <PostsList posts={filteredPosts} onPostUpdate={fetchPosts} />
+              <div className="space-y-6">
+                <PostsList
+                  posts={filteredPosts}
+                  isLoading={loading}
+                  isLoadingMore={isLoadingMore}
+                  hasMore={hasMore}
+                  searchQuery={searchTerm}
+                  onLoadMore={loadMorePosts}
+                  onLikeChange={fetchPosts}
+                  onPostDelete={fetchPosts}
+                />
+              </div>
             )}
           </div>
         </div>

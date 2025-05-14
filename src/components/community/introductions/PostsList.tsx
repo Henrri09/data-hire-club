@@ -1,30 +1,32 @@
+
 import { PostCard } from "@/components/community/PostCard"
-import { PostSkeleton } from "@/components/community/PostSkeleton"
 import { Button } from "@/components/ui/button"
 
+interface PostAuthor {
+  id: string;
+  full_name: string | null;
+  logo_url?: string | null;
+}
+
 interface Post {
-  id: string
-  content: string
-  created_at: string
-  likes_count: number
-  comments_count: number
-  author: {
-    full_name: string
-    id: string
-    logo_url: string
-  }
-  is_liked?: boolean
+  id: string;
+  content: string;
+  created_at: string;
+  likes_count: number;
+  comments_count: number;
+  author: PostAuthor;
+  is_liked?: boolean;
 }
 
 interface PostsListProps {
-  posts: Post[]
-  isLoading: boolean
-  isLoadingMore: boolean
-  hasMore: boolean
-  searchQuery: string
-  onLoadMore: () => void
-  onLikeChange: () => void
-  onPostDelete?: () => void
+  posts: Post[];
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  searchQuery: string;
+  onLoadMore: () => void;
+  onLikeChange: () => void;
+  onPostDelete?: () => void;
 }
 
 export function PostsList({
@@ -37,16 +39,6 @@ export function PostsList({
   onLikeChange,
   onPostDelete,
 }: PostsListProps) {
-  if (isLoading) {
-    return (
-      <>
-        <PostSkeleton />
-        <PostSkeleton />
-        <PostSkeleton />
-      </>
-    )
-  }
-
   if (posts.length === 0) {
     return (
       <p className="text-center text-gray-500">
@@ -68,7 +60,7 @@ export function PostsList({
           id={post.id}
           author={{
             name: post.author?.full_name || 'Usuário Anônimo',
-            id: post.author?.id,
+            id: post.author?.id || '',
             avatar: post.author?.logo_url
           }}
           content={post.content}

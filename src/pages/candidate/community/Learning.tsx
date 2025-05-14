@@ -13,6 +13,7 @@ import { CandidateSidebar } from "@/components/candidate/Sidebar"
 interface PostAuthor {
   id: string;
   full_name: string | null;
+  logo_url?: string | null;
 }
 
 interface Post {
@@ -102,7 +103,7 @@ export default function Learning() {
           created_at, 
           likes_count, 
           comments_count, 
-          author:author_id(id, full_name)
+          author:author_id(id, full_name, logo_url)
         `)
         .eq('post_type', 'learning')
         .order('created_at', { ascending: false })
@@ -118,8 +119,9 @@ export default function Learning() {
         comments_count: post.comments_count,
         post_type: 'learning',
         author: {
-          id: post.author ? post.author.id : '',
-          full_name: post.author && post.author.full_name ? post.author.full_name : 'Usuário Anônimo'
+          id: post.author ? (post.author as any).id || '' : '',
+          full_name: post.author && (post.author as any).full_name ? (post.author as any).full_name : 'Usuário Anônimo',
+          logo_url: post.author && (post.author as any).logo_url ? (post.author as any).logo_url : ''
         }
       }))
 
@@ -174,7 +176,7 @@ export default function Learning() {
 
             <div className="mb-6">
               <CreatePost 
-                postType="learning" 
+                type="learning" 
                 placeholder="Compartilhe o que você está aprendendo, cursos, tutoriais ou livros..." 
                 onPostSuccess={handleNewPost}
               />
@@ -205,9 +207,18 @@ export default function Learning() {
                 ) : (
                   filteredPosts.map(post => (
                     <PostCard 
-                      key={post.id} 
-                      post={post} 
-                      onUpdate={fetchPosts} 
+                      key={post.id}
+                      id={post.id}
+                      author={{
+                        id: post.author.id,
+                        name: post.author.full_name || 'Usuário Anônimo',
+                        avatar: post.author.logo_url || undefined
+                      }}
+                      content={post.content}
+                      likes={post.likes_count}
+                      comments={post.comments_count}
+                      created_at={post.created_at}
+                      onPostDelete={fetchPosts}
                     />
                   ))
                 )}

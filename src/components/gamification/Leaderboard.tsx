@@ -107,7 +107,7 @@ export function Leaderboard() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <LevelBadge level={user.current_level} />
+                      <LevelBadge userId={user.user_id} />
                     </TableCell>
                     <TableCell className="text-right">{user.total_points}</TableCell>
                   </TableRow>

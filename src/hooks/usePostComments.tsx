@@ -21,6 +21,8 @@ export const usePostComments = (postId: string) => {
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingAdd, setLoadingAdd] = useState(false)
+  const [showComments, setShowComments] = useState(false)
+  const [newComment, setNewComment] = useState("")
   const { toast } = useToast()
 
   const fetchComments = async () => {
@@ -48,9 +50,9 @@ export const usePostComments = (postId: string) => {
         content: comment.content,
         created_at: comment.created_at,
         author: {
-          id: comment.author ? comment.author.id : '',
-          full_name: comment.author && comment.author.full_name ? comment.author.full_name : 'Usuário Anônimo',
-          logo_url: comment.author && comment.author.logo_url ? comment.author.logo_url : ''
+          id: comment.author ? (comment.author as any).id || '' : '',
+          full_name: comment.author && (comment.author as any).full_name ? (comment.author as any).full_name : 'Usuário Anônimo',
+          logo_url: comment.author && (comment.author as any).logo_url ? (comment.author as any).logo_url : null
         }
       }))
 
@@ -107,13 +109,14 @@ export const usePostComments = (postId: string) => {
         content: data.content,
         created_at: data.created_at,
         author: {
-          id: data.author ? data.author.id : '',
-          full_name: data.author && data.author.full_name ? data.author.full_name : 'Usuário Anônimo',
-          logo_url: data.author && data.author.logo_url ? data.author.logo_url : ''
+          id: data.author ? (data.author as any).id || '' : '',
+          full_name: data.author && (data.author as any).full_name ? (data.author as any).full_name : 'Usuário Anônimo',
+          logo_url: data.author && (data.author as any).logo_url ? (data.author as any).logo_url : null
         }
       }
 
       setComments(prev => [...prev, newComment])
+      setNewComment("")
       toast({
         title: "Comentário adicionado",
         description: "Seu comentário foi adicionado com sucesso",
@@ -136,11 +139,25 @@ export const usePostComments = (postId: string) => {
     return addComment(content)
   }
 
+  const loadComments = () => {
+    setShowComments(prev => !prev)
+    if (!showComments && comments.length === 0) {
+      fetchComments()
+    }
+  }
+
   return {
     comments,
     loading,
     loadingAdd,
     fetchComments,
-    handleComment
+    handleComment,
+    showComments,
+    setShowComments,
+    newComment,
+    setNewComment,
+    loadComments,
+    postComments: comments,
+    isLoadingComments: loading
   }
 }

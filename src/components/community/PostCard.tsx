@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-react"
@@ -60,13 +61,14 @@ export function PostCard({
   })
 
   const {
-    showComments,
+    comments: postComments,
+    loading: isLoadingComments,
+    loadingAdd,
     newComment,
-    postComments,
-    isLoadingComments,
     setNewComment,
-    loadComments,
-    handleComment
+    handleComment,
+    showComments,
+    loadComments
   } = usePostComments(id)
 
   console.log("Post Comments:", postComments)
@@ -164,7 +166,7 @@ export function PostCard({
             newComment={newComment}
             isLoading={isLoadingComments}
             onCommentChange={setNewComment}
-            onSubmitComment={handleComment}
+            onSubmitComment={() => handleComment(newComment)}
           />
         )}
       </CardFooter>
