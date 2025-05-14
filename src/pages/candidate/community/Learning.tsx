@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react"
 import supabase from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
@@ -97,8 +98,8 @@ export default function Learning() {
         likes_count: post.likes_count,
         comments_count: post.comments_count,
         author: {
-          id: post.author.id,
-          full_name: post.author.full_name
+          id: post.author?.id || '',
+          full_name: post.author?.full_name || 'Usuário Anônimo'
         }
       }))
 

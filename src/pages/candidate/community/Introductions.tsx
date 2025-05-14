@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react"
 import supabase from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
@@ -116,9 +117,9 @@ export default function Introductions() {
         likes_count: post.likes_count,
         comments_count: post.comments_count,
         author: {
-          id: post.author.id,
-          full_name: post.author.full_name,
-          logo_url: post.author.logo_url
+          id: post.author?.id || '',
+          full_name: post.author?.full_name || 'Usuário Anônimo',
+          logo_url: post.author?.logo_url || ''
         }
       }))
 

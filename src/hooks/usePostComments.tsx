@@ -1,3 +1,4 @@
+
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import supabase from "@/integrations/supabase/client"
@@ -43,9 +44,9 @@ export function usePostComments(postId: string) {
           content: comment.content,
           created_at: comment.created_at,
           author: {
-            id: comment.author.id,
-            full_name: comment.author.full_name,
-            logo_url: comment.author.logo_url
+            id: comment.author?.id || '',
+            full_name: comment.author?.full_name || 'Usuário Anônimo',
+            logo_url: comment.author?.logo_url || ''
           }
         }))
 
@@ -104,9 +105,9 @@ export function usePostComments(postId: string) {
           content: data.content,
           created_at: data.created_at,
           author: {
-            id: data.author.id,
-            full_name: data.author.full_name,
-            logo_url: data.author.logo_url
+            id: data.author?.id || '',
+            full_name: data.author?.full_name || 'Usuário Anônimo',
+            logo_url: data.author?.logo_url || ''
           }
         }
 
