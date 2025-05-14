@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Loader2, PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react';
 import { CandidateSidebar } from '@/components/candidate/Sidebar';
-import { Header } from '@/components/candidate/Header';
+import { CandidateHeader } from '@/components/candidate/Header';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -129,7 +129,7 @@ export default function StaticPages() {
     <div className="flex min-h-screen bg-gray-100">
       <CandidateSidebar />
       <div className="flex-1 pl-64">
-        <Header title="Gerenciamento de Páginas Estáticas" />
+        <CandidateHeader />
         <main className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">Páginas Estáticas</h1>
