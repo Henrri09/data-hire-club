@@ -2,207 +2,206 @@
 import { useEffect, useState } from "react"
 import supabase from "@/integrations/supabase/client"
 import { CreatePost } from "@/components/community/CreatePost"
+import { PostCard } from "@/components/community/PostCard"
+import { CommunityHeader } from "@/components/community/CommunityHeader"
+import { PostSkeleton } from "@/components/community/PostSkeleton"
 import { CommunityBanner } from "@/components/community/CommunityBanner"
+import { PinnedRule } from "@/components/community/PinnedRule"
 import { CandidateHeader } from "@/components/candidate/Header"
 import { CandidateSidebar } from "@/components/candidate/Sidebar"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { AdminControls } from "@/components/community/introductions/AdminControls"
 import { SearchBar } from "@/components/community/introductions/SearchBar"
 import { PostsList } from "@/components/community/introductions/PostsList"
-import { AdminControls } from "@/components/community/introductions/AdminControls"
-import { PinnedRule } from "@/components/community/PinnedRule"
 
-interface Post {
-  id: string
-  content: string
-  created_at: string
-  likes_count: number
-  comments_count: number
-  author: {
-    full_name: string
-    id: string
-    logo_url: string
-  }
-  is_liked?: boolean
+interface PostAuthor {
+  id: string;
+  full_name: string | null;
+  logo_url?: string | null;
 }
 
-interface PinnedRuleType {
-  id: string
-  content: string
+interface Post {
+  id: string;
+  content: string;
+  created_at: string;
+  author: PostAuthor;
+  likes_count: number;
+  comments_count: number;
+  post_type: string;
 }
 
 export default function Introductions() {
-  const isMobile = useIsMobile()
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [posts, setPosts] = useState<Post[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [currentRule, setCurrentRule] = useState<PinnedRuleType | null>(null)
-  const postsPerPage = 10
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [pinnedRule, setPinnedRule] = useState<{ content: string } | null>(null)
+  const [banner, setBanner] = useState<{
+    title: string;
+    description: string;
+    image_url?: string;
+  } | null>(null)
 
-  const fetchCurrentRule = async () => {
-    const { data } = await supabase
-      .from('community_pinned_rules')
-      .select('id, content')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+  useEffect(() => {
+    checkAdminStatus()
+    fetchPosts()
+    fetchPinnedRule()
+    fetchBanner()
+  }, [])
 
-    if (data) {
-      setCurrentRule(data)
-    } else {
-      setCurrentRule(null)
+  const checkAdminStatus = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single()
+
+      setIsAdmin(!!profile?.is_admin)
+    } catch (error) {
+      console.error('Error checking admin status:', error)
     }
   }
 
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .single()
-
-        setIsAdmin(profile?.is_admin || false)
-      }
-    }
-
-    checkAdminStatus()
-    fetchCurrentRule()
-  }, [])
-
-  const fetchPosts = async (isNewSearch = false) => {
+  const fetchPinnedRule = async () => {
     try {
-      if (isNewSearch) {
-        setIsLoading(true)
-        setPage(1)
-        setPosts([])
-      } else {
-        setIsLoadingMore(true)
-      }
+      const { data } = await supabase
+        .from('community_pinned_rules')
+        .select('content')
+        .eq('is_active', true)
+        .eq('post_type', 'introductions')
+        .single()
 
-      const { data: { user } } = await supabase.auth.getUser()
+      setPinnedRule(data)
+    } catch (error) {
+      console.log('No pinned rule found')
+    }
+  }
 
-      let query = supabase
+  const fetchBanner = async () => {
+    try {
+      const { data } = await supabase
+        .from('community_banners')
+        .select('title, description, image_url')
+        .eq('is_active', true)
+        .eq('type', 'introductions')
+        .single()
+
+      setBanner(data)
+    } catch (error) {
+      console.log('No banner found')
+    }
+  }
+
+  const fetchPosts = async () => {
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
         .from('community_posts')
         .select(`
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles!community_posts_author_id_fkey(id, full_name, logo_url)
+          id, 
+          content, 
+          created_at, 
+          likes_count, 
+          comments_count, 
+          author:author_id(id, full_name, logo_url)
         `)
-        .eq('post_type', 'introduction')
+        .eq('post_type', 'introductions')
         .order('created_at', { ascending: false })
-        .range((page - 1) * postsPerPage, page * postsPerPage - 1)
-
-      if (searchQuery) {
-        query = query.ilike('content', `%${searchQuery}%`)
-      }
-
-      const { data: posts, error } = await query
 
       if (error) throw error
 
-      let postsWithLikes = (posts || []).map(post => ({
+      // Transformar os dados e lidar com possíveis valores nulos
+      const formattedPosts = data.map(post => ({
         id: post.id,
         content: post.content,
         created_at: post.created_at,
         likes_count: post.likes_count,
         comments_count: post.comments_count,
+        post_type: 'introductions',
         author: {
-          id: post.author?.id || '',
-          full_name: post.author?.full_name || 'Usuário Anônimo',
-          logo_url: post.author?.logo_url || ''
+          id: post.author ? post.author.id : '',
+          full_name: post.author && post.author.full_name ? post.author.full_name : 'Usuário Anônimo',
+          logo_url: post.author && post.author.logo_url ? post.author.logo_url : ''
         }
       }))
 
-      if (user) {
-        const { data: likes } = await supabase
-          .from('community_post_likes')
-          .select('post_id')
-          .eq('user_id', user.id)
-          .in('post_id', postsWithLikes.map(post => post.id))
-
-        const likedPostIds = new Set(likes?.map(like => like.post_id))
-        postsWithLikes = postsWithLikes.map(post => ({
-          ...post,
-          is_liked: likedPostIds.has(post.id)
-        }))
-      }
-
-      if (isNewSearch) {
-        setPosts(postsWithLikes)
-      } else {
-        setPosts(prev => [...prev, ...postsWithLikes])
-      }
-
-      setHasMore(postsWithLikes.length === postsPerPage)
+      setPosts(formattedPosts)
     } catch (error) {
       console.error('Error fetching posts:', error)
     } finally {
-      setIsLoading(false)
-      setIsLoadingMore(false)
+      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    fetchPosts(true)
-  }, [searchQuery])
+  const handleSearch = (term: string) => {
+    setSearchTerm(term)
+  }
+
+  const filteredPosts = posts.filter(post => {
+    const content = post.content.toLowerCase()
+    const author = post.author.full_name?.toLowerCase() || ''
+    const term = searchTerm.toLowerCase()
+    
+    return content.includes(term) || author.includes(term)
+  })
+
+  const handleNewPost = () => {
+    fetchPosts()
+  }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <CandidateHeader />
-      <div className="flex flex-1">
-        {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8">
+      <div className="flex">
+        <CandidateSidebar />
+        <div className="flex-1 p-6 pl-64">
           <div className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">Apresente-se à Comunidade</h1>
-            </div>
-            <CommunityBanner type="INTRODUCTION" />
-            {isAdmin && (
-              <AdminControls
-                currentRule={currentRule?.content || ""}
-                onRuleUpdate={fetchCurrentRule}
-                type="INTRODUCTION"
-              />
+            <CommunityHeader title="Apresente-se à Comunidade" isAdmin={isAdmin} />
+            
+            {banner && (
+              <div className="mb-6">
+                <CommunityBanner 
+                  title={banner.title} 
+                  description={banner.description}
+                  imageUrl={banner.image_url}
+                />
+              </div>
             )}
 
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={() => fetchPosts(true)}
-            />
+            {pinnedRule && (
+              <div className="mb-6">
+                <PinnedRule content={pinnedRule.content} />
+              </div>
+            )}
 
+            {isAdmin && <AdminControls />}
 
-            <PinnedRule
-              content={currentRule?.content || ""}
-              ruleId={currentRule?.id}
-              isAdmin={isAdmin}
-              onUpdate={fetchCurrentRule}
-            />
-            <CreatePost onPostCreated={() => fetchPosts(true)} />
-
-            <div className="space-y-4">
-              <PostsList
-                posts={posts}
-                isLoading={isLoading}
-                isLoadingMore={isLoadingMore}
-                hasMore={hasMore}
-                searchQuery={searchQuery}
-                onLoadMore={() => setPage(prev => prev + 1)}
-                onLikeChange={() => fetchPosts()}
+            <div className="mb-6">
+              <CreatePost 
+                postType="introductions" 
+                placeholder="Conte um pouco sobre você, sua experiência e objetivos..." 
+                onPostSuccess={handleNewPost}
               />
             </div>
+
+            <div className="mb-6">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+
+            {loading ? (
+              <div className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                  <PostSkeleton key={i} />
+                ))}
+              </div>
+            ) : (
+              <PostsList posts={filteredPosts} onPostUpdate={fetchPosts} />
+            )}
           </div>
-        </main>
+        </div>
       </div>
     </div>
   )

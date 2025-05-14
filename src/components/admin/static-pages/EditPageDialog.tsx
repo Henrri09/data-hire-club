@@ -1,16 +1,17 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StaticPage } from '@/types/staticPage.types';
 import { useToast } from '@/hooks/use-toast';
 import supabase from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye } from 'lucide-react';
 
 interface EditPageDialogProps {
   page: StaticPage | null;
@@ -21,10 +22,12 @@ interface EditPageDialogProps {
 
 export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPageDialogProps) {
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("content");
+  const [previewContent, setPreviewContent] = useState<string>("");
   const { toast } = useToast();
 
   const form = useForm<StaticPage>({
-    defaultValues: page || {
+    defaultValues: {
       title: '',
       slug: '',
       content: '',
@@ -33,10 +36,11 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
     }
   });
 
-  // Reset form when page changes
-  useState(() => {
+  // Reset form when page changes or dialog opens
+  useEffect(() => {
     if (page) {
       form.reset(page);
+      setPreviewContent(page.content);
     } else {
       form.reset({
         title: '',
@@ -45,8 +49,39 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
         meta_description: '',
         published: false
       });
+      setPreviewContent("");
     }
-  });
+  }, [page, open, form]);
+
+  // Update preview when content changes
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.content) {
+        setPreviewContent(value.content);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
+  // Helper to generate slug from title
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .trim();
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    form.setValue('title', title);
+    
+    // Apenas gera o slug automaticamente se for uma nova página ou se o slug estiver vazio
+    if (!page?.id || !form.getValues('slug')) {
+      form.setValue('slug', generateSlug(title));
+    }
+  };
 
   const onSubmit = async (data: StaticPage) => {
     setLoading(true);
@@ -113,7 +148,7 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {page ? `Editar: ${page.title}` : 'Criar Nova Página'}
@@ -130,7 +165,11 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
                   <FormItem>
                     <FormLabel>Título</FormLabel>
                     <FormControl>
-                      <Input placeholder="Título da página" {...field} />
+                      <Input 
+                        placeholder="Título da página" 
+                        {...field} 
+                        onChange={(e) => handleTitleChange(e)}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -145,6 +184,9 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
                     <FormControl>
                       <Input placeholder="slug-da-pagina" {...field} />
                     </FormControl>
+                    <FormDescription>
+                      URL da página (ex: /sobre-nos)
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -159,26 +201,48 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
                   <FormControl>
                     <Input placeholder="Descrição para SEO" {...field} />
                   </FormControl>
+                  <FormDescription>
+                    Breve descrição para motores de busca (SEO)
+                  </FormDescription>
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Conteúdo HTML</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Conteúdo HTML da página"
-                      className="h-64 font-mono"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="content">Editor</TabsTrigger>
+                <TabsTrigger value="preview" className="flex items-center">
+                  <Eye className="h-4 w-4 mr-1" /> Visualizar
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="content" className="p-0 border rounded-md mt-2">
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Conteúdo HTML da página"
+                          className="min-h-[400px] font-mono border-0 resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className="px-3 pb-2">
+                        Use HTML para formatar o conteúdo. Exemplo: &lt;h1&gt;Título&lt;/h1&gt;, &lt;p&gt;Parágrafo&lt;/p&gt;
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+              
+              <TabsContent value="preview" className="border rounded-md p-4 min-h-[400px] mt-2">
+                <div className="prose max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: previewContent }} />
+                </div>
+              </TabsContent>
+            </Tabs>
 
             <FormField
               control={form.control}
@@ -187,9 +251,9 @@ export function EditPageDialog({ page, open, onOpenChange, onSuccess }: EditPage
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">Publicado</FormLabel>
-                    <p className="text-sm text-muted-foreground">
+                    <FormDescription>
                       Tornar esta página visível ao público
-                    </p>
+                    </FormDescription>
                   </div>
                   <FormControl>
                     <Switch
