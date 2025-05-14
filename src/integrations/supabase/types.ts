@@ -646,6 +646,42 @@ export type Database = {
         }
         Relationships: []
       }
+      static_pages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          last_updated_by: string | null
+          meta_description: string | null
+          published: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          last_updated_by?: string | null
+          meta_description?: string | null
+          published?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          last_updated_by?: string | null
+          meta_description?: string | null
+          published?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_points: {
         Row: {
           created_at: string

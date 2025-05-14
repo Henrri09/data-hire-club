@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/login/Login";
@@ -13,8 +14,12 @@ import Learning from "./pages/candidate/community/Learning";
 import Questions from "./pages/candidate/community/Questions";
 import SEOScripts from "./pages/candidate/admin/SEOScripts";
 import { BannersPage } from "./pages/candidate/admin/Banners";
+import StaticPages from "./pages/candidate/admin/StaticPages";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { CompleteProfile } from "./components/auth/CompleteProfile";
+import About from "./pages/static/About";
+import Terms from "./pages/static/Terms";
+import Privacy from "./pages/static/Privacy";
 
 function App() {
   return (
@@ -25,6 +30,12 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Páginas estáticas públicas */}
+        <Route path="/sobre" element={<About />} />
+        <Route path="/termos" element={<Terms />} />
+        <Route path="/privacidade" element={<Privacy />} />
+
         <Route path="/complete-profile" element={
           <ProtectedRoute>
             <CompleteProfile />
@@ -63,6 +74,11 @@ function App() {
         <Route path="/candidate/admin/banners" element={
           <ProtectedRoute requiredUserType="candidate">
             <BannersPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/candidate/admin/static-pages" element={
+          <ProtectedRoute requiredUserType="candidate">
+            <StaticPages />
           </ProtectedRoute>
         } />
 
