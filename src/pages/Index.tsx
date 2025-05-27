@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Search, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -112,9 +113,9 @@ const Index = () => {
             <div className="text-center md:text-left sm:col-span-2 md:col-span-1">
               <h4 className="text-lg font-bold mb-4">Links Úteis</h4>
               <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">Sobre Nós</Link></li>
-                <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">Termos de Uso</Link></li>
-                <li><Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">Política de Privacidade</Link></li>
+                <li><Link to="/sobre" className="text-gray-300 hover:text-white transition-colors">Sobre Nós</Link></li>
+                <li><Link to="/termos" className="text-gray-300 hover:text-white transition-colors">Termos de Uso</Link></li>
+                <li><Link to="/privacidade" className="text-gray-300 hover:text-white transition-colors">Política de Privacidade</Link></li>
               </ul>
             </div>
           </div>
