@@ -6,6 +6,7 @@ export interface Post {
   updated_at: string;
   likes_count: number;
   comments_count: number;
+  is_liked?: boolean;
   author: {
     id: string;
     full_name: string;

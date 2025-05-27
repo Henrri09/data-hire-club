@@ -18,7 +18,7 @@ export const PostCard = ({ post, onLikeChange, onPostDelete }: PostCardProps) =>
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const { isLiking, localLiked, localLikes, handleLike } = usePostActions({
+  const { isLiked, likesCount, toggleLike, isLoading } = usePostActions({
     postId: post.id,
     initialLiked: post.is_liked || false,
     initialLikes: post.likes_count,
@@ -106,16 +106,16 @@ export const PostCard = ({ post, onLikeChange, onPostDelete }: PostCardProps) =>
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleLike}
-              disabled={isLiking}
+              onClick={toggleLike}
+              disabled={isLoading}
               className={`flex items-center gap-2 ${
-                localLiked ? 'text-red-500' : 'text-gray-500'
+                isLiked ? 'text-red-500' : 'text-gray-500'
               }`}
             >
               <Heart 
-                className={`h-4 w-4 ${localLiked ? 'fill-current' : ''}`} 
+                className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} 
               />
-              <span>{localLikes}</span>
+              <span>{likesCount}</span>
             </Button>
 
             <Button
@@ -135,9 +135,9 @@ export const PostCard = ({ post, onLikeChange, onPostDelete }: PostCardProps) =>
               comments={comments}
               isLoading={isLoadingComments}
               newComment={newComment}
-              setNewComment={setNewComment}
-              onAddComment={handleAddComment}
-              isAddingComment={isAddingComment}
+              onCommentChange={setNewComment}
+              onSubmitComment={handleAddComment}
+              isSubmitting={isAddingComment}
             />
           )}
         </CardContent>

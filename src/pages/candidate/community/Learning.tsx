@@ -1,14 +1,13 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import supabase from '@/integrations/supabase/client';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
 import { CreatePost } from '@/components/community/CreatePost';
 import { PostCard } from '@/components/community/PostCard';
 import { PostSkeleton } from '@/components/community/PostSkeleton';
-import { Header } from '@/components/candidate/Header';
 import { Post } from '@/types/community.types';
 
 const Learning = () => {
@@ -81,15 +80,13 @@ const Learning = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="max-w-4xl mx-auto px-4 py-8">
         <CommunityHeader 
           title="Aprendizado" 
           description="Compartilhe recursos, dicas e experiências de aprendizado em dados"
         />
 
-        <CommunityBanner />
+        <CommunityBanner type="LEARNING" />
         
         <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
 

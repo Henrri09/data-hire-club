@@ -1,14 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import supabase from '@/integrations/supabase/client';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
 import { CreatePost } from '@/components/community/CreatePost';
 import { PostCard } from '@/components/community/PostCard';
 import { PostSkeleton } from '@/components/community/PostSkeleton';
-import { Header } from '@/components/candidate/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -115,12 +114,10 @@ const Questions = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="max-w-4xl mx-auto px-4 py-8">
         <CommunityHeader title="Perguntas e Respostas" />
 
-        <CommunityBanner />
+        <CommunityBanner type="QUESTIONS" />
         
         <PinnedRule content="❓ Faça suas perguntas sobre carreira, tecnologias e desafios na área de dados. A comunidade está aqui para ajudar!" />
 

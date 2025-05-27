@@ -1,68 +1,67 @@
 
 import { useState } from "react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import supabase from "@/integrations/supabase/client"
 import { Post } from "@/types/community.types"
 
-export function usePostActions(post: Post) {
-  const [isLiking, setIsLiking] = useState(false)
-  const [localLiked, setLocalLiked] = useState(false)
-  const [localLikes, setLocalLikes] = useState(post.likes_count)
-  const { toast } = useToast()
+interface UsePostActionsProps {
+  postId: string;
+  initialLiked: boolean;
+  initialLikes: number;
+  onLikeChange?: () => void;
+}
+
+export function usePostActions({ postId, initialLiked, initialLikes, onLikeChange }: UsePostActionsProps) {
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLiked, setIsLiked] = useState(initialLiked)
+  const [likesCount, setLikesCount] = useState(initialLikes)
 
   const toggleLike = async () => {
     try {
-      setIsLiking(true)
+      setIsLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
-        toast({
-          title: "Erro ao curtir post",
-          description: "Você precisa estar logado para curtir posts.",
-          variant: "destructive"
-        })
+        toast.error("Você precisa estar logado para curtir posts.")
         return
       }
 
-      if (localLiked) {
+      if (isLiked) {
         const { error } = await supabase
           .from('community_post_likes')
           .delete()
-          .eq('post_id', post.id)
+          .eq('post_id', postId)
           .eq('user_id', user.id)
 
         if (error) throw error
-        setLocalLikes(prev => prev - 1)
+        setLikesCount(prev => prev - 1)
       } else {
         const { error } = await supabase
           .from('community_post_likes')
           .insert({
-            post_id: post.id,
+            post_id: postId,
             user_id: user.id
           })
 
         if (error) throw error
-        setLocalLikes(prev => prev + 1)
+        setLikesCount(prev => prev + 1)
       }
 
-      setLocalLiked(!localLiked)
+      setIsLiked(!isLiked)
+      if (onLikeChange) onLikeChange()
 
     } catch (error) {
       console.error('Error toggling like:', error)
-      toast({
-        title: "Erro ao curtir post",
-        description: "Ocorreu um erro ao tentar curtir o post.",
-        variant: "destructive"
-      })
+      toast.error("Ocorreu um erro ao tentar curtir o post.")
     } finally {
-      setIsLiking(false)
+      setIsLoading(false)
     }
   }
 
   return {
-    isLiked: localLiked,
-    likesCount: localLikes,
+    isLiked,
+    likesCount,
     toggleLike,
-    isLoading: isLiking
+    isLoading
   }
 }

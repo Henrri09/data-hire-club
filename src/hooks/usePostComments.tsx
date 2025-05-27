@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import supabase from '@/integrations/supabase/client';
 import { Comment } from '@/types/comment.types';
 import { toast } from 'sonner';
 
@@ -40,7 +40,7 @@ export const usePostComments = (postId: string) => {
         author: {
           id: comment.profiles.id,
           full_name: comment.profiles.full_name,
-          logo_url: comment.profiles.logo_url
+          logo_url: comment.profiles.logo_url || ''
         }
       })) as Comment[];
     },

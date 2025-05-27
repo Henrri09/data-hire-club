@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import supabase from '@/integrations/supabase/client';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
@@ -9,7 +9,6 @@ import { CreatePost } from '@/components/community/CreatePost';
 import { SearchBar } from '@/components/community/introductions/SearchBar';
 import { PostsList } from '@/components/community/introductions/PostsList';
 import { AdminControls } from '@/components/community/introductions/AdminControls';
-import { Header } from '@/components/candidate/Header';
 import { Post } from '@/types/community.types';
 
 const Introductions = () => {
@@ -90,19 +89,17 @@ const Introductions = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="max-w-4xl mx-auto px-4 py-8">
         <CommunityHeader 
           title="Apresentações" 
           description="Compartilhe sua jornada na área de dados e conheça outros profissionais"
         />
 
-        <CommunityBanner />
+        <CommunityBanner type="INTRODUCTION" />
         
         <PinnedRule content="📝 Use este espaço para se apresentar à comunidade! Conte sobre sua experiência, área de interesse e objetivos profissionais." />
 
-        <AdminControls />
+        <AdminControls type="INTRODUCTION" />
 
         <CreatePost 
           placeholder="Compartilhe sua apresentação com a comunidade..."

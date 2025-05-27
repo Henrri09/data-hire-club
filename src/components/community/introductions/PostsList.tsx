@@ -1,6 +1,6 @@
 
 import { PostCard } from "@/components/community/PostCard"
-import { Button } from "@/components/ui/button"
+import { PostSkeleton } from "@/components/community/PostSkeleton"
 import { Post } from "@/types/community.types"
 
 interface PostsListProps {
@@ -18,9 +18,7 @@ export function PostsList({
     return (
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="animate-pulse">
-            <div className="bg-gray-200 h-32 rounded-lg"></div>
-          </div>
+          <PostSkeleton key={index} />
         ))}
       </div>
     );
@@ -40,7 +38,8 @@ export function PostsList({
         <PostCard
           key={post.id}
           post={post}
-          onUpdate={onPostUpdate}
+          onLikeChange={onPostUpdate}
+          onPostDelete={onPostUpdate}
         />
       ))}
     </div>
