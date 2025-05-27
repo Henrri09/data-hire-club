@@ -1,183 +1,139 @@
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Pencil } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
-import { PostHeader } from "./PostHeader"
-import { PostActions } from "./PostActions"
-import { PostComments } from "./PostComments"
-import { usePostActions } from "@/hooks/usePostActions"
-import { usePostComments } from "@/hooks/usePostComments"
-import { useState, useEffect } from "react"
-import supabase from "@/integrations/supabase/client"
-import { PostCardActions } from "./post/PostCardActions"
-import { PostEditDialog } from "./post/PostEditDialog"
-import { PostContent } from "./post/PostContent"
-import { PostDeleteButton } from "./post/PostDeleteButton"
+import { useState } from 'react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Heart, MessageCircle, Pencil, Trash2 } from 'lucide-react';
+import { PostHeader } from './PostHeader';
+import { PostContent } from './post/PostContent';
+import { PostComments } from './PostComments';
+import { PostEditDialog } from './post/PostEditDialog';
+import { PostDeleteButton } from './post/PostDeleteButton';
+import { usePostActions } from '@/hooks/usePostActions';
+import { usePostComments } from '@/hooks/usePostComments';
+import { Post } from '@/types/community.types';
 
 interface PostCardProps {
-  id: string
-  author: {
-    name: string
-    avatar?: string
-    id: string
-  }
-  content: string
-  likes: number
-  comments: number
-  created_at: string
-  isLiked?: boolean
-  onLikeChange?: () => void
-  onPostDelete?: () => void
+  post: Post;
+  onUpdate: () => Promise<void>;
+  onDelete?: () => void;
 }
 
-export function PostCard({
-  id,
-  author,
-  content,
-  likes,
-  comments,
-  created_at,
-  isLiked = false,
-  onLikeChange,
-  onPostDelete
-}: PostCardProps) {
-  const [isCurrentUser, setIsCurrentUser] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedContent, setEditedContent] = useState(content)
-  const { toast } = useToast()
+export function PostCard({ post, onUpdate, onDelete }: PostCardProps) {
+  const [showComments, setShowComments] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const { 
+    isLiked, 
+    likesCount, 
+    toggleLike, 
+    isLoading: isLikeLoading 
+  } = usePostActions(post);
 
   const {
-    isLiking,
-    localLiked,
-    localLikes,
-    handleLike
-  } = usePostActions({
-    id,
-    initialLikes: likes,
-    initialIsLiked: isLiked,
-    onLikeChange
-  })
+    comments,
+    loading: commentsLoading,
+    loadingAdd: addingComment,
+    fetchComments,
+    handleComment
+  } = usePostComments(post.id);
 
-  const {
-    comments: postComments,
-    loading: isLoadingComments,
-    loadingAdd,
-    newComment,
-    setNewComment,
-    handleComment,
-    showComments,
-    loadComments
-  } = usePostComments(id)
-
-  console.log("Post Comments:", postComments)
-
-  useEffect(() => {
-    const checkUserPermissions = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          setIsCurrentUser(user.id === author.id)
-
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('id', user.id)
-            .single()
-
-          console.log("Perfil do usuário:", profile)
-          setIsAdmin(profile?.is_admin || false)
-        }
-      } catch (error) {
-        console.error("Erro ao verificar permissões:", error)
-      }
+  const handleToggleComments = async () => {
+    if (!showComments) {
+      await fetchComments();
     }
+    setShowComments(!showComments);
+  };
 
-    checkUserPermissions()
-  }, [author.id])
-
-  const handleEdit = async () => {
-    try {
-      const { error } = await supabase
-        .from('community_posts')
-        .update({ content: editedContent })
-        .eq('id', id)
-
-      if (error) throw error
-
-      toast({
-        title: "Post atualizado",
-        description: "Seu post foi atualizado com sucesso.",
-      })
-      setIsEditing(false)
-    } catch (error) {
-      console.error('Erro ao atualizar post:', error)
-      toast({
-        title: "Erro ao atualizar post",
-        description: "Ocorreu um erro ao tentar atualizar o post.",
-        variant: "destructive"
-      })
-    }
-  }
+  const handleCommentSubmit = async (content: string) => {
+    await handleComment(content);
+    await fetchComments();
+  };
 
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <PostHeader author={author} created_at={created_at} />
-          <div className="flex gap-2">
-            {isCurrentUser && (
+    <>
+      <Card className="mb-4 shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <PostHeader post={post} />
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          <PostContent content={post.content} />
+          
+          <div className="flex items-center justify-between pt-2 border-t">
+            <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
-                size="icon"
-                onClick={() => setIsEditing(true)}
+                size="sm"
+                onClick={toggleLike}
+                disabled={isLikeLoading}
+                className={`flex items-center space-x-1 ${
+                  isLiked ? 'text-red-500 hover:text-red-600' : 'text-gray-500 hover:text-red-500'
+                }`}
+              >
+                <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+                <span>{likesCount}</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleToggleComments}
+                className="flex items-center space-x-1 text-gray-500 hover:text-blue-500"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>{post.comments_count || 0}</span>
+              </Button>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowEditDialog(true)}
+                className="text-gray-500 hover:text-blue-500"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
-            )}
-            {(isCurrentUser || isAdmin) && (
-              <PostDeleteButton
-                postId={id}
-                authorId={author.id}
-                isAdmin={isAdmin}
-                onPostDelete={onPostDelete}
-              />
-            )}
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-gray-500 hover:text-red-500"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <PostContent content={content} />
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
-        <PostActions
-          likes={localLikes}
-          comments={comments}
-          isLiked={localLiked}
-          isLiking={isLiking}
-          onLike={handleLike}
-          onComment={loadComments}
-        />
-
-        {showComments && (
-          <PostComments
-            comments={postComments}
-            newComment={newComment}
-            isLoading={isLoadingComments}
-            onCommentChange={setNewComment}
-            onSubmitComment={() => handleComment(newComment)}
-          />
-        )}
-      </CardFooter>
+          
+          {showComments && (
+            <PostComments
+              comments={comments}
+              loading={commentsLoading}
+              onAddComment={handleCommentSubmit}
+              loadingAdd={addingComment}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       <PostEditDialog
-        open={isEditing}
-        content={editedContent}
-        onOpenChange={setIsEditing}
-        onContentChange={setEditedContent}
-        onSave={handleEdit}
+        post={post}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        onSuccess={onUpdate}
       />
-    </Card>
-  )
+
+      <PostDeleteButton
+        post={post}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onSuccess={() => {
+          onUpdate();
+          if (onDelete) onDelete();
+        }}
+      />
+    </>
+  );
 }

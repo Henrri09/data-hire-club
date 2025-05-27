@@ -1,163 +1,107 @@
 
-import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
-import supabase from "@/integrations/supabase/client"
+import { useState, useCallback } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import supabase from '@/integrations/supabase/client';
+import { Comment } from '@/types/comment.types';
 
-interface Author {
-  id: string;
-  full_name: string | null;
-  logo_url?: string | null;
-}
+export function usePostComments(postId: string) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingAdd, setLoadingAdd] = useState(false);
+  const { toast } = useToast();
 
-interface Comment {
-  id: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-  author: Author;
-}
-
-export const usePostComments = (postId: string) => {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadingAdd, setLoadingAdd] = useState(false)
-  const [showComments, setShowComments] = useState(false)
-  const [newComment, setNewComment] = useState("")
-  const { toast } = useToast()
-
-  const fetchComments = async () => {
-    setLoading(true)
+  const fetchComments = useCallback(async () => {
+    if (!postId) return;
+    
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('community_post_comments')
         .select(`
           id,
-          post_id,
           content,
           created_at,
-          author:author_id(id, full_name, logo_url)
+          updated_at,
+          profiles!community_post_comments_author_id_fkey (
+            id,
+            full_name,
+            logo_url
+          )
         `)
         .eq('post_id', postId)
         .is('deleted_at', null)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: true });
 
-      if (error) throw error
+      if (error) throw error;
 
-      // Transformar os dados e lidar com possíveis valores nulos
-      const formattedComments = data.map(comment => ({
+      const commentsWithAuthor: Comment[] = (data || []).map(comment => ({
         id: comment.id,
-        post_id: comment.post_id,
         content: comment.content,
         created_at: comment.created_at,
+        updated_at: comment.updated_at,
         author: {
-          id: comment.author ? (comment.author as any).id || '' : '',
-          full_name: comment.author && (comment.author as any).full_name ? (comment.author as any).full_name : 'Usuário Anônimo',
-          logo_url: comment.author && (comment.author as any).logo_url ? (comment.author as any).logo_url : null
+          id: comment.profiles?.id || '',
+          full_name: comment.profiles?.full_name || 'Usuário anônimo',
+          logo_url: comment.profiles?.logo_url || undefined
         }
-      }))
+      }));
 
-      setComments(formattedComments)
-    } catch (err: any) {
-      console.error('Error fetching comments:', err)
+      setComments(commentsWithAuthor);
+    } catch (error) {
+      console.error('Erro ao buscar comentários:', error);
       toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Falha ao carregar os comentários",
-      })
+        title: 'Erro',
+        description: 'Não foi possível carregar os comentários',
+        variant: 'destructive',
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [postId, toast]);
 
-  const addComment = async (content: string) => {
-    if (!content.trim()) return
+  const handleComment = useCallback(async (content: string) => {
+    if (!content.trim() || !postId) return;
 
-    setLoadingAdd(true)
+    setLoadingAdd(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Você precisa estar logado para comentar",
-        })
-        return
+        throw new Error('Usuário não autenticado');
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('community_post_comments')
         .insert({
           post_id: postId,
           author_id: user.id,
-          content: content.trim(),
-        })
-        .select(`
-          id,
-          post_id,
-          content,
-          created_at,
-          author:author_id(id, full_name, logo_url)
-        `)
-        .single()
+          content: content.trim()
+        });
 
-      if (error) throw error
+      if (error) throw error;
 
-      const newComment = {
-        id: data.id,
-        post_id: data.post_id,
-        content: data.content,
-        created_at: data.created_at,
-        author: {
-          id: data.author ? (data.author as any).id || '' : '',
-          full_name: data.author && (data.author as any).full_name ? (data.author as any).full_name : 'Usuário Anônimo',
-          logo_url: data.author && (data.author as any).logo_url ? (data.author as any).logo_url : null
-        }
-      }
-
-      setComments(prev => [...prev, newComment])
-      setNewComment("")
       toast({
-        title: "Comentário adicionado",
-        description: "Seu comentário foi adicionado com sucesso",
-      })
-      return data.id
-    } catch (err: any) {
-      console.error('Error adding comment:', err)
+        title: 'Comentário adicionado',
+        description: 'Seu comentário foi publicado com sucesso',
+      });
+
+      await fetchComments();
+    } catch (error: any) {
+      console.error('Erro ao adicionar comentário:', error);
       toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Falha ao adicionar comentário",
-      })
-      return null
+        title: 'Erro',
+        description: error.message || 'Não foi possível adicionar o comentário',
+        variant: 'destructive',
+      });
     } finally {
-      setLoadingAdd(false)
+      setLoadingAdd(false);
     }
-  }
-
-  const handleComment = (content: string) => {
-    return addComment(content)
-  }
-
-  const loadComments = () => {
-    setShowComments(prev => !prev)
-    if (!showComments && comments.length === 0) {
-      fetchComments()
-    }
-  }
+  }, [postId, fetchComments, toast]);
 
   return {
     comments,
     loading,
     loadingAdd,
     fetchComments,
-    handleComment,
-    showComments,
-    setShowComments,
-    newComment,
-    setNewComment,
-    loadComments,
-    postComments: comments,
-    isLoadingComments: loading
-  }
+    handleComment
+  };
 }
