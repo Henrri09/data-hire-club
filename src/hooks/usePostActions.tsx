@@ -1,26 +1,16 @@
+
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import supabase from "@/integrations/supabase/client"
+import { Post } from "@/types/community.types"
 
-interface UsePostActionsProps {
-  id: string
-  initialLikes: number
-  initialIsLiked: boolean
-  onLikeChange?: () => void
-}
-
-export function usePostActions({
-  id,
-  initialLikes,
-  initialIsLiked,
-  onLikeChange
-}: UsePostActionsProps) {
+export function usePostActions(post: Post) {
   const [isLiking, setIsLiking] = useState(false)
-  const [localLiked, setLocalLiked] = useState(initialIsLiked)
-  const [localLikes, setLocalLikes] = useState(initialLikes)
+  const [localLiked, setLocalLiked] = useState(false)
+  const [localLikes, setLocalLikes] = useState(post.likes_count)
   const { toast } = useToast()
 
-  const handleLike = async () => {
+  const toggleLike = async () => {
     try {
       setIsLiking(true)
       const { data: { user } } = await supabase.auth.getUser()
@@ -38,7 +28,7 @@ export function usePostActions({
         const { error } = await supabase
           .from('community_post_likes')
           .delete()
-          .eq('post_id', id)
+          .eq('post_id', post.id)
           .eq('user_id', user.id)
 
         if (error) throw error
@@ -47,7 +37,7 @@ export function usePostActions({
         const { error } = await supabase
           .from('community_post_likes')
           .insert({
-            post_id: id,
+            post_id: post.id,
             user_id: user.id
           })
 
@@ -56,7 +46,6 @@ export function usePostActions({
       }
 
       setLocalLiked(!localLiked)
-      if (onLikeChange) onLikeChange()
 
     } catch (error) {
       console.error('Error toggling like:', error)
@@ -71,9 +60,9 @@ export function usePostActions({
   }
 
   return {
-    isLiking,
-    localLiked,
-    localLikes,
-    handleLike
+    isLiked: localLiked,
+    likesCount: localLikes,
+    toggleLike,
+    isLoading: isLiking
   }
 }

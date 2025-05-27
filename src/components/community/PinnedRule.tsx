@@ -1,100 +1,77 @@
-import { useState } from "react"
-import { Pin, Pencil } from "lucide-react"
+
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Pin, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
 import supabase from "@/integrations/supabase/client"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 interface PinnedRuleProps {
-  content: string
-  ruleId?: string
-  isAdmin?: boolean
-  onUpdate?: () => void
+  content?: string;
 }
 
-export function PinnedRule({ content, ruleId, isAdmin = false, onUpdate }: PinnedRuleProps) {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [editedContent, setEditedContent] = useState(content)
-  const [isLoading, setIsLoading] = useState(false)
+export function PinnedRule({ content: initialContent }: PinnedRuleProps) {
+  const [rule, setRule] = useState(initialContent || "")
+  const [isAdmin, setIsAdmin] = useState(false)
   const { toast } = useToast()
 
-  if (!content) return null
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single()
 
-  const handleEdit = async () => {
-    try {
-      setIsLoading(true)
-      const { error } = await supabase
-        .from('community_pinned_rules')
-        .update({ content: editedContent })
-        .eq('id', ruleId)
-
-      if (error) throw error
-
-      toast({
-        title: "Regra atualizada",
-        description: "A regra foi atualizada com sucesso.",
-      })
-
-      setIsEditDialogOpen(false)
-      if (onUpdate) onUpdate()
-    } catch (error) {
-      console.error('Error updating rule:', error)
-      toast({
-        title: "Erro ao atualizar regra",
-        description: "Ocorreu um erro ao tentar atualizar a regra.",
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
+        setIsAdmin(profile?.is_admin || false)
+      }
     }
-  }
+
+    const fetchRule = async () => {
+      if (!initialContent) {
+        const { data, error } = await supabase
+          .from('community_pinned_rules')
+          .select('content')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (data && data.length > 0) {
+          setRule(data[0].content)
+        } else {
+          setRule("Seja respeitoso e mantenha as discussões relevantes para a área de dados.")
+        }
+
+        if (error) {
+          console.error('Error fetching rule:', error)
+        }
+      }
+    }
+
+    checkAdminStatus()
+    fetchRule()
+  }, [initialContent])
+
+  if (!rule) return null
 
   return (
-    <>
-      <Card className="mb-6 bg-muted/30">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2">
-              <Pin className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Regra Fixada</span>
-            </div>
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsEditDialogOpen(true)}
-                disabled={isLoading}
-              >
-                <Pencil className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            )}
+    <Card className="mb-6 bg-blue-50 border-blue-200">
+      <CardContent className="p-4">
+        <div className="flex items-start space-x-3">
+          <Pin className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h3 className="font-semibold text-blue-900 mb-2">Regras da Comunidade</h3>
+            <p className="text-blue-800 text-sm">{rule}</p>
           </div>
-          <p className="text-sm text-muted-foreground">{content}</p>
-        </CardContent>
-      </Card>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar regra fixada</DialogTitle>
-          </DialogHeader>
-          <Textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            className="min-h-[100px]"
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancelar
+          {isAdmin && (
+            <Button variant="ghost" size="icon" className="text-blue-600">
+              <Edit className="h-4 w-4" />
             </Button>
-            <Button onClick={handleEdit} disabled={isLoading}>
-              Salvar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
