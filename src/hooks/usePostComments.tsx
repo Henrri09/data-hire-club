@@ -1,107 +1,99 @@
 
-import { useState, useCallback } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import supabase from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Comment } from '@/types/comment.types';
+import { toast } from 'sonner';
 
-export function usePostComments(postId: string) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingAdd, setLoadingAdd] = useState(false);
-  const { toast } = useToast();
+export const usePostComments = (postId: string) => {
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const queryClient = useQueryClient();
 
-  const fetchComments = useCallback(async () => {
-    if (!postId) return;
-    
-    setLoading(true);
-    try {
+  // Fetch comments
+  const { data: comments = [], isLoading } = useQuery({
+    queryKey: ['comments', postId],
+    queryFn: async () => {
       const { data, error } = await supabase
-        .from('community_post_comments')
+        .from('comments')
         .select(`
           id,
           content,
           created_at,
-          updated_at,
-          profiles!community_post_comments_author_id_fkey (
+          post_id,
+          profiles!inner(
             id,
             full_name,
             logo_url
           )
         `)
         .eq('post_id', postId)
-        .is('deleted_at', null)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      const commentsWithAuthor: Comment[] = (data || []).map(comment => ({
+      return (data || []).map((comment: any) => ({
         id: comment.id,
         content: comment.content,
         created_at: comment.created_at,
-        updated_at: comment.updated_at,
+        post_id: comment.post_id,
         author: {
-          id: comment.profiles?.id || '',
-          full_name: comment.profiles?.full_name || 'Usuário anônimo',
-          logo_url: comment.profiles?.logo_url || undefined
+          id: comment.profiles.id,
+          full_name: comment.profiles.full_name,
+          logo_url: comment.profiles.logo_url
         }
-      }));
+      })) as Comment[];
+    },
+    enabled: showComments
+  });
 
-      setComments(commentsWithAuthor);
-    } catch (error) {
-      console.error('Erro ao buscar comentários:', error);
-      toast({
-        title: 'Erro',
-        description: 'Não foi possível carregar os comentários',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [postId, toast]);
-
-  const handleComment = useCallback(async (content: string) => {
-    if (!content.trim() || !postId) return;
-
-    setLoadingAdd(true);
-    try {
+  // Add comment mutation
+  const addCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Usuário não autenticado');
-      }
+      if (!user) throw new Error('User not authenticated');
 
-      const { error } = await supabase
-        .from('community_post_comments')
-        .insert({
-          post_id: postId,
-          author_id: user.id,
-          content: content.trim()
-        });
+      const { data, error } = await supabase
+        .from('comments')
+        .insert([
+          {
+            content,
+            post_id: postId,
+            user_id: user.id
+          }
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
-
-      toast({
-        title: 'Comentário adicionado',
-        description: 'Seu comentário foi publicado com sucesso',
-      });
-
-      await fetchComments();
-    } catch (error: any) {
-      console.error('Erro ao adicionar comentário:', error);
-      toast({
-        title: 'Erro',
-        description: error.message || 'Não foi possível adicionar o comentário',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoadingAdd(false);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      setNewComment('');
+      toast.success('Comentário adicionado com sucesso!');
+    },
+    onError: (error) => {
+      console.error('Error adding comment:', error);
+      toast.error('Erro ao adicionar comentário');
     }
-  }, [postId, fetchComments, toast]);
+  });
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      addCommentMutation.mutate(newComment.trim());
+    }
+  };
 
   return {
     comments,
-    loading,
-    loadingAdd,
-    fetchComments,
-    handleComment
+    isLoading,
+    showComments,
+    setShowComments,
+    newComment,
+    setNewComment,
+    handleAddComment,
+    isAddingComment: addCommentMutation.isPending
   };
-}
+};

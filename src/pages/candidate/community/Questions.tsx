@@ -1,196 +1,189 @@
-import { useEffect, useState } from "react"
-import supabase from "@/integrations/supabase/client"
-import { CommunityBanner } from "@/components/community/CommunityBanner"
-import { CandidateHeader } from "@/components/candidate/Header"
-import { CandidateSidebar } from "@/components/candidate/Sidebar"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { AdminControls } from "@/components/community/introductions/AdminControls"
-import { CreatePost } from "@/components/community/CreatePost"
-import { PostsList } from "@/components/community/introductions/PostsList"
-import { PinnedRule } from "@/components/community/PinnedRule"
-import { SearchBar } from "@/components/community/introductions/SearchBar"
 
-export default function Questions() {
-  const isMobile = useIsMobile()
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [posts, setPosts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentRule, setCurrentRule] = useState("")
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { CommunityHeader } from '@/components/community/CommunityHeader';
+import { CommunityBanner } from '@/components/community/CommunityBanner';
+import { PinnedRule } from '@/components/community/PinnedRule';
+import { CreatePost } from '@/components/community/CreatePost';
+import { PostCard } from '@/components/community/PostCard';
+import { PostSkeleton } from '@/components/community/PostSkeleton';
+import { Header } from '@/components/candidate/Header';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { Post } from '@/types/community.types';
 
+const Questions = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const postsPerPage = 10;
+
+  // Debounce search query
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .single()
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setPage(1); // Reset to first page when searching
+    }, 300);
 
-        setIsAdmin(profile?.is_admin || false)
-      }
-    }
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-    checkAdminStatus()
-    loadPosts()
-    fetchCurrentRule()
-  }, [])
-
-  const fetchCurrentRule = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('community_pinned_rules')
-        .select('content')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .maybeSingle()
-
-      if (error) throw error
-
-      setCurrentRule(data?.content || "")
-    } catch (error) {
-      console.error('Error fetching current rule:', error)
-    }
-  }
-
-  const loadPosts = async () => {
-    try {
-      setIsLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const baseQuery = supabase
-        .from('community_posts')
-        .select(user ? `
+  // Fetch posts for questions
+  const { 
+    data: posts = [], 
+    isLoading, 
+    refetch: refetchPosts 
+  } = useQuery({
+    queryKey: ['questions-posts', debouncedSearchQuery, page],
+    queryFn: async () => {
+      console.log('Fetching questions posts...');
+      
+      let query = supabase
+        .from('posts')
+        .select(`
           id,
           content,
           created_at,
+          updated_at,
           likes_count,
           comments_count,
-          author:profiles(id, full_name),
-          is_liked:community_post_likes!inner(id)
-        ` : `
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles(id, full_name)
+          profiles!inner(
+            id,
+            full_name,
+            logo_url
+          ),
+          user_likes!left(
+            user_id
+          )
         `)
-        .eq('post_type', 'question')
+        .eq('type', 'question')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .range((page - 1) * postsPerPage, page * postsPerPage - 1);
 
-      const query = searchQuery
-        ? baseQuery.ilike('content', `%${searchQuery}%`)
-        : baseQuery
+      if (debouncedSearchQuery.trim()) {
+        query = query.ilike('content', `%${debouncedSearchQuery}%`);
+      }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching posts:', error);
+        throw error;
+      }
 
-      setPosts(data || [])
-      setHasMore(data?.length === 10)
-    } catch (error) {
-      console.error('Error loading posts:', error)
-    } finally {
-      setIsLoading(false)
+      console.log('Fetched posts:', data);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const formattedPosts = (data || []).map((post: any) => ({
+        id: post.id,
+        content: post.content,
+        created_at: post.created_at,
+        updated_at: post.updated_at,
+        likes_count: post.likes_count || 0,
+        comments_count: post.comments_count || 0,
+        author: {
+          id: post.profiles.id,
+          full_name: post.profiles.full_name,
+          logo_url: post.profiles.logo_url
+        },
+        is_liked: user ? post.user_likes?.some((like: any) => like.user_id === user.id) : false
+      })) as Post[];
+
+      return formattedPosts;
     }
-  }
+  });
+
+  const handlePostSuccess = async () => {
+    await refetchPosts();
+  };
+
+  const handlePostUpdate = async () => {
+    await refetchPosts();
+  };
+
+  const handleSearch = async () => {
+    setPage(1);
+    await refetchPosts();
+  };
 
   const loadMore = async () => {
-    if (!hasMore || isLoadingMore) return
-
-    try {
-      setIsLoadingMore(true)
-      const lastPost = posts[posts.length - 1]
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const baseQuery = supabase
-        .from('community_posts')
-        .select(user ? `
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles(id, full_name),
-          is_liked:community_post_likes!inner(id)
-        ` : `
-          id,
-          content,
-          created_at,
-          likes_count,
-          comments_count,
-          author:profiles(id, full_name)
-        `)
-        .eq('post_type', 'question')
-        .order('created_at', { ascending: false })
-        .lt('created_at', lastPost.created_at)
-        .limit(10)
-
-      const query = searchQuery
-        ? baseQuery.ilike('content', `%${searchQuery}%`)
-        : baseQuery
-
-      const { data, error } = await query
-
-      if (error) throw error
-
-      setPosts(prev => [...prev, ...(data || [])])
-      setHasMore(data?.length === 10)
-    } catch (error) {
-      console.error('Error loading more posts:', error)
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }
+    setPage(prev => prev + 1);
+  };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <CandidateHeader />
-      <div className="flex flex-1">
-        {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">Tire suas Dúvidas</h1>
-            </div>
-            <CommunityBanner type="QUESTIONS" />
-            {isAdmin && (
-              <AdminControls
-                currentRule={currentRule}
-                onRuleUpdate={fetchCurrentRule}
-                type="QUESTIONS"
-              />
-            )}
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <CommunityHeader title="Perguntas e Respostas" />
 
-            <SearchBar
+        <CommunityBanner />
+        
+        <PinnedRule content="❓ Faça suas perguntas sobre carreira, tecnologias e desafios na área de dados. A comunidade está aqui para ajudar!" />
+
+        <CreatePost 
+          placeholder="Faça sua pergunta para a comunidade..."
+          onPostSuccess={handlePostSuccess}
+        />
+
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Buscar perguntas..."
               value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={loadPosts}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
             />
-
-
-            <PinnedRule content={currentRule} />
-
-            <div className="mt-6">
-              <CreatePost onPostCreated={loadPosts} />
-              <PostsList
-                posts={posts}
-                isLoading={isLoading}
-                isLoadingMore={isLoadingMore}
-                hasMore={hasMore}
-                searchQuery={searchQuery}
-                onLoadMore={loadMore}
-                onLikeChange={loadPosts}
-              />
-            </div>
           </div>
-        </main>
+        </div>
+
+        {/* Posts */}
+        <div className="space-y-4">
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <PostSkeleton key={index} />
+            ))
+          ) : posts.length > 0 ? (
+            <>
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onLikeChange={handlePostUpdate}
+                  onPostDelete={handlePostUpdate}
+                />
+              ))}
+              
+              {posts.length === postsPerPage && (
+                <div className="text-center py-4">
+                  <Button 
+                    onClick={loadMore}
+                    variant="outline"
+                    disabled={isLoading}
+                  >
+                    Carregar mais
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {debouncedSearchQuery 
+                ? 'Nenhuma pergunta encontrada com esse termo.'
+                : 'Ainda não há perguntas. Seja o primeiro a perguntar!'
+              }
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Questions;
