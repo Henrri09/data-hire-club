@@ -61,7 +61,7 @@ const Learning = () => {
         author: {
           id: post.profiles.id,
           full_name: post.profiles.full_name,
-          logo_url: post.profiles.logo_url
+          logo_url: post.profiles.logo_url || ''
         },
         is_liked: user ? post.user_likes?.some((like: any) => like.user_id === user.id) : false
       })) as Post[];
@@ -91,8 +91,8 @@ const Learning = () => {
         <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
 
         <CreatePost 
-          placeholder="Compartilhe um recurso de aprendizado ou dica..."
           onPostSuccess={handlePostSuccess}
+          placeholder="Compartilhe um recurso de aprendizado ou dica..."
         />
 
         {/* Posts */}

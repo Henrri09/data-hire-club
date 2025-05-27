@@ -349,6 +349,33 @@ export type Database = {
           },
         ]
       }
+      contact_settings: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          location: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          location: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          location?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       external_scripts: {
         Row: {
           created_at: string

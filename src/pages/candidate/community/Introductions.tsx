@@ -70,7 +70,7 @@ const Introductions = () => {
         author: {
           id: post.profiles.id,
           full_name: post.profiles.full_name,
-          logo_url: post.profiles.logo_url
+          logo_url: post.profiles.logo_url || ''
         },
         is_liked: user ? post.user_likes?.some((like: any) => like.user_id === user.id) : false
       })) as Post[];
@@ -102,8 +102,8 @@ const Introductions = () => {
         <AdminControls type="INTRODUCTION" />
 
         <CreatePost 
-          placeholder="Compartilhe sua apresentação com a comunidade..."
           onPostSuccess={handlePostSuccess}
+          placeholder="Compartilhe sua apresentação com a comunidade..."
         />
 
         <SearchBar 

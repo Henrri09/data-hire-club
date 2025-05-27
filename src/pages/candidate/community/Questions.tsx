@@ -86,7 +86,7 @@ const Questions = () => {
         author: {
           id: post.profiles.id,
           full_name: post.profiles.full_name,
-          logo_url: post.profiles.logo_url
+          logo_url: post.profiles.logo_url || ''
         },
         is_liked: user ? post.user_likes?.some((like: any) => like.user_id === user.id) : false
       })) as Post[];
@@ -122,8 +122,8 @@ const Questions = () => {
         <PinnedRule content="❓ Faça suas perguntas sobre carreira, tecnologias e desafios na área de dados. A comunidade está aqui para ajudar!" />
 
         <CreatePost 
-          placeholder="Faça sua pergunta para a comunidade..."
           onPostSuccess={handlePostSuccess}
+          placeholder="Faça sua pergunta para a comunidade..."
         />
 
         {/* Search Bar */}
