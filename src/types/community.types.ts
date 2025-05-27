@@ -43,6 +43,6 @@ export interface Comment {
 }
 
 export interface CreatePostProps {
-  onSuccess: () => Promise<void>;
+  onPostSuccess: () => Promise<void>;
   placeholder?: string;
 }

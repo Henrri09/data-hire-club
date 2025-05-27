@@ -91,7 +91,7 @@ const Learning = () => {
         <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
 
         <CreatePost 
-          onSuccess={handlePostSuccess}
+          onPostSuccess={handlePostSuccess}
           placeholder="Compartilhe um recurso de aprendizado ou dica..."
         />
 

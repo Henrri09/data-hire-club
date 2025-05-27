@@ -20,7 +20,6 @@ export const usePostComments = (postId: string) => {
           id,
           content,
           created_at,
-          updated_at,
           post_id,
           profiles!inner(
             id,
@@ -37,7 +36,6 @@ export const usePostComments = (postId: string) => {
         id: comment.id,
         content: comment.content,
         created_at: comment.created_at,
-        updated_at: comment.updated_at,
         post_id: comment.post_id,
         author: {
           id: comment.profiles.id,

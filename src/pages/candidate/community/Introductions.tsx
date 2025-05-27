@@ -102,7 +102,7 @@ const Introductions = () => {
         <AdminControls type="INTRODUCTION" />
 
         <CreatePost 
-          onSuccess={handlePostSuccess}
+          onPostSuccess={handlePostSuccess}
           placeholder="Compartilhe sua apresentação com a comunidade..."
         />
 
