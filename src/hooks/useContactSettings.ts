@@ -15,24 +15,37 @@ export function useContactSettings() {
       const { data, error } = await supabase
         .from('contact_settings')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as ContactSettings;
+      return data as ContactSettings | null;
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (settings: Partial<ContactSettings>) => {
-      const { data, error } = await supabase
-        .from('contact_settings')
-        .update(settings)
-        .eq('id', contactSettings?.id)
-        .select()
-        .single();
+    mutationFn: async (settings: { email: string; phone: string; location: string }) => {
+      if (contactSettings?.id) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from('contact_settings')
+          .update(settings)
+          .eq('id', contactSettings.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } else {
+        // Create new record if none exists
+        const { data, error } = await supabase
+          .from('contact_settings')
+          .insert(settings)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-settings'] });
@@ -42,6 +55,7 @@ export function useContactSettings() {
       });
     },
     onError: (error: any) => {
+      console.error('Error updating contact settings:', error);
       toast({
         variant: 'destructive',
         title: 'Erro',

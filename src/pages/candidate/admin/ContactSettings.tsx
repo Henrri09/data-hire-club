@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useContactSettings } from '@/hooks/useContactSettings';
 import { CandidateHeader } from '@/components/candidate/Header';
 import { CandidateSidebar } from '@/components/candidate/Sidebar';
@@ -9,30 +9,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Save } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 export default function ContactSettings() {
   const isMobile = useIsMobile();
-  const { toast } = useToast();
   const { contactSettings, isLoading, updateContactSettings, isUpdating } = useContactSettings();
   
   const [formData, setFormData] = useState({
-    email: '',
-    phone: '',
-    location: ''
+    email: 'contato@datahireclub.com.br',
+    phone: '(11) 4002-8922',
+    location: 'São Paulo, SP'
   });
 
-  const [hasLoaded, setHasLoaded] = useState(false);
-
   // Atualizar o formulário quando os dados carregarem
-  if (contactSettings && !hasLoaded) {
-    setFormData({
-      email: contactSettings.email,
-      phone: contactSettings.phone,
-      location: contactSettings.location
-    });
-    setHasLoaded(true);
-  }
+  useEffect(() => {
+    if (contactSettings) {
+      setFormData({
+        email: contactSettings.email,
+        phone: contactSettings.phone,
+        location: contactSettings.location
+      });
+    }
+  }, [contactSettings]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
