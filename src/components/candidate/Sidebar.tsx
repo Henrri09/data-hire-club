@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2, Code, Image, FileText } from "lucide-react";
+import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Link2, Code, Image, FileText, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
@@ -137,6 +137,11 @@ export function CandidateSidebar() {
       icon: FileText,
       label: "Páginas",
       path: "/candidate/admin/static-pages"
+    },
+    {
+      icon: Settings,
+      label: "Contato",
+      path: "/candidate/admin/contact-settings"
     }
   ];
 
