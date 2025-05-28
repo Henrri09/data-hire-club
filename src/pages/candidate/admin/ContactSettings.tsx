@@ -17,9 +17,9 @@ const ContactSettings = () => {
   const isMobile = useIsMobile();
   
   const [formData, setFormData] = useState({
-    email: 'contato@datahireclub.com.br',
-    phone: '(11) 4002-8922',
-    location: 'São Paulo, SP'
+    email: '',
+    phone: '',
+    location: ''
   });
 
   useEffect(() => {
@@ -28,6 +28,13 @@ const ContactSettings = () => {
         email: contactSettings.email,
         phone: contactSettings.phone,
         location: contactSettings.location
+      });
+    } else {
+      // Valores padrão apenas quando não há dados salvos
+      setFormData({
+        email: 'contato@datahireclub.com.br',
+        phone: '(11) 4002-8922',
+        location: 'São Paulo, SP'
       });
     }
   }, [contactSettings]);
