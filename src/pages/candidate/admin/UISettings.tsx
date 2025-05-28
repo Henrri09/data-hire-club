@@ -10,7 +10,12 @@ import { CandidateSidebar } from '@/components/candidate/Sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const UISettings = () => {
-  const { uiSettings, updateUISettings, uploadImage, isUpdating, isUploading, getSettingByKey } = useUISettings();
+  const { 
+    uiSettings, 
+    uploadAndUpdateImage, 
+    isProcessing, 
+    getSettingByKey 
+  } = useUISettings();
   const isMobile = useIsMobile();
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -54,17 +59,10 @@ const UISettings = () => {
     if (!selectedFile) return;
 
     try {
-      uploadImage(selectedFile, {
-        onSuccess: (imageUrl) => {
-          updateUISettings({
-            setting_key: 'empty_jobs_image',
-            image_url: imageUrl
-          });
-          setSelectedFile(null);
-        }
-      });
+      await uploadAndUpdateImage(selectedFile, 'empty_jobs_image');
+      setSelectedFile(null);
     } catch (error) {
-      console.error('Erro ao fazer upload:', error);
+      console.error('Erro ao fazer upload e salvar:', error);
     }
   };
 
@@ -133,6 +131,7 @@ const UISettings = () => {
                         variant="outline"
                         onClick={() => document.getElementById('image-upload')?.click()}
                         className="flex items-center gap-2"
+                        disabled={isProcessing}
                       >
                         <Upload className="w-4 h-4" />
                         Escolher arquivo
@@ -151,10 +150,10 @@ const UISettings = () => {
                   {/* Botão de salvar */}
                   <Button 
                     onClick={handleUploadAndSave}
-                    disabled={!selectedFile || isUploading || isUpdating}
+                    disabled={!selectedFile || isProcessing}
                     className="w-full"
                   >
-                    {isUploading ? 'Fazendo upload...' : isUpdating ? 'Salvando...' : 'Salvar imagem'}
+                    {isProcessing ? 'Processando...' : 'Salvar imagem'}
                   </Button>
                 </div>
               </CardContent>

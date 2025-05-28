@@ -44,6 +44,8 @@ export const useUISettings = () => {
           image_url: updateData.image_url,
           updated_by: user?.id,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'setting_key'
         });
 
       if (error) throw error;
@@ -56,17 +58,17 @@ export const useUISettings = () => {
       });
     },
     onError: (error) => {
+      console.error("Erro ao atualizar configuração de UI:", error);
       toast({
         title: "Erro ao atualizar",
         description: "Não foi possível atualizar a configuração.",
         variant: "destructive",
       });
-      console.error("Erro ao atualizar configuração de UI:", error);
     },
   });
 
   const uploadImageMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (file: File): Promise<string> => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `empty-state/${fileName}`;
@@ -84,14 +86,28 @@ export const useUISettings = () => {
       return data.publicUrl;
     },
     onError: (error) => {
+      console.error("Erro no upload:", error);
       toast({
         title: "Erro no upload",
         description: "Não foi possível fazer upload da imagem.",
         variant: "destructive",
       });
-      console.error("Erro no upload:", error);
     },
   });
+
+  const uploadAndUpdateImage = async (file: File, settingKey: string) => {
+    try {
+      const imageUrl = await uploadImageMutation.mutateAsync(file);
+      await updateMutation.mutateAsync({
+        setting_key: settingKey,
+        image_url: imageUrl
+      });
+      return imageUrl;
+    } catch (error) {
+      console.error("Erro no processo de upload e atualização:", error);
+      throw error;
+    }
+  };
 
   const getSettingByKey = (key: string) => {
     return uiSettings?.find(setting => setting.setting_key === key);
@@ -104,6 +120,8 @@ export const useUISettings = () => {
     isUpdating: updateMutation.isPending,
     uploadImage: uploadImageMutation.mutate,
     isUploading: uploadImageMutation.isPending,
+    uploadAndUpdateImage,
+    isProcessing: uploadImageMutation.isPending || updateMutation.isPending,
     getSettingByKey,
   };
 };
