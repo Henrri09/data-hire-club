@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/login/Login";
@@ -21,6 +20,7 @@ import { CompleteProfile } from "./components/auth/CompleteProfile";
 import About from "./pages/static/About";
 import Terms from "./pages/static/Terms";
 import Privacy from "./pages/static/Privacy";
+import UISettings from "./pages/candidate/admin/UISettings";
 
 function App() {
   return (
@@ -85,6 +85,11 @@ function App() {
         <Route path="/candidate/admin/contact-settings" element={
           <ProtectedRoute requiredUserType="candidate">
             <ContactSettings />
+          </ProtectedRoute>
+        } />
+        <Route path="/candidate/admin/ui-settings" element={
+          <ProtectedRoute requiredUserType="candidate">
+            <UISettings />
           </ProtectedRoute>
         } />
 
