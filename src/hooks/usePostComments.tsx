@@ -2,8 +2,20 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import supabase from '@/integrations/supabase/client';
-import { Comment } from '@/types/comment.types';
 import { toast } from 'sonner';
+
+interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  post_id: string;
+  author: {
+    id: string;
+    full_name: string;
+    logo_url: string;
+  };
+}
 
 export const usePostComments = (postId: string) => {
   const [showComments, setShowComments] = useState(false);
@@ -20,6 +32,7 @@ export const usePostComments = (postId: string) => {
           id,
           content,
           created_at,
+          updated_at,
           post_id,
           profiles!inner(
             id,
@@ -36,6 +49,7 @@ export const usePostComments = (postId: string) => {
         id: comment.id,
         content: comment.content,
         created_at: comment.created_at,
+        updated_at: comment.updated_at,
         post_id: comment.post_id,
         author: {
           id: comment.profiles.id,

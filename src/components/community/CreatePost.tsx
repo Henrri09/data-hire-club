@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,9 +9,11 @@ import { useLocation, useNavigate } from "react-router-dom"
 
 interface CreatePostProps {
   onPostCreated?: () => void
+  onPostSuccess?: () => Promise<void>
+  placeholder?: string
 }
 
-export function CreatePost({ onPostCreated }: CreatePostProps) {
+export function CreatePost({ onPostCreated, onPostSuccess, placeholder }: CreatePostProps) {
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
@@ -59,8 +62,13 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
       })
 
       setContent("")
+      
+      // Call both callback functions if provided
       if (onPostCreated) {
         onPostCreated()
+      }
+      if (onPostSuccess) {
+        await onPostSuccess()
       }
     } catch (error) {
       console.error('Error creating post:', error)
@@ -79,7 +87,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
       <form onSubmit={handleSubmit}>
         <CardContent className="pt-6">
           <Textarea
-            placeholder="Compartilhe algo com a comunidade..."
+            placeholder={placeholder || "Compartilhe algo com a comunidade..."}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="min-h-[100px] resize-none"

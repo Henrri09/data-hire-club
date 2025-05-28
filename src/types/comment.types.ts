@@ -2,7 +2,7 @@
 export interface CommentAuthor {
   id: string;
   full_name: string;
-  logo_url?: string;
+  logo_url: string;
 }
 
 export interface Comment {

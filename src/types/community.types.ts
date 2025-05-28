@@ -30,20 +30,7 @@ export interface CommunityPost {
   is_liked?: boolean;
 }
 
-export interface Comment {
-  id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  author: {
-    id: string;
-    full_name: string;
-    logo_url?: string;
-  };
-}
-
 export interface CreatePostProps {
-  onPostSuccess: () => Promise<void>;
-  onSuccess?: () => Promise<void>;
+  onPostCreated?: () => void;
   placeholder?: string;
 }
