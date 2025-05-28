@@ -15,6 +15,7 @@ import Questions from "./pages/candidate/community/Questions";
 import SEOScripts from "./pages/candidate/admin/SEOScripts";
 import { BannersPage } from "./pages/candidate/admin/Banners";
 import StaticPages from "./pages/candidate/admin/StaticPages";
+import ContactSettings from "./pages/candidate/admin/ContactSettings";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { CompleteProfile } from "./components/auth/CompleteProfile";
 import About from "./pages/static/About";
@@ -79,6 +80,11 @@ function App() {
         <Route path="/candidate/admin/static-pages" element={
           <ProtectedRoute requiredUserType="candidate">
             <StaticPages />
+          </ProtectedRoute>
+        } />
+        <Route path="/candidate/admin/contact-settings" element={
+          <ProtectedRoute requiredUserType="candidate">
+            <ContactSettings />
           </ProtectedRoute>
         } />
 
