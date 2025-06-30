@@ -88,7 +88,7 @@ export function CandidateHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0">
-                <CandidateSidebar />
+                <CandidateSidebar isMobileSheet={true} />
               </SheetContent>
             </Sheet>
           )}

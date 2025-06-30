@@ -59,7 +59,7 @@ export default function CandidateJobs() {
 
   const SidebarContent = () => (
     <div className="h-full py-4">
-      <CandidateSidebar />
+      <CandidateSidebar isMobileSheet={true} />
     </div>
   );
 

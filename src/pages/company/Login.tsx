@@ -67,8 +67,8 @@ export default function CompanyLogin() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Gradient Section */}
+    <div className="min-h-screen bg-gray-50 md:bg-transparent flex flex-col md:flex-row">
+
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
         <div className="max-w-xl">
           <h1 className="text-5xl font-bold mb-6">Data Hire Club</h1>
@@ -78,18 +78,17 @@ export default function CompanyLogin() {
         </div>
       </div>
 
-      {/* Form Section */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <Card className="w-full max-w-md border-none shadow-none bg-transparent">
-          <div className="mb-6">
-            <Link
-              to="/"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar para home
-            </Link>
-          </div>
+      <div className="flex flex-1 relative items-center justify-center p-6 bg-gray-50">
+        <div className="mb-6 absolute top-6 left-6">
+          <Link
+            to="/"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-[#8B5CF6] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar para home
+          </Link>
+        </div>
+        <div className="w-full max-w-md space-y-8">
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl md:text-3xl text-center">Login</CardTitle>
             <CardDescription className="text-center">
@@ -140,7 +139,7 @@ export default function CompanyLogin() {
               </div>
             </form>
           </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
