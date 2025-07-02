@@ -163,6 +163,19 @@ export function EditProfileDialog({
         description: "Suas informações foram atualizadas com sucesso",
       });
 
+      onProfileUpdate({
+        description,
+        skills,
+        photoUrl,
+        full_name: fullName,
+        headline,
+        location,
+        experience_level: experienceLevel,
+        linkedin_url: linkedinUrl,
+        github_url: githubUrl,
+        portfolio_url: portfolioUrl
+      });
+      
       onOpenChange(false);
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
