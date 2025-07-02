@@ -420,7 +420,7 @@ export default function StaticPages() {
       <CandidateHeader />
       <div className="flex">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-3 md:p-6">
+        <main className={`flex-1 p-3 md:p-6 ${!isMobile ? 'ml-64' : ''}`}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <h1 className="text-xl md:text-2xl font-semibold">Páginas Estáticas</h1>
             <Button onClick={handleCreate} className="w-full sm:w-auto">
