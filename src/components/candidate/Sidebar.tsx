@@ -7,6 +7,7 @@ import supabase from "@/integrations/supabase/client";
 import { SidebarMenuItem } from "./sidebar/SidebarMenuItem";
 import { SidebarSubmenu } from "./sidebar/SidebarSubmenu";
 import { AddLinkDialog } from "./sidebar/AddLinkDialog";
+import { EditLinkDialog } from "./sidebar/EditLinkDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Profile {
@@ -38,6 +39,8 @@ export function CandidateSidebar({ isMobileSheet = false }: CandidateSidebarProp
   const isMobile = useIsMobile();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isAddLinkOpen, setIsAddLinkOpen] = useState(false);
+  const [isEditLinkOpen, setIsEditLinkOpen] = useState(false);
+  const [linkToEdit, setLinkToEdit] = useState<SubMenuItem | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [internalLinks, setInternalLinks] = useState<SubMenuItem[]>([]);
   const { toast } = useToast();
@@ -76,17 +79,36 @@ export function CandidateSidebar({ isMobileSheet = false }: CandidateSidebarProp
   };
 
   const handleEditLink = async (item: SubMenuItem) => {
-    toast({
-      title: "Editar link",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setLinkToEdit(item);
+    setIsEditLinkOpen(true);
   };
 
   const handleDeleteLink = async (id: string) => {
-    toast({
-      title: "Deletar link",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    if (!confirm("Tem certeza que deseja excluir este link?")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('community_external_links')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await fetchInternalLinks();
+      toast({
+        title: "Link excluído",
+        description: "O link foi removido com sucesso",
+      });
+    } catch (error) {
+      console.error('Erro ao deletar link:', error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir o link",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleProfileUpdate = (profile: Profile) => {
@@ -246,6 +268,13 @@ export function CandidateSidebar({ isMobileSheet = false }: CandidateSidebarProp
         open={isAddLinkOpen}
         onOpenChange={setIsAddLinkOpen}
         onSuccess={fetchInternalLinks}
+      />
+
+      <EditLinkDialog
+        open={isEditLinkOpen}
+        onOpenChange={setIsEditLinkOpen}
+        onSuccess={fetchInternalLinks}
+        linkToEdit={linkToEdit}
       />
     </aside>
   );
