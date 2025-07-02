@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import supabase from '@/integrations/supabase/client';
+import { CandidateHeader } from '@/components/candidate/Header';
+import { CandidateSidebar } from '@/components/candidate/Sidebar';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
@@ -12,12 +14,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Post } from '@/types/community.types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Questions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const postsPerPage = 10;
+  const isMobile = useIsMobile();
 
   // Debounce search query
   useEffect(() => {
@@ -113,71 +117,77 @@ const Questions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <CommunityHeader title="Perguntas e Respostas" />
+    <div className="min-h-screen bg-[#f8fafc]">
+      <CandidateHeader />
+      <div className="flex">
+        {!isMobile && <CandidateSidebar />}
+        <main className="flex-1 py-6 px-4 md:py-8 md:px-8">
+          <div className="max-w-4xl mx-auto bg-gray-50 rounded-lg p-6 md:p-8">
+            <CommunityHeader title="Perguntas e Respostas" />
 
-        <CommunityBanner type="QUESTIONS" />
-        
-        <PinnedRule content="❓ Faça suas perguntas sobre carreira, tecnologias e desafios na área de dados. A comunidade está aqui para ajudar!" />
+            <CommunityBanner type="QUESTIONS" />
+            
+            <PinnedRule content="❓ Faça suas perguntas sobre carreira, tecnologias e desafios na área de dados. A comunidade está aqui para ajudar!" />
 
-        <CreatePost 
-          onPostSuccess={handlePostSuccess}
-          placeholder="Faça sua pergunta para a comunidade..."
-        />
-
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Buscar perguntas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+            <CreatePost 
+              onPostSuccess={handlePostSuccess}
+              placeholder="Faça sua pergunta para a comunidade..."
             />
-          </div>
-        </div>
 
-        {/* Posts */}
-        <div className="space-y-4">
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <PostSkeleton key={index} />
-            ))
-          ) : posts.length > 0 ? (
-            <>
-              {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onLikeChange={handlePostUpdate}
-                  onPostDelete={handlePostUpdate}
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Buscar perguntas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
                 />
-              ))}
-              
-              {posts.length === postsPerPage && (
-                <div className="text-center py-4">
-                  <Button 
-                    onClick={loadMore}
-                    variant="outline"
-                    disabled={isLoading}
-                  >
-                    Carregar mais
-                  </Button>
+              </div>
+            </div>
+
+            {/* Posts */}
+            <div className="space-y-4">
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))
+              ) : posts.length > 0 ? (
+                <>
+                  {posts.map((post) => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onLikeChange={handlePostUpdate}
+                      onPostDelete={handlePostUpdate}
+                    />
+                  ))}
+                  
+                  {posts.length === postsPerPage && (
+                    <div className="text-center py-4">
+                      <Button 
+                        onClick={loadMore}
+                        variant="outline"
+                        disabled={isLoading}
+                      >
+                        Carregar mais
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  {debouncedSearchQuery 
+                    ? 'Nenhuma pergunta encontrada com esse termo.'
+                    : 'Ainda não há perguntas. Seja o primeiro a perguntar!'
+                  }
                 </div>
               )}
-            </>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              {debouncedSearchQuery 
-                ? 'Nenhuma pergunta encontrada com esse termo.'
-                : 'Ainda não há perguntas. Seja o primeiro a perguntar!'
-              }
             </div>
-          )}
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );

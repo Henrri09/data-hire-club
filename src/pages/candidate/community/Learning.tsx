@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import supabase from '@/integrations/supabase/client';
+import { CandidateHeader } from '@/components/candidate/Header';
+import { CandidateSidebar } from '@/components/candidate/Sidebar';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
@@ -9,8 +11,11 @@ import { CreatePost } from '@/components/community/CreatePost';
 import { PostCard } from '@/components/community/PostCard';
 import { PostSkeleton } from '@/components/community/PostSkeleton';
 import { Post } from '@/types/community.types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Learning = () => {
+  const isMobile = useIsMobile();
+  
   // Fetch posts for learning
   const { 
     data: posts = [], 
@@ -79,43 +84,49 @@ const Learning = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <CommunityHeader 
-          title="Aprendizado" 
-          description="Compartilhe recursos, dicas e experiências de aprendizado em dados"
-        />
+    <div className="min-h-screen bg-[#f8fafc]">
+      <CandidateHeader />
+      <div className="flex">
+        {!isMobile && <CandidateSidebar />}
+        <main className="flex-1 py-6 px-4 md:py-8 md:px-8">
+          <div className="max-w-4xl mx-auto bg-gray-50 rounded-lg p-6 md:p-8">
+            <CommunityHeader 
+              title="Aprendizado" 
+              description="Compartilhe recursos, dicas e experiências de aprendizado em dados"
+            />
 
-        <CommunityBanner type="LEARNING" />
-        
-        <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
+            <CommunityBanner type="LEARNING" />
+            
+            <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
 
-        <CreatePost 
-          onPostSuccess={handlePostSuccess}
-          placeholder="Compartilhe um recurso de aprendizado ou dica..."
-        />
+            <CreatePost 
+              onPostSuccess={handlePostSuccess}
+              placeholder="Compartilhe um recurso de aprendizado ou dica..."
+            />
 
-        {/* Posts */}
-        <div className="space-y-4">
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <PostSkeleton key={index} />
-            ))
-          ) : posts.length > 0 ? (
-            posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onLikeChange={handlePostUpdate}
-                onPostDelete={handlePostUpdate}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              Ainda não há posts de aprendizado. Seja o primeiro a compartilhar!
+            {/* Posts */}
+            <div className="space-y-4">
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))
+              ) : posts.length > 0 ? (
+                posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onLikeChange={handlePostUpdate}
+                    onPostDelete={handlePostUpdate}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Ainda não há posts de aprendizado. Seja o primeiro a compartilhar!
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );

@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import supabase from '@/integrations/supabase/client';
+import { CandidateHeader } from '@/components/candidate/Header';
+import { CandidateSidebar } from '@/components/candidate/Sidebar';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
 import { CommunityBanner } from '@/components/community/CommunityBanner';
 import { PinnedRule } from '@/components/community/PinnedRule';
@@ -10,9 +12,11 @@ import { SearchBar } from '@/components/community/introductions/SearchBar';
 import { PostsList } from '@/components/community/introductions/PostsList';
 import { AdminControls } from '@/components/community/introductions/AdminControls';
 import { Post } from '@/types/community.types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Introductions = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const isMobile = useIsMobile();
 
   // Fetch posts for introductions
   const { 
@@ -88,34 +92,40 @@ const Introductions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <CommunityHeader 
-          title="Apresentações" 
-          description="Compartilhe sua jornada na área de dados e conheça outros profissionais"
-        />
+    <div className="min-h-screen bg-[#f8fafc]">
+      <CandidateHeader />
+      <div className="flex">
+        {!isMobile && <CandidateSidebar />}
+        <main className="flex-1 py-6 px-4 md:py-8 md:px-8">
+          <div className="max-w-4xl mx-auto bg-gray-50 rounded-lg p-6 md:p-8">
+            <CommunityHeader 
+              title="Apresentações" 
+              description="Compartilhe sua jornada na área de dados e conheça outros profissionais"
+            />
 
-        <CommunityBanner type="INTRODUCTION" />
-        
-        <PinnedRule content="📝 Use este espaço para se apresentar à comunidade! Conte sobre sua experiência, área de interesse e objetivos profissionais." />
+            <CommunityBanner type="INTRODUCTION" />
+            
+            <PinnedRule content="📝 Use este espaço para se apresentar à comunidade! Conte sobre sua experiência, área de interesse e objetivos profissionais." />
 
-        <AdminControls type="INTRODUCTION" />
+            <AdminControls type="INTRODUCTION" />
 
-        <CreatePost 
-          onPostSuccess={handlePostSuccess}
-          placeholder="Compartilhe sua apresentação com a comunidade..."
-        />
+            <CreatePost 
+              onPostSuccess={handlePostSuccess}
+              placeholder="Compartilhe sua apresentação com a comunidade..."
+            />
 
-        <SearchBar 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+            <SearchBar 
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+            />
 
-        <PostsList 
-          posts={posts}
-          loading={isLoading}
-          onPostUpdate={handlePostUpdate}
-        />
+            <PostsList 
+              posts={posts}
+              loading={isLoading}
+              onPostUpdate={handlePostUpdate}
+            />
+          </div>
+        </main>
       </div>
     </div>
   );
