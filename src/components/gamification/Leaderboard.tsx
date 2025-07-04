@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

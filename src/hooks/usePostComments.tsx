@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import supabase from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Comment {
@@ -27,7 +27,7 @@ export const usePostComments = (postId: string) => {
     queryKey: ['comments', postId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('comments')
+        .from('community_post_comments')
         .select(`
           id,
           content,
@@ -68,12 +68,12 @@ export const usePostComments = (postId: string) => {
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
-        .from('comments')
+        .from('community_post_comments')
         .insert([
           {
             content,
             post_id: postId,
-            user_id: user.id
+            author_id: user.id
           }
         ])
         .select()

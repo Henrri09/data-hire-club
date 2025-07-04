@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import supabase from "@/integrations/supabase/client"
+import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 interface Comment {

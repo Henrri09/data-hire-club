@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import supabase from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';

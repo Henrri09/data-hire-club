@@ -8,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
   full_name: string | null;

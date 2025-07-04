@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useContactSettings } from '@/hooks/useContactSettings';
 import { ContactSettingsDialog } from '@/components/admin/ContactSettingsDialog';
 import { useQuery } from '@tanstack/react-query';
-import supabase from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 
 export function Footer() {
   const { contactSettings } = useContactSettings();

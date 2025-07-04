@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MobileHeaderProps {
   sidebarContent?: React.ReactNode;

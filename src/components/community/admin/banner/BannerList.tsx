@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast"
-import supabase from "@/integrations/supabase/client"
+import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"

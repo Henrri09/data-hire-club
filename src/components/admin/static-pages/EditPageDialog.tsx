@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StaticPage } from '@/types/staticPage.types';
 import { useToast } from '@/hooks/use-toast';
-import supabase from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Eye } from 'lucide-react';
 
 interface EditPageDialogProps {

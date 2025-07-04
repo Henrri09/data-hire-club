@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { CandidateSidebar } from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { LevelBadge } from "../gamification/LevelBadge";
 

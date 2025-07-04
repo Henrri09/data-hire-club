@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import supabase from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { CandidateHeader } from '@/components/candidate/Header';
 import { CandidateSidebar } from '@/components/candidate/Sidebar';
 import { CommunityHeader } from '@/components/community/CommunityHeader';
@@ -29,7 +29,7 @@ const Introductions = () => {
       console.log('Fetching introduction posts...');
       
       let query = supabase
-        .from('posts')
+        .from('community_posts')
         .select(`
           id,
           content,
