@@ -21,12 +21,14 @@ import About from "./pages/static/About";
 import Terms from "./pages/static/Terms";
 import Privacy from "./pages/static/Privacy";
 import UISettings from "./pages/candidate/admin/UISettings";
+import CandidatesLanding from "./pages/CandidatesLanding";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/candidatos" element={<CandidatesLanding />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

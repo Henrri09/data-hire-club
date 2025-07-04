@@ -3,7 +3,7 @@ import { LayoutDashboard, UserCog, Briefcase, Users, MessageSquare, BookOpen, Li
 import { useLocation } from "react-router-dom";
 import { EditProfileDialog } from "./EditProfileDialog";
 import { useToast } from "../ui/use-toast";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { SidebarMenuItem } from "./sidebar/SidebarMenuItem";
 import { SidebarSubmenu } from "./sidebar/SidebarSubmenu";
 import { AddLinkDialog } from "./sidebar/AddLinkDialog";

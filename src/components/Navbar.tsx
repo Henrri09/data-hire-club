@@ -18,6 +18,9 @@ export function Navbar() {
         </Link>
         <nav className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="flex items-center gap-4">
+            <Link to="/candidatos" className="text-gray-300 hover:text-white">
+              Para Candidatos
+            </Link>
             <Link to="/company/login" className="text-gray-300 hover:text-white">
               Publique uma vaga
             </Link>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { PhotoUploadField } from "./profile/PhotoUploadField";
 import { SkillsInput } from "./profile/SkillsInput";
