@@ -78,7 +78,7 @@ export function CandidateHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-black text-white">
-      <div className="container flex h-14 items-center justify-between px-4">
+      <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           {isMobile && (
             <Sheet>
@@ -97,7 +97,7 @@ export function CandidateHeader() {
             <img 
               src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
               alt="Hire Club" 
-              className="h-12 w-auto"
+              className="h-16 w-auto"
             />
           </Link>
         </div>
