@@ -38,7 +38,7 @@ export function MobileHeader({ sidebarContent, showAuthButtons = true }: MobileH
 
   return (
     <div className="sticky top-0 z-50 w-full border-b bg-black text-white">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-20 items-center justify-between">
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger asChild>
@@ -83,7 +83,7 @@ export function MobileHeader({ sidebarContent, showAuthButtons = true }: MobileH
             <img 
               src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
               alt="Hire Club" 
-              className="h-12 w-auto"
+              className="h-16 w-auto"
             />
           </Link>
         </div>

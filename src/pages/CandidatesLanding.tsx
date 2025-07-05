@@ -80,7 +80,7 @@ export default function CandidatesLanding() {
             <img 
               src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png"
               alt="Hire Club" 
-              className="h-16 w-auto"
+              className="h-24 w-auto"
             />
           </Link>
           <div className="flex items-center gap-4">
@@ -388,7 +388,7 @@ export default function CandidatesLanding() {
             <img 
               src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
               alt="Hire Club" 
-              className="h-16 w-auto mb-4 md:mb-0"
+              className="h-20 w-auto mb-4 md:mb-0"
             />
             <div className="flex gap-6 text-sm">
               <Link to="/sobre" className="text-gray-300 hover:text-white">
