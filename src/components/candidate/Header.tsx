@@ -97,7 +97,7 @@ export function CandidateHeader() {
             <img 
               src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
               alt="Hire Club" 
-              className="h-8 w-auto"
+              className="h-10 w-auto"
             />
           </Link>
         </div>
