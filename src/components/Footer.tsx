@@ -33,7 +33,7 @@ export function Footer() {
             <img 
               src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
               alt="Hire Club" 
-              className="h-10 w-auto mb-4 mx-auto md:mx-0"
+              className="h-12 w-auto mb-4 mx-auto md:mx-0"
             />
             <p className="text-gray-300">
               Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.

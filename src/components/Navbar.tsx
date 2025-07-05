@@ -17,7 +17,7 @@ export function Navbar() {
           <img 
             src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
             alt="Hire Club" 
-            className="h-10 w-auto"
+            className="h-12 w-auto"
           />
         </Link>
         <nav className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
