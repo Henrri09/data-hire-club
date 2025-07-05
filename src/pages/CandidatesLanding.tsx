@@ -128,7 +128,7 @@ export default function CandidatesLanding() {
           </div>
 
           {/* Registration Form */}
-          <Card className="bg-background/80 backdrop-blur-sm border-2 shadow-xl">
+          <Card id="cadastro" className="bg-background/80 backdrop-blur-sm border-2 shadow-xl">
             <CardHeader>
               <CardTitle className="text-2xl text-center">Cadastre-se Grátis</CardTitle>
               <CardDescription className="text-center">
