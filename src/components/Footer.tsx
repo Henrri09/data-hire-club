@@ -1,40 +1,36 @@
-
 import { Link } from 'react-router-dom';
 import { useContactSettings } from '@/hooks/useContactSettings';
 import { ContactSettingsDialog } from '@/components/admin/ContactSettingsDialog';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
 export function Footer() {
-  const { contactSettings } = useContactSettings();
+  const {
+    contactSettings
+  } = useContactSettings();
 
   // Verificar se o usuário é admin
-  const { data: isAdmin } = useQuery({
+  const {
+    data: isAdmin
+  } = useQuery({
     queryKey: ['user-admin-status'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) return false;
-
-      const { data } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id)
-        .single();
-
+      const {
+        data
+      } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
       return data?.is_admin || false;
     }
   });
-
-  return (
-    <footer className="bg-black text-white py-8 mt-auto">
+  return <footer className="bg-black text-white py-8 mt-auto">
       <div className="container px-4 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div className="text-center md:text-left">
-            <img 
-              src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
-              alt="Hire Club" 
-              className="h-12 w-auto mb-4 mx-auto md:mx-0"
-            />
+            <img alt="Hire Club" className="h-12 w-auto mb-4 mx-auto md:mx-0" src="/lovable-uploads/d4ecdce9-50d7-4ca2-aac2-e20d4b727581.png" />
             <p className="text-gray-300">
               Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.
             </p>
@@ -44,19 +40,15 @@ export function Footer() {
               <h4 className="text-lg font-bold">Contato</h4>
               {isAdmin && <ContactSettingsDialog />}
             </div>
-            {contactSettings ? (
-              <p className="text-gray-300">
+            {contactSettings ? <p className="text-gray-300">
                 Email: {contactSettings.email}<br />
                 Tel: {contactSettings.phone}<br />
                 {contactSettings.location}
-              </p>
-            ) : (
-              <p className="text-gray-300">
+              </p> : <p className="text-gray-300">
                 Email: contato@datahireclub.com.br<br />
                 Tel: (11) 4002-8922<br />
                 São Paulo, SP
-              </p>
-            )}
+              </p>}
           </div>
           <div className="text-center md:text-left sm:col-span-2 md:col-span-1">
             <h4 className="text-lg font-bold mb-4">Links Úteis</h4>
@@ -71,6 +63,5 @@ export function Footer() {
           <p>&copy; 2024 Data Hire Club. Todos os direitos reservados.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 }
