@@ -200,7 +200,7 @@ export default function CandidatesLanding() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="text-center p-6">
               <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <Check className="w-6 h-6 text-primary" />
@@ -221,15 +221,6 @@ export default function CandidatesLanding() {
               </p>
             </Card>
 
-            <Card className="text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <Target className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Vagas Exclusivas</h3>
-              <p className="text-muted-foreground">
-                Oportunidades curadas especialmente para profissionais de dados
-              </p>
-            </Card>
 
             <Card className="text-center p-6">
               <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
