@@ -95,7 +95,7 @@ export function CandidateHeader() {
 
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/f9bf12ff-c7d4-4d7a-87fa-14d0b5213c3d.png" 
+              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
               alt="Hire Club" 
               className="h-8 w-auto"
             />
