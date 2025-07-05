@@ -15,7 +15,7 @@ export function Navbar() {
       <div className="container flex h-14 items-center">
         <Link to="/" className="mr-6 flex items-center space-x-2">
           <img 
-            src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+            src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
             alt="Hire Club" 
             className="h-10 w-auto"
           />

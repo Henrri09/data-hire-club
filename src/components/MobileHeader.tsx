@@ -81,7 +81,7 @@ export function MobileHeader({ sidebarContent, showAuthButtons = true }: MobileH
           </Sheet>
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+              src="/lovable-uploads/6e308181-180a-4c1e-90e4-1b3e51e6d1a5.png" 
               alt="Hire Club" 
               className="h-8 w-auto"
             />
