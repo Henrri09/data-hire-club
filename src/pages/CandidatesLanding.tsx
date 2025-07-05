@@ -368,11 +368,17 @@ export default function CandidatesLanding() {
             <p className="text-xl text-muted-foreground mb-8">
               Cadastre-se gratuitamente e comece a acelerar sua carreira em dados hoje mesmo
             </p>
-            <Button size="lg" className="text-lg px-8" asChild>
-              <Link to="#cadastro">
-                Cadastrar Agora - É Grátis
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
+            <Button 
+              size="lg" 
+              className="text-lg px-8"
+              onClick={() => {
+                document.getElementById('cadastro')?.scrollIntoView({ 
+                  behavior: 'smooth' 
+                });
+              }}
+            >
+              Cadastrar Agora - É Grátis
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <p className="text-sm text-muted-foreground mt-4">
               Sem compromisso • Acesso completo • Para sempre gratuito
