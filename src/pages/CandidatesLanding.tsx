@@ -88,7 +88,7 @@ export default function CandidatesLanding() {
               Já tem conta? Entre
             </Link>
             <Link to="/company/login">
-              <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-black">
+              <Button variant="outline" size="sm" className="text-black border-gray-300 bg-white hover:bg-primary hover:text-white hover:border-primary">
                 Sou Empresa
               </Button>
             </Link>
