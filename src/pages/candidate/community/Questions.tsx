@@ -61,7 +61,7 @@ const Questions = () => {
             user_id
           )
         `)
-        .eq('type', 'question')
+        .eq('post_type', 'question')
         .order('created_at', { ascending: false })
         .range((page - 1) * postsPerPage, page * postsPerPage - 1);
 

@@ -14,7 +14,11 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-black text-white">
       <div className="container flex h-14 items-center">
         <Link to="/" className="mr-6 flex items-center space-x-2">
-          <span className="font-bold">Data Hire Club</span>
+          <img 
+            src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+            alt="Hire Club" 
+            className="h-8 w-auto"
+          />
         </Link>
         <nav className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="flex items-center gap-4">

@@ -30,7 +30,11 @@ export function Footer() {
       <div className="container px-4 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div className="text-center md:text-left">
-            <h4 className="text-lg font-bold mb-4">Data Hire Club</h4>
+            <img 
+              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+              alt="Hire Club" 
+              className="h-8 w-auto mb-4 mx-auto md:mx-0"
+            />
             <p className="text-gray-300">
               Conectando os melhores talentos em dados com as empresas mais inovadoras do Brasil.
             </p>

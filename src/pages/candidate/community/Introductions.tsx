@@ -46,7 +46,7 @@ const Introductions = () => {
             user_id
           )
         `)
-        .eq('type', 'introduction')
+        .eq('post_type', 'introduction')
         .order('created_at', { ascending: false });
 
       if (searchTerm.trim()) {

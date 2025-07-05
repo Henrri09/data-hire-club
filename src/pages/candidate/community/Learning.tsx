@@ -44,7 +44,7 @@ const Learning = () => {
             user_id
           )
         `)
-        .eq('type', 'learning')
+        .eq('post_type', 'learning')
         .order('created_at', { ascending: false });
 
       if (error) {

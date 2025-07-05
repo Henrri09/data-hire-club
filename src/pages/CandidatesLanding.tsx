@@ -76,8 +76,12 @@ export default function CandidatesLanding() {
       {/* Navigation */}
       <nav className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            Data Hire Club
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+              alt="Hire Club" 
+              className="h-8 w-auto"
+            />
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-sm text-muted-foreground hover:text-primary">
@@ -381,9 +385,11 @@ export default function CandidatesLanding() {
       <footer className="border-t bg-muted/30 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-2xl font-bold text-primary mb-4 md:mb-0">
-              Data Hire Club
-            </div>
+            <img 
+              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+              alt="Hire Club" 
+              className="h-8 w-auto mb-4 md:mb-0"
+            />
             <div className="flex gap-6 text-sm">
               <Link to="/sobre" className="text-muted-foreground hover:text-primary">
                 Sobre

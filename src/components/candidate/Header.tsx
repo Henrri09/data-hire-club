@@ -94,7 +94,11 @@ export function CandidateHeader() {
           )}
 
           <Link to="/" className="flex items-center">
-            <span className="font-bold whitespace-nowrap">Data Hire Club</span>
+            <img 
+              src="/lovable-uploads/bd797d1f-1c30-453c-b7f0-865aeec8bae0.png" 
+              alt="Hire Club" 
+              className="h-8 w-auto"
+            />
           </Link>
         </div>
 
