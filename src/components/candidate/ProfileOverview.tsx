@@ -60,7 +60,7 @@ export function ProfileOverview() {
 
         if (error) throw error;
 
-        const { data: candidateData, error: candidateError } = await supabase
+        const { data: candidateData = candidateIntialData, error: candidateError } = await supabase
           .from('candidates')
           .select('bio, skills, headline, experience_level, github_url, portfolio_url')
           .eq('profile_id', user.id)
