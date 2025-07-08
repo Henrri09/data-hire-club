@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import BrevoService from "@/services/BrevoService";
@@ -19,6 +20,8 @@ export default function Register() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -78,10 +81,8 @@ export default function Register() {
       }
 
       if (data) {
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Verifique seu email para confirmar o cadastro.",
-        });
+        setRegisteredEmail(formData.email);
+        setShowEmailModal(true);
 
         const responseCreateContact = await fetch(`https://api.brevo.com/v3/contacts`, {
           method: 'POST',
@@ -107,8 +108,6 @@ export default function Register() {
           },
           body: JSON.stringify({ emails: [formData.email] }),
         });
-
-        navigate("/login");
       }
     } catch (error: unknown) {
       toast({
@@ -122,6 +121,7 @@ export default function Register() {
   };
 
   return (
+    <>
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Gradient Section */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B5CF6] to-[#6366F1] p-12 text-white flex-col justify-center">
@@ -234,10 +234,50 @@ export default function Register() {
                   Entrar
                 </Link>
               </p>
-            </form>
-          </CardContent>
-        </Card>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <AlertDialog open={showEmailModal} onOpenChange={() => {}}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-primary" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-xl">📧 Verifique seu Email!</AlertDialogTitle>
+            <AlertDialogDescription className="text-left space-y-3">
+              <p>Enviamos um email de confirmação para:</p>
+              <div className="bg-muted p-3 rounded-lg text-center">
+                <strong className="text-primary">{registeredEmail}</strong>
+              </div>
+              <div className="space-y-2">
+                <p className="font-medium">Para completar seu cadastro:</p>
+                <ol className="list-decimal list-inside space-y-1 text-sm">
+                  <li>Acesse sua caixa de entrada</li>
+                  <li>Procure o email do Data Hire Club</li>
+                  <li>Clique no link de confirmação</li>
+                </ol>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                💡 <strong>Dica:</strong> Se não encontrar o email, verifique a pasta de spam
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction 
+            onClick={() => {
+              setShowEmailModal(false);
+              navigate("/login");
+            }}
+            className="w-full"
+          >
+            Entendi, vou verificar meu email
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

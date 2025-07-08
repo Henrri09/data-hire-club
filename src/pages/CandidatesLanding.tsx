@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Users, BookOpen, MessageSquare, Trophy, Target, Zap, Check } from "lucide-react";
+import { ArrowRight, Users, BookOpen, MessageSquare, Trophy, Target, Zap, Check, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -12,6 +13,8 @@ export default function CandidatesLanding() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,12 +57,8 @@ export default function CandidatesLanding() {
         if (candidateError) throw candidateError;
       }
 
-      toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Verifique seu email para confirmar o cadastro.",
-      });
-
-      navigate("/login");
+      setRegisteredEmail(formData.email);
+      setShowEmailModal(true);
     } catch (error: unknown) {
       toast({
         title: "Erro no cadastro",
@@ -401,6 +400,45 @@ export default function CandidatesLanding() {
           </div>
         </div>
       </footer>
+
+      <AlertDialog open={showEmailModal} onOpenChange={() => {}}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-primary" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-xl">📧 Verifique seu Email!</AlertDialogTitle>
+            <AlertDialogDescription className="text-left space-y-3">
+              <p>Enviamos um email de confirmação para:</p>
+              <div className="bg-muted p-3 rounded-lg text-center">
+                <strong className="text-primary">{registeredEmail}</strong>
+              </div>
+              <div className="space-y-2">
+                <p className="font-medium">Para completar seu cadastro:</p>
+                <ol className="list-decimal list-inside space-y-1 text-sm">
+                  <li>Acesse sua caixa de entrada</li>
+                  <li>Procure o email do Data Hire Club</li>
+                  <li>Clique no link de confirmação</li>
+                </ol>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                💡 <strong>Dica:</strong> Se não encontrar o email, verifique a pasta de spam
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction 
+            onClick={() => {
+              setShowEmailModal(false);
+              navigate("/login");
+            }}
+            className="w-full"
+          >
+            Entendi, vou verificar meu email
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
