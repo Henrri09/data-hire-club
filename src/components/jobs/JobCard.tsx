@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { useState } from "react";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { JobCardHeader } from "./JobCardHeader";
 import { JobDetails } from "./JobDetails";
 

@@ -1,173 +1,135 @@
-import { useEffect, useState } from "react"
-import supabase from "@/integrations/supabase/client"
-import { CreatePost } from "@/components/community/CreatePost"
-import { PostCard } from "@/components/community/PostCard"
-import { CommunityBanner } from "@/components/community/CommunityBanner"
-import { CandidateHeader } from "@/components/candidate/Header"
-import { CandidateSidebar } from "@/components/candidate/Sidebar"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { PinnedRule } from "@/components/community/PinnedRule"
-import { AdminControls } from "@/components/community/introductions/AdminControls"
-import { SearchBar } from "@/components/community/introductions/SearchBar"
 
-interface Post {
-  id: string
-  content: string
-  created_at: string
-  likes_count: number
-  comments_count: number
-  author: {
-    full_name: string
-    id: string
-  }
-}
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { CandidateHeader } from '@/components/candidate/Header';
+import { CandidateSidebar } from '@/components/candidate/Sidebar';
+import { CommunityHeader } from '@/components/community/CommunityHeader';
+import { CommunityBanner } from '@/components/community/CommunityBanner';
+import { PinnedRule } from '@/components/community/PinnedRule';
+import { CreatePost } from '@/components/community/CreatePost';
+import { PostCard } from '@/components/community/PostCard';
+import { PostSkeleton } from '@/components/community/PostSkeleton';
+import { Post } from '@/types/community.types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function Learning() {
-  const isMobile = useIsMobile()
-  const [posts, setPosts] = useState<Post[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [currentRule, setCurrentRule] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-
-  useEffect(() => {
-    fetchPosts()
-    checkAdminStatus()
-    fetchCurrentRule()
-  }, [])
-
-  const checkAdminStatus = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id)
-        .single()
-
-      setIsAdmin(profile?.is_admin || false)
-    }
-  }
-
-  const fetchCurrentRule = async () => {
-    try {
+const Learning = () => {
+  const isMobile = useIsMobile();
+  
+  // Fetch posts for learning
+  const { 
+    data: posts = [], 
+    isLoading, 
+    refetch: refetchPosts 
+  } = useQuery({
+    queryKey: ['learning-posts'],
+    queryFn: async () => {
+      console.log('Fetching learning posts...');
+      
       const { data, error } = await supabase
-        .from('community_pinned_rules')
-        .select('content')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .maybeSingle()
-
-      if (error) throw error
-
-      setCurrentRule(data?.content || "")
-    } catch (error) {
-      console.error('Error fetching current rule:', error)
-    }
-  }
-
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true)
-      let query = supabase
         .from('community_posts')
         .select(`
           id,
           content,
           created_at,
+          updated_at,
           likes_count,
           comments_count,
-          author:profiles!community_posts_author_id_fkey(id, full_name)
+          profiles!inner(
+            id,
+            full_name,
+            logo_url
+          ),
+          user_likes!left(
+            user_id
+          )
         `)
         .eq('post_type', 'learning')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (searchQuery) {
-        query = query.ilike('content', `%${searchQuery}%`)
+      if (error) {
+        console.error('Error fetching posts:', error);
+        throw error;
       }
 
-      const { data, error } = await query
+      console.log('Fetched posts:', data);
 
-      if (error) throw error
-
-      const formattedPosts = (data || []).map(post => ({
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const formattedPosts = (data || []).map((post: any) => ({
         id: post.id,
         content: post.content,
         created_at: post.created_at,
-        likes_count: post.likes_count,
-        comments_count: post.comments_count,
+        updated_at: post.updated_at,
+        likes_count: post.likes_count || 0,
+        comments_count: post.comments_count || 0,
         author: {
-          id: post.author.id,
-          full_name: post.author.full_name
-        }
-      }))
+          id: post.profiles.id,
+          full_name: post.profiles.full_name,
+          logo_url: post.profiles.logo_url || ''
+        },
+        is_liked: user ? post.user_likes?.some((like: any) => like.user_id === user.id) : false
+      })) as Post[];
 
-      setPosts(formattedPosts)
-    } catch (error) {
-      console.error('Error fetching posts:', error)
-    } finally {
-      setIsLoading(false)
+      return formattedPosts;
     }
-  }
+  });
+
+  const handlePostSuccess = async () => {
+    await refetchPosts();
+  };
+
+  const handlePostUpdate = async () => {
+    await refetchPosts();
+  };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+    <div className="min-h-screen bg-[#f8fafc]">
       <CandidateHeader />
-      <div className="flex flex-1">
+      <div className="flex">
         {!isMobile && <CandidateSidebar />}
-        <main className="flex-1 p-4 md:p-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">O que você está aprendendo?</h1>
-            </div>
-            <CommunityBanner type="LEARNING" />
-            {isAdmin && (
-              <AdminControls
-                currentRule={currentRule}
-                onRuleUpdate={fetchCurrentRule}
-                type="LEARNING"
-              />
-            )}
-
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={fetchPosts}
+        <main className="flex-1 py-6 px-4 md:py-8 md:px-8">
+          <div className="max-w-4xl mx-auto bg-gray-50 rounded-lg p-6 md:p-8">
+            <CommunityHeader 
+              title="Aprendizado" 
+              description="Compartilhe recursos, dicas e experiências de aprendizado em dados"
             />
 
+            <CommunityBanner type="LEARNING" />
+            
+            <PinnedRule content="📚 Compartilhe cursos, livros, artigos e dicas que ajudaram em sua jornada de aprendizado!" />
 
-            <PinnedRule content={currentRule} />
-            <CreatePost onPostCreated={fetchPosts} />
+            <CreatePost 
+              onPostSuccess={handlePostSuccess}
+              placeholder="Compartilhe um recurso de aprendizado ou dica..."
+            />
 
+            {/* Posts */}
             <div className="space-y-4">
               {isLoading ? (
-                <p className="text-center text-gray-500">Carregando posts...</p>
-              ) : posts.length === 0 ? (
-                <p className="text-center text-gray-500">
-                  {searchQuery
-                    ? "Nenhum post encontrado para sua busca."
-                    : "Nenhum post encontrado. Compartilhe o que você está aprendendo!"}
-                </p>
-              ) : (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))
+              ) : posts.length > 0 ? (
                 posts.map((post) => (
                   <PostCard
                     key={post.id}
-                    id={post.id}
-                    author={{
-                      name: post.author?.full_name || 'Usuário Anônimo',
-                      id: post.author?.id
-                    }}
-                    content={post.content}
-                    likes={post.likes_count}
-                    comments={post.comments_count}
-                    created_at={post.created_at}
+                    post={post}
+                    onLikeChange={handlePostUpdate}
+                    onPostDelete={handlePostUpdate}
                   />
                 ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Ainda não há posts de aprendizado. Seja o primeiro a compartilhar!
+                </div>
               )}
             </div>
           </div>
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Learning;

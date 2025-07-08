@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { PhotoUploadField } from "./profile/PhotoUploadField";
 import { SkillsInput } from "./profile/SkillsInput";
@@ -163,6 +163,19 @@ export function EditProfileDialog({
         description: "Suas informações foram atualizadas com sucesso",
       });
 
+      onProfileUpdate({
+        description,
+        skills,
+        photoUrl,
+        full_name: fullName,
+        headline,
+        location,
+        experience_level: experienceLevel,
+        linkedin_url: linkedinUrl,
+        github_url: githubUrl,
+        portfolio_url: portfolioUrl
+      });
+      
       onOpenChange(false);
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);

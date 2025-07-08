@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SimpleBannerUploadProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface SimpleBannerUploadProps {
 
 export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBannerUploadProps) {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [isUploading, setIsUploading] = useState(false);
   const [type, setType] = useState<"INTRODUCTION" | "LEARNING" | "QUESTIONS">("INTRODUCTION");
   const [display, setDisplay] = useState<"MOBILE" | "DESKTOP">("DESKTOP");
@@ -112,19 +114,19 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Adicionar Banner</DialogTitle>
-          <DialogDescription>
+      <DialogContent className={`${isMobile ? 'w-[95vw] max-w-[95vw] h-[90vh] max-h-[90vh] overflow-y-auto' : 'sm:max-w-md'}`}>
+        <DialogHeader className={isMobile ? 'space-y-2' : ''}>
+          <DialogTitle className={isMobile ? 'text-lg' : ''}>Adicionar Banner</DialogTitle>
+          <DialogDescription className={isMobile ? 'text-sm' : ''}>
             Faça upload de uma imagem para o banner da comunidade
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6">
+        <div className={`space-y-4 ${isMobile ? 'space-y-4' : 'space-y-6'}`}>
           <div className="grid gap-4">
             <div className="space-y-2">
-              <Label htmlFor="type">Tipo do Banner</Label>
+              <Label htmlFor="type" className={isMobile ? 'text-sm' : ''}>Tipo do Banner</Label>
               <Select value={type} onValueChange={(value: "INTRODUCTION" | "LEARNING" | "QUESTIONS") => setType(value)}>
-                <SelectTrigger>
+                <SelectTrigger className={isMobile ? 'h-10' : ''}>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,9 +138,9 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="display">Dispositivo</Label>
+              <Label htmlFor="display" className={isMobile ? 'text-sm' : ''}>Dispositivo</Label>
               <Select value={display} onValueChange={(value: "MOBILE" | "DESKTOP") => setDisplay(value)}>
-                <SelectTrigger>
+                <SelectTrigger className={isMobile ? 'h-10' : ''}>
                   <SelectValue placeholder="Selecione o dispositivo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -149,11 +151,13 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
             </div>
           </div>
 
-          <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-[#9b87f5]/40 rounded-lg p-12 text-center">
-            <Upload className="h-10 w-10 text-[#9b87f5] mb-4" />
+          <div className={`relative flex flex-col items-center justify-center border-2 border-dashed border-[#9b87f5]/40 rounded-lg text-center ${isMobile ? 'p-6' : 'p-12'}`}>
+            <Upload className={`text-[#9b87f5] mb-4 ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`} />
             <div className="space-y-2">
-              <h3 className="font-semibold text-lg">Arraste sua imagem ou clique para selecionar</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className={`font-semibold ${isMobile ? 'text-base' : 'text-lg'}`}>
+                {isMobile ? 'Toque para selecionar' : 'Arraste sua imagem ou clique para selecionar'}
+              </h3>
+              <p className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                 Formatos suportados: JPG, PNG, WebP
                 <br />
                 Tamanho máximo: 2MB

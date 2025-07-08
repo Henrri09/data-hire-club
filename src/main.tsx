@@ -6,7 +6,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import App from './App'
 import './index.css'
 import { Toaster } from "@/components/ui/toaster"
-import supabase from './integrations/supabase/client'
+import { supabase } from './integrations/supabase/client'
 
 ReactGA.initialize('G-XXXXXXXXXX')
 

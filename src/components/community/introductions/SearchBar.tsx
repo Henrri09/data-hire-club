@@ -1,13 +1,13 @@
+
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
 interface SearchBarProps {
-  value: string
-  onChange: (value: string) => void
-  onSearch: () => void
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
 }
 
-export function SearchBar({ value, onChange, onSearch }: SearchBarProps) {
+export function SearchBar({ searchTerm, onSearchChange }: SearchBarProps) {
   return (
     <div className="mb-6">
       <div className="relative">
@@ -15,9 +15,8 @@ export function SearchBar({ value, onChange, onSearch }: SearchBarProps) {
         <Input
           type="text"
           placeholder="Buscar posts..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"
         />
       </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CandidateHeader } from "@/components/candidate/Header";
 import { CandidateSidebar } from "@/components/candidate/Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";

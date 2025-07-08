@@ -1,128 +1,122 @@
-import { useEffect, useState } from "react";
-import supabase from "@/integrations/supabase/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { LevelBadge } from "./LevelBadge";
-import { Skeleton } from "../ui/skeleton";
-import { Trophy } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
-interface LeaderboardUser {
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Skeleton } from "../ui/skeleton";
+import { LevelBadge } from "./LevelBadge";
+
+interface UserPointsData {
   id: string;
-  full_name: string | null;
+  user_id: string;
   total_points: number;
   current_level: number;
+  profile: {
+    full_name: string | null;
+    logo_url?: string | null;
+  } | null;
 }
 
 export function Leaderboard() {
-  const [users, setUsers] = useState<LeaderboardUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const isMobile = useIsMobile();
+  const [userPoints, setUserPoints] = useState<UserPointsData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadLeaderboard = async () => {
+    async function fetchUserPoints() {
       try {
         const { data, error } = await supabase
           .from('user_points')
-          .select(`
-            user_id,
-            total_points,
-            current_level,
-            profiles:profiles(full_name)
-          `)
+          .select('*, profile:profiles(full_name, logo_url)')
           .order('total_points', { ascending: false })
           .limit(10);
 
-        if (error) throw error;
-
-        if (data) {
-          const formattedData: LeaderboardUser[] = data.map(item => ({
-            id: item.user_id,
-            full_name: item.profiles?.full_name || 'Usuário Anônimo',
-            total_points: item.total_points,
-            current_level: item.current_level
-          }));
-          setUsers(formattedData);
+        if (error) {
+          throw error;
         }
-      } catch (error) {
-        console.error('Erro ao carregar leaderboard:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    loadLeaderboard();
+        console.log('User points data:', data);
+        setUserPoints(data || []);
+      } catch (error) {
+        console.error('Error loading leaderboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserPoints();
   }, []);
 
-  if (isLoading) {
-    return <Skeleton className="w-full h-64" />;
-  }
-
-  if (isMobile) {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          <h2 className="text-lg font-semibold">Top 10 da Comunidade</h2>
-        </div>
-        <div className="space-y-4">
-          {users.map((user, index) => (
-            <div
-              key={user.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-            >
-              <div className="flex items-center gap-3">
-                <span className="font-medium text-gray-600 min-w-[24px]">
-                  {index + 1}º
-                </span>
-                <div className="flex flex-col">
-                  <span className="font-medium">{user.full_name}</span>
-                  <LevelBadge userId={user.id} />
-                </div>
-              </div>
-              <span className="font-medium text-primary">
-                {user.total_points} pts
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  function getInitials(name: string | null | undefined): string {
+    if (!name) return "U";
+    
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Trophy className="w-5 h-5 text-yellow-500" />
-        <h2 className="text-lg font-semibold">Top 10 da Comunidade</h2>
-      </div>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">Pos.</TableHead>
-              <TableHead>Nome</TableHead>
-              <TableHead>Nível</TableHead>
-              <TableHead className="text-right">Pontos</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user, index) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">
-                  {index + 1}º
-                </TableCell>
-                <TableCell>{user.full_name}</TableCell>
-                <TableCell>
-                  <LevelBadge userId={user.id} />
-                </TableCell>
-                <TableCell className="text-right">
-                  {user.total_points} pts
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle>Ranking da Comunidade</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="space-y-3">
+              {Array(5)
+                .fill(null)
+                .map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-[150px]" />
+                      <Skeleton className="h-4 w-[120px]" />
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : userPoints.length === 0 ? (
+            <div className="text-center py-6 text-muted-foreground">
+              Nenhum dado de pontuação encontrado
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[60px]">Rank</TableHead>
+                  <TableHead>Usuário</TableHead>
+                  <TableHead>Nível</TableHead>
+                  <TableHead className="text-right">Pontos</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {userPoints.map((user, index) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-7 w-7">
+                          {user.profile?.logo_url ? (
+                            <AvatarImage src={user.profile.logo_url} alt={user.profile?.full_name || 'Usuário'} />
+                          ) : null}
+                          <AvatarFallback>{getInitials(user.profile?.full_name)}</AvatarFallback>
+                        </Avatar>
+                        <span>{user.profile?.full_name || 'Usuário Anônimo'}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <LevelBadge userId={user.user_id} />
+                    </TableCell>
+                    <TableCell className="text-right">{user.total_points}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

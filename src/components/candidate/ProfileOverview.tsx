@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { EditProfileDialog } from "./EditProfileDialog";
-import supabase from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { ProfileHeader } from "./profile/ProfileHeader";
 
@@ -60,30 +60,32 @@ export function ProfileOverview() {
 
         if (error) throw error;
 
-        // const { data: candidateData = candidateIntialData, error: candidateError } = await supabase
-        //   .from('candidates')
-        //   .select('bio, skills, headline, experience_level, github_url, portfolio_url')
-        //   .eq('profile_id', user.id)
-        //   .single();
+        const { data: candidateData = candidateIntialData, error: candidateError } = await supabase
+          .from('candidates')
+          .select('bio, skills, headline, experience_level, github_url, portfolio_url')
+          .eq('profile_id', user.id)
+          .single();
 
-        // if (candidateError) throw candidateError;
+        if (candidateError) {
+          console.error('Erro ao carregar dados do candidato:', candidateError);
+        }
 
-        // if (profileData) {
-        //   setProfile({
-        //     description: candidateData.bio || "",
-        //     skills: Array.isArray(candidateData.skills)
-        //       ? candidateData.skills.map(skill => String(skill))
-        //       : [],
-        //     photoUrl: profileData.logo_url || "",
-        //     full_name: profileData.full_name || "",
-        //     headline: candidateData.headline || "",
-        //     location: profileData.location || "",
-        //     experience_level: candidateData.experience_level || "",
-        //     linkedin_url: profileData.linkedin_url || "",
-        //     github_url: candidateData.github_url || "",
-        //     portfolio_url: candidateData.portfolio_url || ""
-        //   });
-        // }
+        if (profileData) {
+          setProfile({
+            description: candidateData?.bio || "",
+            skills: Array.isArray(candidateData?.skills)
+              ? candidateData.skills.map(skill => String(skill))
+              : [],
+            photoUrl: profileData.logo_url,
+            full_name: profileData.full_name,
+            headline: candidateData?.headline,
+            location: profileData.location,
+            experience_level: candidateData?.experience_level,
+            linkedin_url: profileData.linkedin_url,
+            github_url: candidateData?.github_url,
+            portfolio_url: candidateData?.portfolio_url
+          });
+        }
       } catch (error) {
         console.error('Erro ao carregar perfil:', error);
         toast({
@@ -99,6 +101,8 @@ export function ProfileOverview() {
 
   const handleProfileUpdate = (updatedProfile: Profile) => {
     setProfile(updatedProfile);
+    // Trigger a re-render to refresh data
+    window.location.reload();
   };
 
   return (

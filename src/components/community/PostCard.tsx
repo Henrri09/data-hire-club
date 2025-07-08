@@ -1,181 +1,163 @@
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Pencil } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
-import { PostHeader } from "./PostHeader"
-import { PostActions } from "./PostActions"
-import { PostComments } from "./PostComments"
-import { usePostActions } from "@/hooks/usePostActions"
-import { usePostComments } from "@/hooks/usePostComments"
-import { useState, useEffect } from "react"
-import supabase from "@/integrations/supabase/client"
-import { PostCardActions } from "./post/PostCardActions"
-import { PostEditDialog } from "./post/PostEditDialog"
-import { PostContent } from "./post/PostContent"
-import { PostDeleteButton } from "./post/PostDeleteButton"
 
-interface PostCardProps {
-  id: string
-  author: {
-    name: string
-    avatar?: string
-    id: string
-  }
-  content: string
-  likes: number
-  comments: number
-  created_at: string
-  isLiked?: boolean
-  onLikeChange?: () => void
-  onPostDelete?: () => void
-}
+import React, { useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Heart, MessageCircle, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { PostComments } from './PostComments';
+import { PostEditDialog } from './post/PostEditDialog';
+import { PostDeleteButton } from './post/PostDeleteButton';
+import { usePostActions } from '@/hooks/usePostActions';
+import { usePostComments } from '@/hooks/usePostComments';
+import { PostCardProps } from '@/types/community-props.types';
 
-export function PostCard({
-  id,
-  author,
-  content,
-  likes,
-  comments,
-  created_at,
-  isLiked = false,
-  onLikeChange,
-  onPostDelete
-}: PostCardProps) {
-  const [isCurrentUser, setIsCurrentUser] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedContent, setEditedContent] = useState(content)
-  const { toast } = useToast()
+export const PostCard = ({ post, onLikeChange, onPostDelete }: PostCardProps) => {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {
-    isLiking,
-    localLiked,
-    localLikes,
-    handleLike
-  } = usePostActions({
-    id,
-    initialLikes: likes,
-    initialIsLiked: isLiked,
+  const { isLiked, likesCount, toggleLike, isLoading } = usePostActions({
+    postId: post.id,
+    initialLiked: post.is_liked || false,
+    initialLikes: post.likes_count,
     onLikeChange
-  })
+  });
 
   const {
+    comments,
+    isLoading: isLoadingComments,
     showComments,
+    setShowComments,
     newComment,
-    postComments,
-    isLoadingComments,
     setNewComment,
-    loadComments,
-    handleComment
-  } = usePostComments(id)
+    handleAddComment,
+    isAddingComment
+  } = usePostComments(post.id);
 
-  console.log("Post Comments:", postComments)
-
-  useEffect(() => {
-    const checkUserPermissions = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          setIsCurrentUser(user.id === author.id)
-
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('id', user.id)
-            .single()
-
-          console.log("Perfil do usuário:", profile)
-          setIsAdmin(profile?.is_admin || false)
-        }
-      } catch (error) {
-        console.error("Erro ao verificar permissões:", error)
-      }
+  const handleEditSuccess = async () => {
+    if (onLikeChange) {
+      await onLikeChange();
     }
+  };
 
-    checkUserPermissions()
-  }, [author.id])
-
-  const handleEdit = async () => {
-    try {
-      const { error } = await supabase
-        .from('community_posts')
-        .update({ content: editedContent })
-        .eq('id', id)
-
-      if (error) throw error
-
-      toast({
-        title: "Post atualizado",
-        description: "Seu post foi atualizado com sucesso.",
-      })
-      setIsEditing(false)
-    } catch (error) {
-      console.error('Erro ao atualizar post:', error)
-      toast({
-        title: "Erro ao atualizar post",
-        description: "Ocorreu um erro ao tentar atualizar o post.",
-        variant: "destructive"
-      })
+  const handleDeleteSuccess = () => {
+    if (onPostDelete) {
+      onPostDelete();
     }
-  }
+  };
 
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <PostHeader author={author} created_at={created_at} />
-          <div className="flex gap-2">
-            {isCurrentUser && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            )}
-            {(isCurrentUser || isAdmin) && (
-              <PostDeleteButton
-                postId={id}
-                authorId={author.id}
-                isAdmin={isAdmin}
-                onPostDelete={onPostDelete}
-              />
-            )}
+    <>
+      <Card className="mb-4">
+        <CardContent className="p-6">
+          {/* Post Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={post.author.logo_url || ''} />
+                <AvatarFallback>
+                  {post.author.full_name?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {post.author.full_name || 'Usuário'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {formatDistanceToNow(new Date(post.created_at), {
+                    addSuffix: true,
+                    locale: ptBR
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-red-600"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <PostContent content={content} />
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
-        <PostActions
-          likes={localLikes}
-          comments={comments}
-          isLiked={localLiked}
-          isLiking={isLiking}
-          onLike={handleLike}
-          onComment={loadComments}
-        />
 
-        {showComments && (
-          <PostComments
-            comments={postComments}
-            newComment={newComment}
-            isLoading={isLoadingComments}
-            onCommentChange={setNewComment}
-            onSubmitComment={handleComment}
-          />
-        )}
-      </CardFooter>
+          {/* Post Content */}
+          <div className="mb-4">
+            <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+          </div>
 
+          {/* Post Actions */}
+          <div className="flex items-center gap-4 pt-2 border-t">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLike}
+              disabled={isLoading}
+              className={`flex items-center gap-2 ${
+                isLiked ? 'text-red-500' : 'text-gray-500'
+              }`}
+            >
+              <Heart 
+                className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} 
+              />
+              <span>{likesCount}</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowComments(!showComments)}
+              className="flex items-center gap-2 text-gray-500"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>{post.comments_count}</span>
+            </Button>
+          </div>
+
+          {/* Comments Section */}
+          {showComments && (
+            <PostComments
+              comments={comments}
+              isLoading={isLoadingComments}
+              newComment={newComment}
+              onCommentChange={setNewComment}
+              onSubmitComment={handleAddComment}
+              isSubmitting={isAddingComment}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Dialog */}
       <PostEditDialog
-        open={isEditing}
-        content={editedContent}
-        onOpenChange={setIsEditing}
-        onContentChange={setEditedContent}
-        onSave={handleEdit}
+        post={post}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={handleEditSuccess}
       />
-    </Card>
-  )
-}
+
+      {/* Delete Dialog */}
+      <PostDeleteButton
+        post={post}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onSuccess={handleDeleteSuccess}
+      />
+    </>
+  );
+};

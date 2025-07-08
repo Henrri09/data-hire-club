@@ -349,6 +349,33 @@ export type Database = {
           },
         ]
       }
+      contact_settings: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          location: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          location: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          location?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       external_scripts: {
         Row: {
           created_at: string
@@ -643,6 +670,72 @@ export type Database = {
           updated_at?: string
           user_type?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      static_pages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          last_updated_by: string | null
+          meta_description: string | null
+          published: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          last_updated_by?: string | null
+          meta_description?: string | null
+          published?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          last_updated_by?: string | null
+          meta_description?: string | null
+          published?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ui_settings: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          setting_key: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          setting_key: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          setting_key?: string
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
