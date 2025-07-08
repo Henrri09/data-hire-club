@@ -69,6 +69,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           company: job.companies?.name || 'Empresa não especificada',
           location: job.companies?.location || 'Localização não especificada',
           type: job.work_model || 'Não especificado',
+          logo_url: job.companies?.logo_url,
           description: job.description,
           seniority: job.experience_level || 'Não especificado',
           salary_range: job.salary_range || 'A combinar',

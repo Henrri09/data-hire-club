@@ -10,6 +10,7 @@ export interface Job {
   salary_range: string;
   contract_type: string;
   application_url?: string;
+  logo_url?: string;
   benefits?: string[];
   requirements?: string[];
   responsibilities?: string[];
@@ -34,6 +35,7 @@ export interface JobResponse {
   companies?: {
     name: string;
     location: string | null;
+    logo_url: string | null;
   } | null;
 }
 
