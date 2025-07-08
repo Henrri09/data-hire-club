@@ -7,11 +7,14 @@ import { EmptyJobsList } from "./EmptyJobsList";
 import type { Job } from "@/types/job.types";
 import type { Database } from "@/integrations/supabase/types";
 
+import type { JobFilters } from "./filters/JobFiltersBar";
+
 interface JobsListProps {
   searchQuery?: string;
+  filters?: JobFilters;
 }
 
-export const JobsList = ({ searchQuery }: JobsListProps) => {
+export const JobsList = ({ searchQuery, filters }: JobsListProps) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -31,7 +34,8 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
             *,
             companies (
               name,
-              location
+              location,
+              logo_url
             )
           `)
           .eq('status', 'active')
@@ -82,8 +86,73 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           applications: job.applications_count || 0
         }));
 
-        console.log('Vagas formatadas:', formattedJobs);
-        setJobs(formattedJobs);
+        // Aplicar filtros se houver
+        let filteredJobs = formattedJobs;
+        
+        if (filters) {
+          filteredJobs = formattedJobs.filter(job => {
+            // Filtro por tipo de trabalho
+            if (filters.workType.length > 0) {
+              const jobWorkType = job.type.toLowerCase();
+              const matchesWorkType = filters.workType.some(filter => 
+                jobWorkType.includes(filter) || 
+                (filter === 'remoto' && jobWorkType.includes('remote')) ||
+                (filter === 'hibrido' && jobWorkType.includes('híbrido'))
+              );
+              if (!matchesWorkType) return false;
+            }
+
+            // Filtro por tipo de contrato
+            if (filters.contractType.length > 0) {
+              const jobContractType = job.contract_type.toLowerCase();
+              const matchesContract = filters.contractType.some(filter => 
+                jobContractType.includes(filter)
+              );
+              if (!matchesContract) return false;
+            }
+
+            // Filtro por senioridade
+            if (filters.seniority.length > 0) {
+              const jobSeniority = job.seniority.toLowerCase();
+              const matchesSeniority = filters.seniority.some(filter => 
+                jobSeniority.includes(filter) ||
+                (filter === 'junior' && (jobSeniority.includes('júnior') || jobSeniority.includes('estagiario'))) ||
+                (filter === 'senior' && jobSeniority.includes('sênior'))
+              );
+              if (!matchesSeniority) return false;
+            }
+
+            // Filtro por faixa salarial
+            if (filters.salaryRanges.length > 0) {
+              const salary = job.salary_range.toLowerCase();
+              const matchesSalary = filters.salaryRanges.some(range => {
+                if (range === "0-3000") return salary.includes("3") && !salary.includes("6");
+                if (range === "3000-6000") return salary.includes("3") && salary.includes("6");
+                if (range === "6000-10000") return salary.includes("6") && salary.includes("10");
+                if (range === "10000+") return salary.includes("10") || salary.includes("15") || salary.includes("20");
+                return false;
+              });
+              if (!matchesSalary) return false;
+            }
+
+            // Filtro por tags de área de dados
+            if (filters.dataTags.length > 0) {
+              const jobContent = `${job.title} ${job.description}`.toLowerCase();
+              const matchesTags = filters.dataTags.some(tag => {
+                if (tag === 'data-analyst') return jobContent.includes('analista') || jobContent.includes('analyst');
+                if (tag === 'data-scientist') return jobContent.includes('cientista') || jobContent.includes('scientist');
+                if (tag === 'data-engineer') return jobContent.includes('engenheiro') || jobContent.includes('engineer');
+                return jobContent.includes(tag.replace('-', ' '));
+              });
+              if (!matchesTags) return false;
+            }
+
+            return true;
+          });
+        }
+
+        console.log('Vagas filtradas:', filteredJobs);
+        setJobs(filteredJobs);
       } catch (err) {
         console.error("Erro ao buscar vagas:", err);
         setError(err instanceof Error ? err : new Error('Falha ao buscar vagas'));
@@ -93,7 +162,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
     };
 
     fetchJobs();
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
   if (isLoading) return <JobsLoadingState />;
   if (error) return <JobsErrorState error={error} />;

@@ -4,11 +4,19 @@ import { Search, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { JobsList } from "@/components/jobs/JobsList";
+import { JobFiltersBar, type JobFilters } from "@/components/jobs/filters/JobFiltersBar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<JobFilters>({
+    workType: [],
+    contractType: [],
+    seniority: [],
+    salaryRanges: [],
+    dataTags: [],
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -41,8 +49,8 @@ const Index = () => {
       {/* Search and Jobs Section */}
       <section className="py-4 md:py-12 bg-[#f8fafc]">
         <div className="container px-4 md:px-8">
-          <div className="max-w-2xl mx-auto mb-4 md:mb-8">
-            <div className="relative">
+          <div className="max-w-4xl mx-auto mb-4 md:mb-8">
+            <div className="relative max-w-2xl mx-auto mb-6">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8E9196] h-5 w-5" />
               <Input
                 type="text"
@@ -52,9 +60,14 @@ const Index = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            
+            <JobFiltersBar 
+              filters={filters}
+              onFiltersChange={setFilters}
+            />
           </div>
 
-          <JobsList searchQuery={searchQuery} />
+          <JobsList searchQuery={searchQuery} filters={filters} />
         </div>
       </section>
 
