@@ -1,4 +1,5 @@
-import { Briefcase, MapPin } from "lucide-react";
+import { Briefcase, MapPin, Building } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 
 interface JobCardHeaderProps {
   job: {
@@ -10,6 +11,7 @@ interface JobCardHeaderProps {
     seniority: string;
     salary_range: string;
     contract_type: string;
+    logo_url?: string;
   };
 }
 
@@ -39,10 +41,29 @@ export function JobCardHeader({ job }: JobCardHeaderProps) {
     return location;
   };
 
+  // Função para gerar iniciais da empresa
+  const getCompanyInitials = (companyName: string) => {
+    return companyName
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <>
       <h3 className="text-lg md:text-xl font-semibold mb-2 text-[#1e293b]">{job.title}</h3>
-      <p className="text-[#1e293b]/80 mb-3 md:mb-4">{job.company}</p>
+      
+      <div className="flex items-center gap-3 mb-3 md:mb-4">
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={job.logo_url || undefined} alt={`${job.company} logo`} />
+          <AvatarFallback className="bg-primary/10 text-primary">
+            {job.logo_url ? <Building className="h-5 w-5" /> : getCompanyInitials(job.company)}
+          </AvatarFallback>
+        </Avatar>
+        <p className="text-[#1e293b]/80 font-medium">{job.company}</p>
+      </div>
       <div className="flex flex-wrap gap-3 md:gap-4 text-[#1e293b]/70 mb-3 md:mb-4">
         <span className="flex items-center gap-1 text-sm">
           <MapPin className="w-4 h-4" />

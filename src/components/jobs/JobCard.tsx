@@ -23,6 +23,7 @@ interface JobCardProps {
     salary_range: string;
     contract_type: string;
     application_url?: string;
+    logo_url?: string;
   };
 }
 

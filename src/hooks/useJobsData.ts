@@ -13,7 +13,8 @@ const fetchJobs = async (): Promise<Job[]> => {
         *,
         companies (
           name,
-          location
+          location,
+          logo_url
         )
       `)
       .eq('status', 'active')
@@ -37,6 +38,7 @@ const fetchJobs = async (): Promise<Job[]> => {
       title: job.title,
       company: job.companies?.name || 'Empresa não especificada',
       location: job.companies?.location || 'Localização não especificada',
+      logo_url: job.companies?.logo_url,
       type: job.work_model || 'Não especificado',
       description: job.description,
       seniority: job.experience_level || 'Não especificado',

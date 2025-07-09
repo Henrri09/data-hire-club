@@ -7,11 +7,14 @@ import { EmptyJobsList } from "./EmptyJobsList";
 import type { Job } from "@/types/job.types";
 import type { Database } from "@/integrations/supabase/types";
 
+import type { JobFilters } from "./filters/JobFiltersModal";
+
 interface JobsListProps {
   searchQuery?: string;
+  filters?: JobFilters;
 }
 
-export const JobsList = ({ searchQuery }: JobsListProps) => {
+export const JobsList = ({ searchQuery, filters }: JobsListProps) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -31,7 +34,8 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
             *,
             companies (
               name,
-              location
+              location,
+              logo_url
             )
           `)
           .eq('status', 'active')
@@ -69,6 +73,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           company: job.companies?.name || 'Empresa não especificada',
           location: job.companies?.location || 'Localização não especificada',
           type: job.work_model || 'Não especificado',
+          logo_url: job.companies?.logo_url,
           description: job.description,
           seniority: job.experience_level || 'Não especificado',
           salary_range: job.salary_range || 'A combinar',
@@ -81,8 +86,120 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
           applications: job.applications_count || 0
         }));
 
-        console.log('Vagas formatadas:', formattedJobs);
-        setJobs(formattedJobs);
+        // Aplicar filtros se houver
+        let filteredJobs = formattedJobs;
+        
+        if (filters) {
+          filteredJobs = formattedJobs.filter(job => {
+            // Filtro por tipo de trabalho
+            if (filters.workType.length > 0) {
+              const jobWorkType = job.type.toLowerCase();
+              const matchesWorkType = filters.workType.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobWorkType.includes(filterLower) || 
+                       (filterLower === 'remoto' && (jobWorkType.includes('remote') || jobWorkType.includes('remoto'))) ||
+                       (filterLower === 'hibrido' && (jobWorkType.includes('híbrido') || jobWorkType.includes('hybrid'))) ||
+                       (filterLower === 'presencial' && (jobWorkType.includes('presencial') || jobWorkType.includes('on-site') || jobWorkType.includes('onsite')));
+              });
+              if (!matchesWorkType) return false;
+            }
+
+            // Filtro por tipo de contrato
+            if (filters.contractType.length > 0) {
+              const jobContractType = job.contract_type.toLowerCase();
+              const matchesContract = filters.contractType.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobContractType.includes(filterLower) ||
+                       (filterLower === 'clt' && jobContractType.includes('clt')) ||
+                       (filterLower === 'pj' && (jobContractType.includes('pj') || jobContractType.includes('pessoa jurídica'))) ||
+                       (filterLower === 'freelancer' && (jobContractType.includes('freelancer') || jobContractType.includes('free')));
+              });
+              if (!matchesContract) return false;
+            }
+
+            // Filtro por senioridade
+            if (filters.seniority.length > 0) {
+              const jobSeniority = job.seniority.toLowerCase();
+              const matchesSeniority = filters.seniority.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobSeniority.includes(filterLower) ||
+                       (filterLower === 'junior' && (jobSeniority.includes('júnior') || jobSeniority.includes('jr') || jobSeniority.includes('estagiário') || jobSeniority.includes('trainee'))) ||
+                       (filterLower === 'pleno' && (jobSeniority.includes('pleno') || jobSeniority.includes('mid'))) ||
+                       (filterLower === 'senior' && (jobSeniority.includes('sênior') || jobSeniority.includes('sr') || jobSeniority.includes('senior')));
+              });
+              if (!matchesSeniority) return false;
+            }
+
+            // Filtro por faixa salarial - melhorado para extrair números reais
+            if (filters.salaryRanges.length > 0) {
+              const salary = job.salary_range.toLowerCase();
+              // Extrair números do salário usando regex
+              const salaryNumbers = salary.match(/\d+/g);
+              
+              const matchesSalary = filters.salaryRanges.some(range => {
+                if (range === "0-3000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value <= 3000 && value >= 1000;
+                  });
+                }
+                if (range === "3000-6000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 3000 && value <= 6000;
+                  });
+                }
+                if (range === "6000-10000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 6000 && value <= 10000;
+                  });
+                }
+                if (range === "10000+") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 10000;
+                  });
+                }
+                return false;
+              });
+              if (!matchesSalary) return false;
+            }
+
+            // Filtro por tags de área de dados - expandido
+            if (filters.dataTags.length > 0) {
+              const jobContent = `${job.title} ${job.description}`.toLowerCase();
+              const matchesTags = filters.dataTags.some(tag => {
+                switch(tag) {
+                  case 'data-analyst':
+                    return jobContent.includes('analista') || jobContent.includes('analyst') || jobContent.includes('análise');
+                  case 'data-scientist':
+                    return jobContent.includes('cientista') || jobContent.includes('scientist') || jobContent.includes('ciência');
+                  case 'data-engineer':
+                    return jobContent.includes('engenheiro') || jobContent.includes('engineer') || jobContent.includes('engenharia');
+                  case 'bi':
+                    return jobContent.includes('bi') || jobContent.includes('business intelligence') || jobContent.includes('power bi');
+                  case 'python':
+                    return jobContent.includes('python');
+                  case 'sql':
+                    return jobContent.includes('sql') || jobContent.includes('mysql') || jobContent.includes('postgresql');
+                  case 'ml':
+                    return jobContent.includes('machine learning') || jobContent.includes('ml') || jobContent.includes('aprendizado');
+                  case 'etl':
+                    return jobContent.includes('etl') || jobContent.includes('extract') || jobContent.includes('pipeline');
+                  default:
+                    return jobContent.includes(tag.replace('-', ' '));
+                }
+              });
+              if (!matchesTags) return false;
+            }
+
+            return true;
+          });
+        }
+
+        console.log('Vagas filtradas:', filteredJobs);
+        setJobs(filteredJobs);
       } catch (err) {
         console.error("Erro ao buscar vagas:", err);
         setError(err instanceof Error ? err : new Error('Falha ao buscar vagas'));
@@ -92,7 +209,7 @@ export const JobsList = ({ searchQuery }: JobsListProps) => {
     };
 
     fetchJobs();
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
   if (isLoading) return <JobsLoadingState />;
   if (error) return <JobsErrorState error={error} />;
