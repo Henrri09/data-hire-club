@@ -4,8 +4,14 @@ import { FilterButton } from "./FilterButton";
 import { SalaryRangeFilter } from "./SalaryRangeFilter";
 import { DataAreaTags } from "./DataAreaTags";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export interface JobFilters {
   workType: string[];
@@ -15,7 +21,7 @@ export interface JobFilters {
   dataTags: string[];
 }
 
-interface JobFiltersBarProps {
+interface JobFiltersModalProps {
   filters: JobFilters;
   onFiltersChange: (filters: JobFilters) => void;
   jobCount?: number;
@@ -39,8 +45,8 @@ const seniorityLevels = [
   { label: "Sênior", value: "senior" },
 ];
 
-export function JobFiltersBar({ filters, onFiltersChange, jobCount }: JobFiltersBarProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function JobFiltersModal({ filters, onFiltersChange, jobCount }: JobFiltersModalProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleFilter = (category: keyof JobFilters, value: string) => {
     const currentValues = filters[category] as string[];
@@ -68,45 +74,36 @@ export function JobFiltersBar({ filters, onFiltersChange, jobCount }: JobFilters
   const totalActiveFilters = Object.values(filters).reduce((sum, arr) => sum + arr.length, 0);
 
   return (
-    <Card className="p-4 mb-6 bg-background/50 backdrop-blur-sm border-muted">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            Filtros
-            {totalActiveFilters > 0 && (
-              <Badge variant="secondary" className="ml-1">
-                {totalActiveFilters}
-              </Badge>
-            )}
-          </Button>
-          {jobCount !== undefined && (
-            <span className="text-sm text-muted-foreground">
-              {jobCount} vaga{jobCount !== 1 ? 's' : ''} encontrada{jobCount !== 1 ? 's' : ''}
-            </span>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="default"
+          className="flex items-center gap-2 relative"
+        >
+          <Filter className="h-4 w-4" />
+          Filtros
+          {totalActiveFilters > 0 && (
+            <Badge variant="secondary" className="ml-1 h-5 min-w-5 flex items-center justify-center p-1">
+              {totalActiveFilters}
+            </Badge>
           )}
-        </div>
-        
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAllFilters}
-            className="text-muted-foreground hover:text-destructive"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Limpar filtros
-          </Button>
-        )}
-      </div>
+        </Button>
+      </DialogTrigger>
+      
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Filtrar Vagas</span>
+            {jobCount !== undefined && (
+              <span className="text-sm text-muted-foreground font-normal">
+                {jobCount} vaga{jobCount !== 1 ? 's' : ''} encontrada{jobCount !== 1 ? 's' : ''}
+              </span>
+            )}
+          </DialogTitle>
+        </DialogHeader>
 
-      {isExpanded && (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Tipo de Trabalho */}
             <div className="space-y-3">
@@ -180,7 +177,18 @@ export function JobFiltersBar({ filters, onFiltersChange, jobCount }: JobFilters
           {/* Filtros Ativos */}
           {hasActiveFilters && (
             <div className="pt-4 border-t border-border">
-              <h4 className="text-sm font-medium mb-3">Filtros ativos:</h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium">Filtros ativos:</h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllFilters}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpar todos
+                </Button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(filters).map(([category, values]) =>
                   values.map((value) => (
@@ -199,7 +207,7 @@ export function JobFiltersBar({ filters, onFiltersChange, jobCount }: JobFilters
             </div>
           )}
         </div>
-      )}
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -7,7 +7,7 @@ import { EmptyJobsList } from "./EmptyJobsList";
 import type { Job } from "@/types/job.types";
 import type { Database } from "@/integrations/supabase/types";
 
-import type { JobFilters } from "./filters/JobFiltersBar";
+import type { JobFilters } from "./filters/JobFiltersModal";
 
 interface JobsListProps {
   searchQuery?: string;
@@ -94,55 +94,102 @@ export const JobsList = ({ searchQuery, filters }: JobsListProps) => {
             // Filtro por tipo de trabalho
             if (filters.workType.length > 0) {
               const jobWorkType = job.type.toLowerCase();
-              const matchesWorkType = filters.workType.some(filter => 
-                jobWorkType.includes(filter) || 
-                (filter === 'remoto' && jobWorkType.includes('remote')) ||
-                (filter === 'hibrido' && jobWorkType.includes('híbrido'))
-              );
+              const matchesWorkType = filters.workType.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobWorkType.includes(filterLower) || 
+                       (filterLower === 'remoto' && (jobWorkType.includes('remote') || jobWorkType.includes('remoto'))) ||
+                       (filterLower === 'hibrido' && (jobWorkType.includes('híbrido') || jobWorkType.includes('hybrid'))) ||
+                       (filterLower === 'presencial' && (jobWorkType.includes('presencial') || jobWorkType.includes('on-site') || jobWorkType.includes('onsite')));
+              });
               if (!matchesWorkType) return false;
             }
 
             // Filtro por tipo de contrato
             if (filters.contractType.length > 0) {
               const jobContractType = job.contract_type.toLowerCase();
-              const matchesContract = filters.contractType.some(filter => 
-                jobContractType.includes(filter)
-              );
+              const matchesContract = filters.contractType.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobContractType.includes(filterLower) ||
+                       (filterLower === 'clt' && jobContractType.includes('clt')) ||
+                       (filterLower === 'pj' && (jobContractType.includes('pj') || jobContractType.includes('pessoa jurídica'))) ||
+                       (filterLower === 'freelancer' && (jobContractType.includes('freelancer') || jobContractType.includes('free')));
+              });
               if (!matchesContract) return false;
             }
 
             // Filtro por senioridade
             if (filters.seniority.length > 0) {
               const jobSeniority = job.seniority.toLowerCase();
-              const matchesSeniority = filters.seniority.some(filter => 
-                jobSeniority.includes(filter) ||
-                (filter === 'junior' && (jobSeniority.includes('júnior') || jobSeniority.includes('estagiario'))) ||
-                (filter === 'senior' && jobSeniority.includes('sênior'))
-              );
+              const matchesSeniority = filters.seniority.some(filter => {
+                const filterLower = filter.toLowerCase();
+                return jobSeniority.includes(filterLower) ||
+                       (filterLower === 'junior' && (jobSeniority.includes('júnior') || jobSeniority.includes('jr') || jobSeniority.includes('estagiário') || jobSeniority.includes('trainee'))) ||
+                       (filterLower === 'pleno' && (jobSeniority.includes('pleno') || jobSeniority.includes('mid'))) ||
+                       (filterLower === 'senior' && (jobSeniority.includes('sênior') || jobSeniority.includes('sr') || jobSeniority.includes('senior')));
+              });
               if (!matchesSeniority) return false;
             }
 
-            // Filtro por faixa salarial
+            // Filtro por faixa salarial - melhorado para extrair números reais
             if (filters.salaryRanges.length > 0) {
               const salary = job.salary_range.toLowerCase();
+              // Extrair números do salário usando regex
+              const salaryNumbers = salary.match(/\d+/g);
+              
               const matchesSalary = filters.salaryRanges.some(range => {
-                if (range === "0-3000") return salary.includes("3") && !salary.includes("6");
-                if (range === "3000-6000") return salary.includes("3") && salary.includes("6");
-                if (range === "6000-10000") return salary.includes("6") && salary.includes("10");
-                if (range === "10000+") return salary.includes("10") || salary.includes("15") || salary.includes("20");
+                if (range === "0-3000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value <= 3000 && value >= 1000;
+                  });
+                }
+                if (range === "3000-6000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 3000 && value <= 6000;
+                  });
+                }
+                if (range === "6000-10000") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 6000 && value <= 10000;
+                  });
+                }
+                if (range === "10000+") {
+                  return salaryNumbers && salaryNumbers.some(num => {
+                    const value = parseInt(num);
+                    return value >= 10000;
+                  });
+                }
                 return false;
               });
               if (!matchesSalary) return false;
             }
 
-            // Filtro por tags de área de dados
+            // Filtro por tags de área de dados - expandido
             if (filters.dataTags.length > 0) {
               const jobContent = `${job.title} ${job.description}`.toLowerCase();
               const matchesTags = filters.dataTags.some(tag => {
-                if (tag === 'data-analyst') return jobContent.includes('analista') || jobContent.includes('analyst');
-                if (tag === 'data-scientist') return jobContent.includes('cientista') || jobContent.includes('scientist');
-                if (tag === 'data-engineer') return jobContent.includes('engenheiro') || jobContent.includes('engineer');
-                return jobContent.includes(tag.replace('-', ' '));
+                switch(tag) {
+                  case 'data-analyst':
+                    return jobContent.includes('analista') || jobContent.includes('analyst') || jobContent.includes('análise');
+                  case 'data-scientist':
+                    return jobContent.includes('cientista') || jobContent.includes('scientist') || jobContent.includes('ciência');
+                  case 'data-engineer':
+                    return jobContent.includes('engenheiro') || jobContent.includes('engineer') || jobContent.includes('engenharia');
+                  case 'bi':
+                    return jobContent.includes('bi') || jobContent.includes('business intelligence') || jobContent.includes('power bi');
+                  case 'python':
+                    return jobContent.includes('python');
+                  case 'sql':
+                    return jobContent.includes('sql') || jobContent.includes('mysql') || jobContent.includes('postgresql');
+                  case 'ml':
+                    return jobContent.includes('machine learning') || jobContent.includes('ml') || jobContent.includes('aprendizado');
+                  case 'etl':
+                    return jobContent.includes('etl') || jobContent.includes('extract') || jobContent.includes('pipeline');
+                  default:
+                    return jobContent.includes(tag.replace('-', ' '));
+                }
               });
               if (!matchesTags) return false;
             }
