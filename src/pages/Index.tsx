@@ -7,6 +7,7 @@ import { JobsList } from "@/components/jobs/JobsList";
 import { JobFiltersModal, type JobFilters } from "@/components/jobs/filters/JobFiltersModal";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { HomeAdBanner } from "@/components/jobs/HomeAdBanner";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,6 +46,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Advertisement Banner */}
+      <HomeAdBanner />
 
       {/* Search and Jobs Section */}
       <section className="py-4 md:py-12 bg-[#f8fafc]">

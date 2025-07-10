@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 
-type BannerType = "INTRODUCTION" | "LEARNING" | "QUESTIONS";
+type BannerType = "INTRODUCTION" | "LEARNING" | "QUESTIONS" | "HOME_ADS";
 type DisplayType = "MOBILE" | "DESKTOP";
 
 interface Banner {
@@ -32,7 +32,7 @@ interface DatabaseBanner extends Omit<Banner, 'type' | 'display'> {
 }
 
 const isBannerType = (type: string): type is BannerType => {
-    return ["INTRODUCTION", "LEARNING", "QUESTIONS"].includes(type);
+    return ["INTRODUCTION", "LEARNING", "QUESTIONS", "HOME_ADS"].includes(type);
 };
 
 const isDisplayType = (display: string): display is DisplayType => {
@@ -172,6 +172,11 @@ export function BannersPage() {
                                     banners={desktopBanners}
                                     type="QUESTIONS"
                                 />
+                                <BannerSection
+                                    title="Banners Publicitários"
+                                    banners={desktopBanners}
+                                    type="HOME_ADS"
+                                />
                             </TabsContent>
 
                             <TabsContent value="MOBILE" className="space-y-4 md:space-y-6">
@@ -189,6 +194,11 @@ export function BannersPage() {
                                     title="Banners de Dúvidas"
                                     banners={mobileBanners}
                                     type="QUESTIONS"
+                                />
+                                <BannerSection
+                                    title="Banners Publicitários"
+                                    banners={mobileBanners}
+                                    type="HOME_ADS"
                                 />
                             </TabsContent>
                         </Tabs>

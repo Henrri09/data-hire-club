@@ -51,7 +51,7 @@ export interface CommunityBanner {
   image_url?: string | null;
   link_url?: string | null;
   is_active: boolean;
-  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS";
+  type: "INTRODUCTION" | "LEARNING" | "QUESTIONS" | "HOME_ADS";
   display: "MOBILE" | "DESKTOP";
   created_at: string;
 }
