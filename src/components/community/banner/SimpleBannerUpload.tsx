@@ -17,7 +17,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isUploading, setIsUploading] = useState(false);
-  const [type, setType] = useState<"INTRODUCTION" | "LEARNING" | "QUESTIONS">("INTRODUCTION");
+  const [type, setType] = useState<"INTRODUCTION" | "LEARNING" | "QUESTIONS" | "HOME_ADS">("INTRODUCTION");
   const [display, setDisplay] = useState<"MOBILE" | "DESKTOP">("DESKTOP");
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +125,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
           <div className="grid gap-4">
             <div className="space-y-2">
               <Label htmlFor="type" className={isMobile ? 'text-sm' : ''}>Tipo do Banner</Label>
-              <Select value={type} onValueChange={(value: "INTRODUCTION" | "LEARNING" | "QUESTIONS") => setType(value)}>
+              <Select value={type} onValueChange={(value: "INTRODUCTION" | "LEARNING" | "QUESTIONS" | "HOME_ADS") => setType(value)}>
                 <SelectTrigger className={isMobile ? 'h-10' : ''}>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
@@ -133,6 +133,7 @@ export function SimpleBannerUpload({ open, onOpenChange, onSuccess }: SimpleBann
                   <SelectItem value="INTRODUCTION">Introdução</SelectItem>
                   <SelectItem value="LEARNING">Aprendizado</SelectItem>
                   <SelectItem value="QUESTIONS">Perguntas</SelectItem>
+                  <SelectItem value="HOME_ADS">Publicidade/Home</SelectItem>
                 </SelectContent>
               </Select>
             </div>
